@@ -343,131 +343,156 @@ export default function AccountsPage() {
     </Dialog>
   );
 
-  const EditAccountDialog = () => (
-    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit Account - {editingAccount?.name}</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleEditAccount)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Main Checking" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+  const EditAccountDialog = () => {
+    const isAssetAccount = editingAccount?.type && ["checking", "savings", "money_market", "investment"].includes(editingAccount.type);
+    const isDebtAccount = editingAccount?.type && ["credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit"].includes(editingAccount.type);
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Primary checking account" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {editingAccount?.type && ["savings", "money_market", "investment"].includes(editingAccount.type) && (
+    return (
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit {isAssetAccount ? "Asset" : isDebtAccount ? "Debt" : ""} Account - {editingAccount?.name}</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleEditAccount)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="interestRate"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Interest Rate (Optional)</FormLabel>
+                    <FormLabel>Account Name</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" placeholder="4.5" {...field} />
+                      <Input placeholder="e.g., Main Checking" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            {editingAccount?.type && ["credit_card", "line_of_credit"].includes(editingAccount.type) && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="creditLimit"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Credit Limit (Optional)</FormLabel>
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <Input type="number" step="0.01" placeholder="5000.00" {...field} />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select account type" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="apr"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>APR (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" placeholder="5.25" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
+                      <SelectContent>
+                        {isAssetAccount ? (
+                          <>
+                            <SelectItem value="checking">Checking</SelectItem>
+                            <SelectItem value="savings">Savings</SelectItem>
+                            <SelectItem value="money_market">Money Market</SelectItem>
+                            <SelectItem value="investment">Investment</SelectItem>
+                          </>
+                        ) : (
+                          <>
+                            <SelectItem value="credit_card">Credit Card</SelectItem>
+                            <SelectItem value="mortgage">Mortgage</SelectItem>
+                            <SelectItem value="student_loan">Student Loan</SelectItem>
+                            <SelectItem value="auto_loan">Auto Loan</SelectItem>
+                            <SelectItem value="line_of_credit">Line of Credit</SelectItem>
+                          </>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {editingAccount?.type && ["mortgage", "student_loan", "auto_loan"].includes(editingAccount.type) && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="apr"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>APR (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" placeholder="5.25" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="dueDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Monthly Due Date (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="1" max="31" placeholder="15" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder={isAssetAccount ? "e.g., Primary checking account" : "e.g., Visa •••• 1234"} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Update Account</Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
+              {isAssetAccount && (
+                <FormField
+                  control={form.control}
+                  name="interestRate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Interest Rate (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" placeholder="4.5" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {isDebtAccount && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="creditLimit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Credit Limit (Optional)</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" placeholder="5000.00" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="apr"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>APR (Optional)</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" placeholder="5.25" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="dueDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Monthly Due Date (Optional)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="1" max="31" placeholder="15" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Update Account</Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    );
+  };
 
   const BalanceAdjustmentDialog = () => (
     <Dialog open={isBalanceDialogOpen} onOpenChange={setIsBalanceDialogOpen}>
@@ -523,11 +548,22 @@ export default function AccountsPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                  <div>
                     <h3 className="font-semibold text-gray-900">Checking Account</h3>
                     <p className="text-sm text-gray-600">Primary checking account</p>
-                    <button 
-                      className="text-xs text-blue-600 hover:text-blue-800 mt-1"
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => openBalanceAdjustment("Checking Account", 12345.67)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
                       onClick={() => openEditAccount({
                         name: "Checking Account",
                         type: "checking",
@@ -539,17 +575,7 @@ export default function AccountsPage() {
                         dueDate: "",
                       })}
                     >
-                      Edit Account
-                    </button>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openBalanceAdjustment("Checking Account", 12345.67)}
-                    >
-                      <Edit className="h-4 w-4" />
+                      <Settings className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -559,11 +585,22 @@ export default function AccountsPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                  <div>
                     <h3 className="font-semibold text-gray-900">Savings Account</h3>
                     <p className="text-sm text-gray-600">High-yield savings • 4.5% APY</p>
-                    <button 
-                      className="text-xs text-blue-600 hover:text-blue-800 mt-1"
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => openBalanceAdjustment("Savings Account", 25890.12)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
                       onClick={() => openEditAccount({
                         name: "Savings Account",
                         type: "savings",
@@ -575,17 +612,7 @@ export default function AccountsPage() {
                         dueDate: "",
                       })}
                     >
-                      Edit Account
-                    </button>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openBalanceAdjustment("Savings Account", 25890.12)}
-                    >
-                      <Edit className="h-4 w-4" />
+                      <Settings className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -607,11 +634,22 @@ export default function AccountsPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                  <div>
                     <h3 className="font-semibold text-gray-900">Credit Card</h3>
                     <p className="text-sm text-gray-600">Visa •••• 1234 • 22.99% APR</p>
-                    <button 
-                      className="text-xs text-blue-600 hover:text-blue-800 mt-1"
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => openBalanceAdjustment("Credit Card", 2456.78)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
                       onClick={() => openEditAccount({
                         name: "Credit Card",
                         type: "credit_card",
@@ -623,17 +661,7 @@ export default function AccountsPage() {
                         dueDate: "15",
                       })}
                     >
-                      Edit Account
-                    </button>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openBalanceAdjustment("Credit Card", 2456.78)}
-                    >
-                      <Edit className="h-4 w-4" />
+                      <Settings className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
