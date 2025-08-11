@@ -82,8 +82,8 @@ export default function StatementsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[150px] sticky left-0 bg-white z-10 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">Account</TableHead>
-                      <TableHead className="w-[80px] sticky left-[150px] bg-white z-10 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">Type</TableHead>
+                      <TableHead className="w-[150px] sticky left-0 bg-white z-10 border-r border-gray-200">Account</TableHead>
+                      <TableHead className="w-[80px] sticky left-[150px] bg-white z-10 border-r border-gray-200">Type</TableHead>
                       {selectedMonths.map(monthValue => {
                         const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                         return (
@@ -97,7 +97,7 @@ export default function StatementsPage() {
                   <TableBody>
                     {accounts.map((account, accountIndex) => (
                       <TableRow key={account.name}>
-                        <TableCell className="font-medium sticky left-0 bg-white z-10 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+                        <TableCell className="font-medium sticky left-0 bg-white z-10 border-r border-gray-200">
                           <div>
                             <div className="font-medium">{account.name}</div>
                             <div className="text-xs text-gray-500 space-y-0.5">
@@ -110,7 +110,7 @@ export default function StatementsPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="sticky left-[150px] bg-white z-10 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+                        <TableCell className="sticky left-[150px] bg-white z-10 border-r border-gray-200">
                           <div className="space-y-2">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium block text-center ${
                               account.type === 'Asset' 
