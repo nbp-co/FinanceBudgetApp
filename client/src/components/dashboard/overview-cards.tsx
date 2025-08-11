@@ -7,7 +7,7 @@ export function OverviewCards() {
     <Card className="mb-8">
       <CardContent className="p-4 sm:p-6">
         <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
-          <div className="p-3 sm:p-4 rounded-lg bg-gray-50">
+          <div className="p-3 sm:p-4 rounded-lg bg-white border border-gray-200 shadow-sm">
             <div>
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Total Assets</p>
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-green-600 truncate">{formatCurrencyWhole(24567.89)}</p>
@@ -21,7 +21,7 @@ export function OverviewCards() {
             </div>
           </div>
 
-          <div className="p-3 sm:p-4 rounded-lg bg-gray-50">
+          <div className="p-3 sm:p-4 rounded-lg bg-white border border-gray-200 shadow-sm">
             <div>
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Total Debts</p>
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-red-600 truncate">{formatCurrencyWhole(8234.12)}</p>
@@ -35,7 +35,7 @@ export function OverviewCards() {
             </div>
           </div>
 
-          <div className="p-3 sm:p-4 rounded-lg bg-gray-50">
+          <div className="p-3 sm:p-4 rounded-lg bg-white border border-gray-200 shadow-sm">
             <div>
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Net Worth</p>
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-primary truncate">{formatCurrencyWhole(16333.77)}</p>
