@@ -12,7 +12,7 @@ import {
 import { addMonths, startOfMonth, endOfMonth, addDays } from "date-fns";
 
 function requireAuth(req: any, res: any, next: any) {
-  if (!req.isAuthenticated()) {
+  if (!req.isAuthenticated() || !req.user) {
     return res.sendStatus(401);
   }
   next();

@@ -196,32 +196,33 @@ export class DatabaseStorage implements IStorage {
     limit?: number;
     offset?: number;
   }): Promise<Transaction[]> {
-    let query = db
-      .select()
-      .from(transactions)
-      .where(eq(transactions.userId, userId));
+    let whereConditions = [eq(transactions.userId, userId)];
 
     if (filters?.accountId) {
-      query = query.where(eq(transactions.accountId, filters.accountId));
+      whereConditions.push(eq(transactions.accountId, filters.accountId));
     }
     
     if (filters?.type) {
-      query = query.where(eq(transactions.type, filters.type as any));
+      whereConditions.push(eq(transactions.type, filters.type as any));
     }
     
     if (filters?.categoryId) {
-      query = query.where(eq(transactions.categoryId, filters.categoryId));
+      whereConditions.push(eq(transactions.categoryId, filters.categoryId));
     }
     
     if (filters?.startDate) {
-      query = query.where(gte(transactions.date, filters.startDate));
+      whereConditions.push(gte(transactions.date, filters.startDate));
     }
     
     if (filters?.endDate) {
-      query = query.where(lte(transactions.date, filters.endDate));
+      whereConditions.push(lte(transactions.date, filters.endDate));
     }
 
-    query = query.orderBy(desc(transactions.date), desc(transactions.createdAt));
+    let query = db
+      .select()
+      .from(transactions)
+      .where(and(...whereConditions))
+      .orderBy(desc(transactions.date), desc(transactions.createdAt));
     
     if (filters?.limit) {
       query = query.limit(filters.limit);
