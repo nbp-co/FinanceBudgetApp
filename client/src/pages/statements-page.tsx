@@ -82,8 +82,8 @@ export default function StatementsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[200px]">Account</TableHead>
-                      <TableHead className="w-[80px]">Type</TableHead>
+                      <TableHead className="w-[200px] sticky left-0 bg-white z-10 border-r">Account</TableHead>
+                      <TableHead className="w-[80px] sticky left-[200px] bg-white z-10 border-r">Type</TableHead>
                       {selectedMonths.map(monthValue => {
                         const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                         return (
@@ -97,8 +97,8 @@ export default function StatementsPage() {
                   <TableBody>
                     {accounts.map((account, accountIndex) => (
                       <TableRow key={account.name}>
-                        <TableCell className="font-medium">{account.name}</TableCell>
-                        <TableCell>
+                        <TableCell className="font-medium sticky left-0 bg-white z-10 border-r">{account.name}</TableCell>
+                        <TableCell className="sticky left-[200px] bg-white z-10 border-r">
                           <div className="space-y-2">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium block text-center ${
                               account.type === 'Asset' 
