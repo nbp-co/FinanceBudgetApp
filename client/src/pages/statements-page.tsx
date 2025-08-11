@@ -73,44 +73,43 @@ export default function StatementsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-8">
-            {/* Statement Balance Matrix */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Statement Balances</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[200px]">Account</TableHead>
-                        <TableHead className="w-[80px]">Type</TableHead>
-                        {selectedMonths.map(monthValue => {
-                          const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
-                          return (
-                            <TableHead key={monthValue} className="text-center min-w-[120px]">
-                              {monthLabel}
-                            </TableHead>
-                          );
-                        })}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {accounts.map((account, accountIndex) => (
-                        <TableRow key={account.name}>
-                          <TableCell className="font-medium">{account.name}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              account.type === 'Asset' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {account.type}
-                            </span>
-                          </TableCell>
-                          {selectedMonths.map(monthValue => (
-                            <TableCell key={`${account.name}-${monthValue}`} className="text-center">
+          <Card>
+            <CardHeader>
+              <CardTitle>Monthly Statements</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[200px]">Account</TableHead>
+                      <TableHead className="w-[80px]">Type</TableHead>
+                      {selectedMonths.map(monthValue => {
+                        const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                        return (
+                          <TableHead key={monthValue} className="text-center min-w-[120px]">
+                            {monthLabel}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {accounts.map((account, accountIndex) => (
+                      <TableRow key={account.name}>
+                        <TableCell className="font-medium">{account.name}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            account.type === 'Asset' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {account.type}
+                          </span>
+                        </TableCell>
+                        {selectedMonths.map(monthValue => (
+                          <TableCell key={`${account.name}-${monthValue}`} className="text-center">
+                            <div className="space-y-1">
                               <Input
                                 type="number"
                                 defaultValue={
@@ -120,54 +119,8 @@ export default function StatementsPage() {
                                 }
                                 className="w-28 text-center"
                                 step="0.01"
+                                placeholder="Balance"
                               />
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Interest Charged Matrix */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Interest Charged</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[200px]">Account</TableHead>
-                        <TableHead className="w-[80px]">Type</TableHead>
-                        {selectedMonths.map(monthValue => {
-                          const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
-                          return (
-                            <TableHead key={monthValue} className="text-center min-w-[120px]">
-                              {monthLabel}
-                            </TableHead>
-                          );
-                        })}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {accounts.map((account, accountIndex) => (
-                        <TableRow key={account.name}>
-                          <TableCell className="font-medium">{account.name}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              account.type === 'Asset' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {account.type}
-                            </span>
-                          </TableCell>
-                          {selectedMonths.map(monthValue => (
-                            <TableCell key={`${account.name}-${monthValue}-interest`} className="text-center">
                               <Input
                                 type="number"
                                 defaultValue={
@@ -175,19 +128,20 @@ export default function StatementsPage() {
                                   account.name === "Savings Account" ? "95.43" :
                                   "47.23"
                                 }
-                                className="w-28 text-center"
+                                className="w-28 text-center text-xs"
                                 step="0.01"
+                                placeholder="Interest"
                               />
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                            </div>
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
 
