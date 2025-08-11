@@ -116,6 +116,7 @@ export default function StatementsPage() {
                           <TableCell key={`${account.name}-${monthValue}`} className="text-center">
                             <div className="space-y-1">
                               <div className="relative">
+                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
                                 <Input
                                   type="number"
                                   defaultValue={
@@ -123,12 +124,13 @@ export default function StatementsPage() {
                                     account.name === "Savings Account" ? "25890.12" :
                                     "2456.78"
                                   }
-                                  className="w-28 text-center"
+                                  className="w-28 text-center pl-6"
                                   step="0.01"
                                 />
                                 <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
                               </div>
                               <div className="relative">
+                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
                                 <Input
                                   type="number"
                                   defaultValue={
@@ -136,7 +138,7 @@ export default function StatementsPage() {
                                     account.name === "Savings Account" ? "95.43" :
                                     "47.23"
                                   }
-                                  className="w-28 text-center text-xs"
+                                  className="w-28 text-center text-xs pl-6"
                                   step="0.01"
                                 />
                                 <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
