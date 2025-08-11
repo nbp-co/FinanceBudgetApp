@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Save } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 export default function StatementsPage() {
   return (
@@ -141,7 +142,7 @@ export default function StatementsPage() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-sm font-medium text-gray-600">Total Assets</p>
-                <p className="text-2xl font-bold text-green-600">$38,235.79</p>
+                <p className="text-2xl font-bold text-green-600">{formatCurrency(38235.79)}</p>
               </div>
             </CardContent>
           </Card>
@@ -150,7 +151,7 @@ export default function StatementsPage() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-sm font-medium text-gray-600">Total Debts</p>
-                <p className="text-2xl font-bold text-red-600">$2,456.78</p>
+                <p className="text-2xl font-bold text-red-600">{formatCurrency(2456.78)}</p>
               </div>
             </CardContent>
           </Card>
@@ -159,7 +160,7 @@ export default function StatementsPage() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-sm font-medium text-gray-600">Net Worth</p>
-                <p className="text-2xl font-bold text-primary">$35,779.01</p>
+                <p className="text-2xl font-bold text-primary">{formatCurrency(35779.01)}</p>
               </div>
             </CardContent>
           </Card>

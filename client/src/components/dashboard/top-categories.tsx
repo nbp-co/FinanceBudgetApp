@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Home, ShoppingCart, Car, Gamepad2 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 export function TopCategories() {
   // Mock data - in real app this would come from API
@@ -82,7 +83,7 @@ export function TopCategories() {
                   <span className="text-gray-700 font-medium">{category.name}</span>
                 </div>
                 <span className="font-semibold text-gray-900">
-                  ${category.amount.toFixed(2)}
+                  {formatCurrency(category.amount)}
                 </span>
               </div>
             );

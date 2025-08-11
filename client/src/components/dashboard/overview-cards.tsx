@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, ArrowUp, BarChart3 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 export function OverviewCards() {
   return (
@@ -9,7 +10,7 @@ export function OverviewCards() {
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Total Assets</p>
-              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-green-600 truncate">$24,567.89</p>
+              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-green-600 truncate">{formatCurrency(24567.89)}</p>
             </div>
             <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 ml-2">
               <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-green-600" />
@@ -30,7 +31,7 @@ export function OverviewCards() {
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Total Debts</p>
-              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-red-600 truncate">$8,234.12</p>
+              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-red-600 truncate">{formatCurrency(8234.12)}</p>
             </div>
             <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 ml-2">
               <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-red-600" />
@@ -51,7 +52,7 @@ export function OverviewCards() {
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Net Worth</p>
-              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-primary truncate">$16,333.77</p>
+              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-primary truncate">{formatCurrency(16333.77)}</p>
             </div>
             <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 ml-2">
               <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />

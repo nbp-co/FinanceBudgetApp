@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay } from "date-fns";
+import { formatCurrency } from "@/lib/utils";
 
 export function MonthlyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -196,7 +197,7 @@ export function MonthlyCalendar() {
                     transaction.type === 'expense' ? 'text-red-600' : 'text-blue-600'
                   }`}>
                     {transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '-' : ''}
-                    ${transaction.amount.toFixed(2)}
+                    {formatCurrency(transaction.amount)}
                   </p>
                 </div>
               </div>

@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Building, CreditCard } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 export default function AccountsPage() {
   return (
@@ -33,7 +34,7 @@ export default function AccountsPage() {
                     <p className="text-sm text-gray-600">Primary checking account</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-semibold text-green-600">$12,345.67</p>
+                    <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
                     <p className="text-sm text-gray-600">Available Balance</p>
                   </div>
                 </div>
@@ -48,7 +49,7 @@ export default function AccountsPage() {
                     <p className="text-sm text-gray-600">High-yield savings • 4.5% APY</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-semibold text-green-600">$25,890.12</p>
+                    <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
                     <p className="text-sm text-gray-600">Available Balance</p>
                   </div>
                 </div>
@@ -72,7 +73,7 @@ export default function AccountsPage() {
                     <p className="text-sm text-gray-600">Visa •••• 1234 • 22.99% APR</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-semibold text-red-600">$2,456.78</p>
+                    <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
                     <p className="text-sm text-gray-600">Current Balance</p>
                   </div>
                 </div>

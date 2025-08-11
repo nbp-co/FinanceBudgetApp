@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { Link } from "wouter";
+import { formatCurrency } from "@/lib/utils";
 
 export function RecentTransactions() {
   // Mock data - in real app this would come from API
@@ -85,11 +86,11 @@ export function RecentTransactions() {
   const formatAmount = (amount: number, type: string) => {
     const absAmount = Math.abs(amount);
     if (type === "INCOME") {
-      return `+$${absAmount.toFixed(2)}`;
+      return `+${formatCurrency(absAmount)}`;
     } else if (type === "EXPENSE") {
-      return `-$${absAmount.toFixed(2)}`;
+      return `-${formatCurrency(absAmount)}`;
     } else {
-      return `$${absAmount.toFixed(2)}`;
+      return formatCurrency(absAmount);
     }
   };
 

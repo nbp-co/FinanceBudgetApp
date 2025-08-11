@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 export function QuickStats() {
   // Mock data - in real app this would come from API
@@ -28,7 +29,7 @@ export function QuickStats() {
               <span className="text-gray-700 font-medium">Income</span>
             </div>
             <span className="font-semibold text-green-600">
-              ${monthlyStats.income.toFixed(2)}
+              {formatCurrency(monthlyStats.income)}
             </span>
           </div>
           
@@ -40,7 +41,7 @@ export function QuickStats() {
               <span className="text-gray-700 font-medium">Expenses</span>
             </div>
             <span className="font-semibold text-red-600">
-              ${monthlyStats.expenses.toFixed(2)}
+              {formatCurrency(monthlyStats.expenses)}
             </span>
           </div>
           
@@ -49,7 +50,7 @@ export function QuickStats() {
           <div className="flex items-center justify-between">
             <span className="text-gray-900 font-semibold">Net Income</span>
             <span className="font-bold text-primary">
-              ${monthlyStats.net.toFixed(2)}
+              {formatCurrency(monthlyStats.net)}
             </span>
           </div>
         </div>

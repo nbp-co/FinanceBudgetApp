@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { formatCurrency } from "@/lib/utils";
 
 const incomeExpenseData = [
   { month: 'Jul', income: 4500, expense: 3200 },
@@ -65,7 +66,7 @@ export default function AnalysisPage() {
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip 
-                      formatter={(value, name) => [`$${value}`, name === 'income' ? 'Income' : 'Expense']}
+                      formatter={(value, name) => [formatCurrency(Number(value)), name === 'income' ? 'Income' : 'Expense']}
                     />
                     <Bar dataKey="income" fill="hsl(var(--chart-1))" name="income" />
                     <Bar dataKey="expense" fill="hsl(var(--chart-2))" name="expense" />
@@ -96,7 +97,7 @@ export default function AnalysisPage() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                    <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Amount']} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -133,7 +134,7 @@ export default function AnalysisPage() {
                         />
                       </div>
                       <span className="font-semibold min-w-[80px] text-right">
-                        ${category.value.toFixed(2)}
+                        {formatCurrency(category.value)}
                       </span>
                     </div>
                   </div>
