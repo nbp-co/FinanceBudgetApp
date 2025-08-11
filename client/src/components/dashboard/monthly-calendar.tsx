@@ -163,22 +163,6 @@ export function MonthlyCalendar() {
             );
           })}
         </div>
-        
-        {/* Calendar Legend */}
-        <div className="mt-4 flex items-center justify-center space-x-6 text-sm">
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-green-400 rounded-full mr-2" />
-            <span className="text-gray-600">Income</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-red-400 rounded-full mr-2" />
-            <span className="text-gray-600">Expense</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-blue-400 rounded-full mr-2" />
-            <span className="text-gray-600">Transfer</span>
-          </div>
-        </div>
       </CardContent>
     </Card>
   </div>

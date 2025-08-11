@@ -18,18 +18,22 @@ export default function HomePage() {
               <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
               <p className="text-gray-600">View your transactions and upcoming events</p>
             </div>
-            <div className="flex items-center space-x-3">
-              <Button onClick={() => setIsAddModalOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Transaction
-              </Button>
-            </div>
+
           </div>
         </div>
 
         {/* Calendar */}
         <MonthlyCalendar />
       </div>
+
+      {/* Floating Add Transaction Button */}
+      <Button 
+        onClick={() => setIsAddModalOpen(true)}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50"
+        size="icon"
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
 
       <AddTransactionModal 
         isOpen={isAddModalOpen} 
