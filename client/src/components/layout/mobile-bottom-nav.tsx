@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { 
   Home, 
   Building, 
-  BarChart3, 
   Calendar,
   Settings 
 } from "lucide-react";
@@ -12,7 +11,6 @@ const navigation = [
   { name: "Summary", href: "/summary", icon: Calendar },
   { name: "Calendar", href: "/", icon: Home },
   { name: "Accounts", href: "/accounts", icon: Building },
-  { name: "Analysis", href: "/analysis", icon: BarChart3 },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -21,7 +19,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-50">
-      <div className="grid grid-cols-5 h-16">
+      <div className="grid grid-cols-4 h-16">
         {navigation.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.href;
