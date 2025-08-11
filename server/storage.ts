@@ -81,11 +81,11 @@ export interface IStorage {
   createInterestSnapshot(snapshot: InsertInterestSnapshot): Promise<InterestSnapshot>;
 
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 }
 
 export class DatabaseStorage implements IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 
