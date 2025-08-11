@@ -43,6 +43,9 @@ export function MonthlyCalendar() {
     setSelectedDate(today);
   };
 
+  // Mock starting balance - would come from API
+  const startingBalance = 12345.67;
+
   // Mock transaction data - would come from API
   const getTransactionsForDay = (date: Date) => {
     const dayOfMonth = date.getDate();
@@ -69,6 +72,29 @@ export function MonthlyCalendar() {
       { id: '9', type: 'expense', amount: 45, description: 'Gas Station', category: 'Transportation' }
     ];
     return [];
+  };
+
+  // Calculate daily balance for a given date
+  const getDailyBalance = (date: Date) => {
+    let balance = startingBalance;
+    const monthStart = startOfMonth(currentDate);
+    
+    // Calculate balance from start of month to the given date
+    const daysToCalculate = eachDayOfInterval({ start: monthStart, end: date });
+    
+    for (const day of daysToCalculate) {
+      const transactions = getTransactionsForDay(day);
+      for (const transaction of transactions) {
+        if (transaction.type === 'income') {
+          balance += transaction.amount;
+        } else if (transaction.type === 'expense') {
+          balance -= transaction.amount;
+        }
+        // Transfer transactions don't affect the total balance in this simplified example
+      }
+    }
+    
+    return balance;
   };
 
   const handleDayClick = (day: Date) => {
@@ -121,7 +147,7 @@ export function MonthlyCalendar() {
               <div
                 key={index}
                 onClick={() => handleDayClick(day)}
-                className={`h-14 border rounded-lg p-2 cursor-pointer transition-colors hover:bg-gray-50 ${
+                className={`h-16 border rounded-lg p-1 cursor-pointer transition-colors hover:bg-gray-50 ${
                   !isCurrentMonth ? 'cursor-not-allowed' : ''
                 } ${
                   isSelected || isTodayDate
@@ -129,19 +155,21 @@ export function MonthlyCalendar() {
                     : 'border-gray-100'
                 }`}
               >
-                <div className="flex flex-col items-center h-full">
-                  <div className={`text-sm font-medium flex items-center justify-center w-6 h-6 rounded-full ${
-                    isSelected
-                      ? 'bg-primary text-white'
-                      : isTodayDate 
-                        ? 'border-2 border-primary text-primary' 
-                        : isCurrentMonth
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                  }`}>
-                    {format(day, 'd')}
+                <div className="flex flex-col h-full">
+                  <div className="flex items-center justify-center">
+                    <div className={`text-sm font-medium flex items-center justify-center w-6 h-6 rounded-full ${
+                      isSelected
+                        ? 'bg-primary text-white'
+                        : isTodayDate 
+                          ? 'border-2 border-primary text-primary' 
+                          : isCurrentMonth
+                            ? 'text-gray-900'
+                            : 'text-gray-400'
+                    }`}>
+                      {format(day, 'd')}
+                    </div>
                   </div>
-                  <div className="flex gap-1 mt-1">
+                  <div className="flex gap-1 justify-center mt-1">
                     {transactions.slice(0, 2).map((transaction, txIndex) => {
                       let colorClass = '';
                       if (transaction.type === 'income') colorClass = 'bg-green-400';
@@ -159,11 +187,37 @@ export function MonthlyCalendar() {
                       <div className="text-xs text-gray-400">+</div>
                     )}
                   </div>
+                  {/* Show ending balance for days with transactions */}
+                  {transactions.length > 0 && isCurrentMonth && (
+                    <div className="mt-auto">
+                      <div className="text-xs text-center text-gray-600 font-medium truncate">
+                        {formatCurrency(getDailyBalance(day))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
+        
+        {/* Balance Bar for Selected Day */}
+        {selectedDate && (
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Balance for {format(selectedDate, 'EEEE, MMM d')}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-lg font-bold text-primary">
+                  {formatCurrency(getDailyBalance(selectedDate))}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   </div>
