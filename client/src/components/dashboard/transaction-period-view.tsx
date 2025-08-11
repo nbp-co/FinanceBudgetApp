@@ -231,9 +231,6 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
                         <p className="font-medium">{transaction.description}</p>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <span>{format(transaction.date, "MMM d, yyyy")}</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {transaction.category}
-                          </Badge>
                           <span>•</span>
                           <span>{transaction.account}</span>
                         </div>
