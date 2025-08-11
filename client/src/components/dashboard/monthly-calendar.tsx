@@ -155,7 +155,7 @@ export function MonthlyCalendar() {
               <div
                 key={index}
                 onClick={() => handleDayClick(day)}
-                className={`h-12 sm:h-16 border rounded-lg p-1 cursor-pointer transition-colors hover:bg-gray-50 ${
+                className={`h-16 border rounded-lg p-1 cursor-pointer transition-colors hover:bg-gray-50 ${
                   !isCurrentMonth ? 'cursor-not-allowed' : ''
                 } ${
                   isSelected || isTodayDate
