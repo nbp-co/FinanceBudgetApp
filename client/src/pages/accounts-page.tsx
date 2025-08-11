@@ -14,11 +14,13 @@ import { useState } from "react";
 
 const accountFormSchema = z.object({
   name: z.string().min(1, "Account name is required"),
-  type: z.enum(["checking", "savings", "money_market", "investment", "credit_card", "loan", "line_of_credit"]),
+  type: z.enum(["checking", "savings", "money_market", "investment", "credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit"]),
   balance: z.string().min(1, "Balance is required"),
   description: z.string().optional(),
   interestRate: z.string().optional(),
   creditLimit: z.string().optional(),
+  apr: z.string().optional(),
+  dueDate: z.string().optional(),
 });
 
 const balanceAdjustmentSchema = z.object({
@@ -42,6 +44,8 @@ export default function AccountsPage() {
       description: "",
       interestRate: "",
       creditLimit: "",
+      apr: "",
+      dueDate: "",
     },
   });
 
@@ -124,7 +128,9 @@ export default function AccountsPage() {
                       ) : (
                         <>
                           <SelectItem value="credit_card">Credit Card</SelectItem>
-                          <SelectItem value="loan">Loan</SelectItem>
+                          <SelectItem value="mortgage">Mortgage</SelectItem>
+                          <SelectItem value="student_loan">Student Loan</SelectItem>
+                          <SelectItem value="auto_loan">Auto Loan</SelectItem>
                           <SelectItem value="line_of_credit">Line of Credit</SelectItem>
                         </>
                       )}
@@ -180,19 +186,49 @@ export default function AccountsPage() {
             )}
 
             {accountType === "debt" && (
-              <FormField
-                control={form.control}
-                name="creditLimit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Credit Limit (Optional)</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" placeholder="5000.00" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <>
+                <FormField
+                  control={form.control}
+                  name="creditLimit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Credit Limit (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" placeholder="5000.00" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="apr"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>APR (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" placeholder="5.25" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="dueDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Monthly Due Date (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="number" min="1" max="31" placeholder="15" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
             )}
 
             <div className="flex justify-end space-x-2 pt-4">
