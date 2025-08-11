@@ -20,9 +20,9 @@ export default function StatementsPage() {
   ];
 
   const accounts = [
-    { name: "Checking Account", type: "Asset" },
-    { name: "Savings Account", type: "Asset" },
-    { name: "Credit Card", type: "Debt" },
+    { name: "Checking Account", type: "Asset", accountType: "Checking" },
+    { name: "Savings Account", type: "Asset", accountType: "Savings" },
+    { name: "Credit Card", type: "Debt", accountType: "Credit Card" },
   ];
 
   const toggleMonth = (monthValue: string) => {
@@ -99,39 +99,48 @@ export default function StatementsPage() {
                       <TableRow key={account.name}>
                         <TableCell className="font-medium">{account.name}</TableCell>
                         <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            account.type === 'Asset' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {account.type}
-                          </span>
+                          <div className="space-y-1">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium block ${
+                              account.type === 'Asset' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {account.type}
+                            </span>
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 block">
+                              {account.accountType}
+                            </span>
+                          </div>
                         </TableCell>
                         {selectedMonths.map(monthValue => (
                           <TableCell key={`${account.name}-${monthValue}`} className="text-center">
                             <div className="space-y-1">
-                              <Input
-                                type="number"
-                                defaultValue={
-                                  account.name === "Checking Account" ? "12345.67" :
-                                  account.name === "Savings Account" ? "25890.12" :
-                                  "2456.78"
-                                }
-                                className="w-28 text-center"
-                                step="0.01"
-                                placeholder="Balance"
-                              />
-                              <Input
-                                type="number"
-                                defaultValue={
-                                  account.name === "Checking Account" ? "0.00" :
-                                  account.name === "Savings Account" ? "95.43" :
-                                  "47.23"
-                                }
-                                className="w-28 text-center text-xs"
-                                step="0.01"
-                                placeholder="Interest"
-                              />
+                              <div className="relative">
+                                <Input
+                                  type="number"
+                                  defaultValue={
+                                    account.name === "Checking Account" ? "12345.67" :
+                                    account.name === "Savings Account" ? "25890.12" :
+                                    "2456.78"
+                                  }
+                                  className="w-28 text-center"
+                                  step="0.01"
+                                />
+                                <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
+                              </div>
+                              <div className="relative">
+                                <Input
+                                  type="number"
+                                  defaultValue={
+                                    account.name === "Checking Account" ? "0.00" :
+                                    account.name === "Savings Account" ? "95.43" :
+                                    "47.23"
+                                  }
+                                  className="w-28 text-center text-xs"
+                                  step="0.01"
+                                />
+                                <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
+                              </div>
                             </div>
                           </TableCell>
                         ))}
