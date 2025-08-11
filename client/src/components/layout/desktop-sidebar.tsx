@@ -13,11 +13,11 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Home", href: "/", icon: Home },
+  { name: "Summary", href: "/summary", icon: Calendar },
+  { name: "Calendar", href: "/", icon: Home },
   { name: "Accounts", href: "/accounts", icon: Building },
   { name: "Transactions", href: "/transactions", icon: ArrowUpDown },
   { name: "Analysis", href: "/analysis", icon: BarChart3 },
-  { name: "Summary", href: "/summary", icon: Calendar },
   { name: "Statements", href: "/statements", icon: FileText },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
