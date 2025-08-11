@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpDown, TrendingUp, TrendingDown, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, addWeeks, addMonths, subWeeks, subMonths } from "date-fns";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 
 interface Transaction {
   id: string;
@@ -178,7 +178,7 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-gray-600 truncate">Income</p>
-                <p className="text-lg sm:text-xl font-bold text-green-600 truncate">{formatCurrency(totals.income)}</p>
+                <p className="text-lg sm:text-xl font-bold text-green-600 truncate">{formatCurrencyWhole(totals.income)}</p>
               </div>
               <TrendingUp className="h-5 w-5 text-green-600 flex-shrink-0 ml-1" />
             </div>
@@ -190,7 +190,7 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-gray-600 truncate">Expenses</p>
-                <p className="text-lg sm:text-xl font-bold text-red-600 truncate">{formatCurrency(totals.expenses)}</p>
+                <p className="text-lg sm:text-xl font-bold text-red-600 truncate">{formatCurrencyWhole(totals.expenses)}</p>
               </div>
               <TrendingDown className="h-5 w-5 text-red-600 flex-shrink-0 ml-1" />
             </div>
@@ -203,7 +203,7 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-gray-600 truncate">Net</p>
                 <p className={`text-lg sm:text-xl font-bold truncate ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {formatCurrency(netAmount)}
+                  {formatCurrencyWhole(netAmount)}
                 </p>
               </div>
               <ArrowUpDown className="h-5 w-5 text-primary flex-shrink-0 ml-1" />
