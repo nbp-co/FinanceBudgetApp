@@ -20,14 +20,22 @@ export function MonthlyCalendar() {
     new Date(previousMonthEnd.getFullYear(), previousMonthEnd.getMonth(), previousMonthEnd.getDate() - startPadding + i + 1)
   );
   
-  // Get days from next month to fill the grid
-  const totalCells = 42; // 6 rows × 7 days
-  const remainingCells = totalCells - paddingDays.length - daysInMonth.length;
-  const nextMonthDays = Array.from({ length: remainingCells }, (_, i) => 
-    new Date(monthEnd.getFullYear(), monthEnd.getMonth() + 1, i + 1)
-  );
+  // Create initial grid with current month days and minimal padding
+  const initialDays = [...paddingDays, ...daysInMonth];
   
-  const allDays = [...paddingDays, ...daysInMonth, ...nextMonthDays];
+  // Calculate how many complete weeks we need
+  const weeksNeeded = Math.ceil(initialDays.length / 7);
+  const totalCells = weeksNeeded * 7;
+  const remainingCells = totalCells - initialDays.length;
+  
+  // Only add next month days if needed to complete the current weeks
+  const nextMonthDays = remainingCells > 0 
+    ? Array.from({ length: remainingCells }, (_, i) => 
+        new Date(monthEnd.getFullYear(), monthEnd.getMonth() + 1, i + 1)
+      )
+    : [];
+  
+  const allDays = [...initialDays, ...nextMonthDays];
   
   const goToPrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
