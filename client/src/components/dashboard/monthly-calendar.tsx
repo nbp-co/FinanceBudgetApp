@@ -198,8 +198,8 @@ export function MonthlyCalendar() {
                   {/* Show ending balance for days with transactions */}
                   {transactions.length > 0 && isCurrentMonth && (
                     <div className="mt-auto">
-                      <div className="text-[10px] text-center text-gray-600 font-medium truncate px-1 leading-3">
-                        {formatCurrencyWhole(getDailyBalance(day))}
+                      <div className="text-[10px] text-center text-gray-600 font-medium px-1 leading-3">
+                        {Math.round(getDailyBalance(day)).toLocaleString()}
                       </div>
                     </div>
                   )}
