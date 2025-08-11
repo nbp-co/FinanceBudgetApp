@@ -100,14 +100,14 @@ export default function StatementsPage() {
                         <TableCell className="font-medium">{account.name}</TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium block ${
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium block text-center ${
                               account.type === 'Asset' 
                                 ? 'bg-green-100 text-green-800' 
                                 : 'bg-red-100 text-red-800'
                             }`}>
                               {account.type}
                             </span>
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 block">
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 block text-center">
                               {account.accountType}
                             </span>
                           </div>
