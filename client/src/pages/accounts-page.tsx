@@ -23,7 +23,6 @@ const accountFormSchema = z.object({
 
 const balanceAdjustmentSchema = z.object({
   newBalance: z.string().min(1, "New balance is required"),
-  reason: z.string().optional(),
 });
 
 type AccountFormData = z.infer<typeof accountFormSchema>;
@@ -50,7 +49,6 @@ export default function AccountsPage() {
     resolver: zodResolver(balanceAdjustmentSchema),
     defaultValues: {
       newBalance: "",
-      reason: "",
     },
   });
 
@@ -62,7 +60,7 @@ export default function AccountsPage() {
   };
 
   const handleBalanceAdjustment = (data: BalanceAdjustmentData) => {
-    console.log("Adjusting balance for", selectedAccount?.name, "to", data.newBalance, "Reason:", data.reason);
+    console.log("Adjusting balance for", selectedAccount?.name, "to", data.newBalance);
     // Handle balance adjustment here
     setIsBalanceDialogOpen(false);
     setSelectedAccount(null);
@@ -233,20 +231,6 @@ export default function AccountsPage() {
               )}
             />
 
-            <FormField
-              control={balanceForm.control}
-              name="reason"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Reason (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Bank reconciliation, manual correction" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="flex justify-end space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={() => setIsBalanceDialogOpen(false)}>
                 Cancel
@@ -279,11 +263,8 @@ export default function AccountsPage() {
                     <h3 className="font-semibold text-gray-900">Checking Account</h3>
                     <p className="text-sm text-gray-600">Primary checking account</p>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
-                      <p className="text-sm text-gray-600">Available Balance</p>
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -303,11 +284,8 @@ export default function AccountsPage() {
                     <h3 className="font-semibold text-gray-900">Savings Account</h3>
                     <p className="text-sm text-gray-600">High-yield savings • 4.5% APY</p>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
-                      <p className="text-sm text-gray-600">Available Balance</p>
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -339,11 +317,8 @@ export default function AccountsPage() {
                     <h3 className="font-semibold text-gray-900">Credit Card</h3>
                     <p className="text-sm text-gray-600">Visa •••• 1234 • 22.99% APR</p>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
-                      <p className="text-sm text-gray-600">Current Balance</p>
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
                     <Button 
                       variant="ghost" 
                       size="sm" 
