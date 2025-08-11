@@ -161,7 +161,7 @@ export function MonthlyCalendar() {
                       isSelected
                         ? 'bg-primary text-white'
                         : isTodayDate 
-                          ? 'border-2 border-primary text-primary' 
+                          ? 'text-primary font-bold' 
                           : isCurrentMonth
                             ? 'text-gray-900'
                             : 'text-gray-400'
