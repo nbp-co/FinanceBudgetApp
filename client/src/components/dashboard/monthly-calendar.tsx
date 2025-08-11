@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay } from "date-fns";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 
 export function MonthlyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -190,8 +190,8 @@ export function MonthlyCalendar() {
                   {/* Show ending balance for days with transactions */}
                   {transactions.length > 0 && isCurrentMonth && (
                     <div className="mt-auto">
-                      <div className="text-xs text-center text-gray-600 font-medium truncate">
-                        {formatCurrency(getDailyBalance(day))}
+                      <div className="text-[10px] text-center text-gray-600 font-medium truncate px-1 leading-3">
+                        {formatCurrencyWhole(getDailyBalance(day))}
                       </div>
                     </div>
                   )}
