@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp } from "lucide-react";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, addWeeks, addMonths, subWeeks, subMonths } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 
@@ -229,7 +229,11 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
               className="flex items-center space-x-1 text-sm"
             >
               <span>Sort</span>
-              <ArrowUpDown className="h-3 w-3" />
+              {sortOrder === "desc" ? (
+                <ArrowDown className="h-3 w-3" />
+              ) : (
+                <ArrowUp className="h-3 w-3" />
+              )}
             </Button>
           </div>
         </CardHeader>
