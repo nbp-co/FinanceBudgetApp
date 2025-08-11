@@ -242,17 +242,17 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
         {/* Period Summary Cards */}
         <CardContent className="px-6 py-4 border-b">
           <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-2xl mx-auto">
-            <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm">
+            <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm text-center">
               <p className="text-xs font-medium text-gray-600 truncate">Income</p>
               <p className="text-lg sm:text-xl font-bold text-green-600">{formatCurrencyWhole(totals.income)}</p>
             </div>
 
-            <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm">
+            <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm text-center">
               <p className="text-xs font-medium text-gray-600 truncate">Expenses</p>
               <p className="text-lg sm:text-xl font-bold text-red-600">{formatCurrencyWhole(totals.expenses)}</p>
             </div>
 
-            <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm">
+            <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm text-center">
               <p className="text-xs font-medium text-gray-600 truncate">Net</p>
               <p className={`text-lg sm:text-xl font-bold ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {formatCurrencyWhole(netAmount)}
