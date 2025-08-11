@@ -17,18 +17,6 @@ export default function SummaryPage() {
               <h1 className="text-2xl font-bold text-gray-900">Summary</h1>
               <p className="text-gray-600">Track your finances and manage your budget</p>
             </div>
-            <div className="flex items-center space-x-3">
-              <Select value={accountFilter} onValueChange={setAccountFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter accounts" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Accounts</SelectItem>
-                  <SelectItem value="assets">Assets Only</SelectItem>
-                  <SelectItem value="debts">Debts Only</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         </div>
 
@@ -37,7 +25,10 @@ export default function SummaryPage() {
 
         {/* Transaction Period View */}
         <div className="mt-8">
-          <TransactionPeriodView />
+          <TransactionPeriodView 
+            accountFilter={accountFilter} 
+            onAccountFilterChange={setAccountFilter}
+          />
         </div>
       </div>
     </AppShell>

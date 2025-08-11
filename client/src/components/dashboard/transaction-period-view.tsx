@@ -65,7 +65,12 @@ const mockTransactions: Transaction[] = [
   }
 ];
 
-export function TransactionPeriodView() {
+interface TransactionPeriodViewProps {
+  accountFilter?: string;
+  onAccountFilterChange?: (value: string) => void;
+}
+
+export function TransactionPeriodView({ accountFilter = "all", onAccountFilterChange }: TransactionPeriodViewProps) {
   const [viewType, setViewType] = useState<"week" | "month">("month");
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -125,11 +130,23 @@ export function TransactionPeriodView() {
     <div className="space-y-6">
       {/* Period Navigation Header */}
       <Card>
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        <CardHeader className="pb-3 pt-3">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" onClick={() => navigatePeriod("prev")}>
+                <ChevronLeft className="h-3 w-3" />
+              </Button>
+              <h3 className="text-base font-semibold min-w-[180px] text-center">
+                {formatPeriodTitle()}
+              </h3>
+              <Button variant="outline" size="sm" onClick={() => navigatePeriod("next")}>
+                <ChevronRight className="h-3 w-3" />
+              </Button>
+            </div>
+            
+            <div className="flex items-center space-x-2">
               <Select value={viewType} onValueChange={(value: "week" | "month") => setViewType(value)}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-24 h-8">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -138,58 +155,57 @@ export function TransactionPeriodView() {
                 </SelectContent>
               </Select>
               
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="icon" onClick={() => navigatePeriod("prev")}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <h3 className="text-lg font-semibold min-w-[200px] text-center">
-                  {formatPeriodTitle()}
-                </h3>
-                <Button variant="outline" size="icon" onClick={() => navigatePeriod("next")}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              <Select value={accountFilter} onValueChange={onAccountFilterChange}>
+                <SelectTrigger className="w-32 h-8">
+                  <SelectValue placeholder="All Accounts" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  <SelectItem value="assets">Assets Only</SelectItem>
+                  <SelectItem value="debts">Debts Only</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardHeader>
       </Card>
 
       {/* Period Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Income</p>
-                <p className="text-2xl font-bold text-green-600">${totals.income.toFixed(2)}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-gray-600 truncate">Income</p>
+                <p className="text-lg sm:text-xl font-bold text-green-600 truncate">${totals.income.toFixed(2)}</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
+              <TrendingUp className="h-5 w-5 text-green-600 flex-shrink-0 ml-1" />
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Expenses</p>
-                <p className="text-2xl font-bold text-red-600">${totals.expenses.toFixed(2)}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-gray-600 truncate">Expenses</p>
+                <p className="text-lg sm:text-xl font-bold text-red-600 truncate">${totals.expenses.toFixed(2)}</p>
               </div>
-              <TrendingDown className="h-8 w-8 text-red-600" />
+              <TrendingDown className="h-5 w-5 text-red-600 flex-shrink-0 ml-1" />
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Net</p>
-                <p className={`text-2xl font-bold ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-gray-600 truncate">Net</p>
+                <p className={`text-lg sm:text-xl font-bold truncate ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   ${netAmount.toFixed(2)}
                 </p>
               </div>
-              <ArrowUpDown className="h-8 w-8 text-primary" />
+              <ArrowUpDown className="h-5 w-5 text-primary flex-shrink-0 ml-1" />
             </div>
           </CardContent>
         </Card>
