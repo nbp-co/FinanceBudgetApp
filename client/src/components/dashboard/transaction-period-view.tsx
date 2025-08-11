@@ -134,7 +134,61 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
       <Card>
         {/* Navigation Header */}
         <CardHeader className="pb-3 pt-3">
-          <div className="flex items-center justify-between">
+          {/* Mobile Layout - Stack vertically */}
+          <div className="flex flex-col space-y-3 sm:hidden">
+            {/* Top row: Account dropdown and Week/Month toggle */}
+            <div className="flex items-center justify-between">
+              <Select value={accountFilter} onValueChange={onAccountFilterChange}>
+                <SelectTrigger className="w-32 h-8">
+                  <SelectValue placeholder="All Accounts" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  <SelectItem value="assets">Assets Only</SelectItem>
+                  <SelectItem value="debts">Debts Only</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <div className="flex items-center space-x-1 bg-gray-100 rounded-md p-1">
+                <button
+                  onClick={() => setViewType("week")}
+                  className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                    viewType === "week" 
+                      ? "bg-white text-gray-900 shadow-sm" 
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Week
+                </button>
+                <button
+                  onClick={() => setViewType("month")}
+                  className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                    viewType === "month" 
+                      ? "bg-white text-gray-900 shadow-sm" 
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Month
+                </button>
+              </div>
+            </div>
+            
+            {/* Bottom row: Month navigation centered */}
+            <div className="flex items-center justify-center space-x-2">
+              <Button variant="outline" size="sm" onClick={() => navigatePeriod("prev")}>
+                <ChevronLeft className="h-3 w-3" />
+              </Button>
+              <h3 className="text-base font-semibold min-w-[180px] text-center">
+                {formatPeriodTitle()}
+              </h3>
+              <Button variant="outline" size="sm" onClick={() => navigatePeriod("next")}>
+                <ChevronRight className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Desktop Layout - Keep horizontal */}
+          <div className="hidden sm:flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Select value={accountFilter} onValueChange={onAccountFilterChange}>
                 <SelectTrigger className="w-32 h-8">
@@ -177,7 +231,7 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
                   viewType === "month" 
                     ? "bg-white text-gray-900 shadow-sm" 
                     : "text-gray-600 hover:text-gray-900"
-                }`}
+                  }`}
               >
                 Month
               </button>
@@ -200,15 +254,9 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
 
             <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm">
               <p className="text-xs font-medium text-gray-600 truncate">Net</p>
-              <div className="flex items-center space-x-2">
-                <p className={`text-lg sm:text-xl font-bold ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {formatCurrencyWhole(netAmount)}
-                </p>
-                <div className="flex items-center text-xs text-green-600">
-                  <ArrowUp className="mr-1 h-3 w-3 text-green-600" />
-                  <span>22.4% MoM</span>
-                </div>
-              </div>
+              <p className={`text-lg sm:text-xl font-bold ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {formatCurrencyWhole(netAmount)}
+              </p>
             </div>
           </div>
         </CardContent>
