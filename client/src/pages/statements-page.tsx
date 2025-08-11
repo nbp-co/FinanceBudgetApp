@@ -82,8 +82,8 @@ export default function StatementsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[150px] sticky left-0 bg-white z-10 border-r border-gray-200">Account</TableHead>
-                      <TableHead className="w-[80px] sticky left-[150px] bg-white z-10 border-r border-gray-200">Type</TableHead>
+                      <TableHead className="w-[150px] sticky left-0 bg-white z-10 border-r-2 border-gray-300">Account</TableHead>
+                      <TableHead className="w-[80px] sticky left-[150px] bg-white z-10 border-r-2 border-gray-300">Type</TableHead>
                       {selectedMonths.map(monthValue => {
                         const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                         return (
@@ -97,7 +97,7 @@ export default function StatementsPage() {
                   <TableBody>
                     {accounts.map((account, accountIndex) => (
                       <TableRow key={account.name}>
-                        <TableCell className="font-medium sticky left-0 bg-white z-10 border-r border-gray-200">
+                        <TableCell className="font-medium sticky left-0 bg-white z-10 border-r-2 border-gray-300">
                           <div>
                             <div className="font-medium">
                               {account.name}
@@ -112,7 +112,7 @@ export default function StatementsPage() {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="sticky left-[150px] bg-white z-10 border-r border-gray-200">
+                        <TableCell className="sticky left-[150px] bg-white z-10 border-r-2 border-gray-300">
                           <div className="space-y-2">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium block text-center ${
                               account.type === 'Asset' 
