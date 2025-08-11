@@ -1,17 +1,11 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { OverviewCards } from "@/components/dashboard/overview-cards";
-import { RecentTransactions } from "@/components/dashboard/recent-transactions";
-import { QuickStats } from "@/components/dashboard/quick-stats";
-import { TopCategories } from "@/components/dashboard/top-categories";
+import { TransactionPeriodView } from "@/components/dashboard/transaction-period-view";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AddTransactionModal } from "@/components/transactions/add-transaction-modal";
-import { Plus } from "lucide-react";
 
 export default function SummaryPage() {
   const [accountFilter, setAccountFilter] = useState("all");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   return (
     <AppShell>
@@ -34,10 +28,6 @@ export default function SummaryPage() {
                   <SelectItem value="debts">Debts Only</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={() => setIsAddModalOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Transaction
-              </Button>
             </div>
           </div>
         </div>
@@ -45,25 +35,11 @@ export default function SummaryPage() {
         {/* Financial Overview Cards */}
         <OverviewCards />
 
-        {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-          {/* Recent Transactions Column */}
-          <div className="lg:col-span-2 space-y-6">
-            <RecentTransactions />
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            <QuickStats />
-            <TopCategories />
-          </div>
+        {/* Transaction Period View */}
+        <div className="mt-8">
+          <TransactionPeriodView />
         </div>
       </div>
-
-      <AddTransactionModal 
-        isOpen={isAddModalOpen} 
-        onClose={() => setIsAddModalOpen(false)} 
-      />
     </AppShell>
   );
 }
