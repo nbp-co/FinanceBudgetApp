@@ -91,8 +91,7 @@ export function MonthlyCalendar() {
               <div className="flex items-center space-x-3">
                 <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy')}</CardTitle>
                 <Button variant="outline" size="sm" onClick={goToToday}>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Today
+                  <Calendar className="h-4 w-4" />
                 </Button>
               </div>
               <Button variant="ghost" size="icon" onClick={goToNextMonth}>
@@ -121,39 +120,44 @@ export function MonthlyCalendar() {
               <div
                 key={index}
                 onClick={() => handleDayClick(day)}
-                className={`h-20 border rounded-lg p-1 cursor-pointer transition-colors ${
-                  isSelected 
-                    ? 'bg-primary border-primary text-white' 
-                    : isTodayDate 
-                      ? 'bg-primary/10 border-primary/30 hover:bg-primary/20' 
-                      : 'border-gray-100 hover:bg-gray-50'
-                } ${!isCurrentMonth ? 'cursor-not-allowed' : ''}`}
+                className={`h-14 border rounded-lg p-2 cursor-pointer transition-colors hover:bg-gray-50 ${
+                  !isCurrentMonth ? 'cursor-not-allowed' : ''
+                } ${
+                  isSelected || isTodayDate
+                    ? 'border-primary/30' 
+                    : 'border-gray-100'
+                }`}
               >
-                <div className={`text-sm ${
-                  isSelected
-                    ? 'text-white font-semibold'
-                    : isCurrentMonth 
-                      ? isTodayDate 
-                        ? 'text-primary font-semibold' 
-                        : 'text-gray-900 font-medium'
-                      : 'text-gray-400'
-                }`}>
-                  {format(day, 'd')}
-                </div>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {transactions.slice(0, 3).map((transaction, txIndex) => {
-                    let colorClass = '';
-                    if (transaction.type === 'income') colorClass = isSelected ? 'bg-white/80' : 'bg-green-400';
-                    else if (transaction.type === 'expense') colorClass = isSelected ? 'bg-white/80' : 'bg-red-400';
-                    else if (transaction.type === 'transfer') colorClass = isSelected ? 'bg-white/80' : 'bg-blue-400';
-                    
-                    return (
-                      <div
-                        key={txIndex}
-                        className={`w-2 h-2 ${colorClass} rounded-full`}
-                      />
-                    );
-                  })}
+                <div className="flex flex-col items-center h-full">
+                  <div className={`text-sm font-medium flex items-center justify-center w-6 h-6 rounded-full ${
+                    isSelected
+                      ? 'bg-primary text-white'
+                      : isTodayDate 
+                        ? 'border-2 border-primary text-primary' 
+                        : isCurrentMonth
+                          ? 'text-gray-900'
+                          : 'text-gray-400'
+                  }`}>
+                    {format(day, 'd')}
+                  </div>
+                  <div className="flex gap-1 mt-1">
+                    {transactions.slice(0, 2).map((transaction, txIndex) => {
+                      let colorClass = '';
+                      if (transaction.type === 'income') colorClass = 'bg-green-400';
+                      else if (transaction.type === 'expense') colorClass = 'bg-red-400';
+                      else if (transaction.type === 'transfer') colorClass = 'bg-blue-400';
+                      
+                      return (
+                        <div
+                          key={txIndex}
+                          className={`w-1.5 h-1.5 ${colorClass} rounded-full`}
+                        />
+                      );
+                    })}
+                    {transactions.length > 2 && (
+                      <div className="text-xs text-gray-400">+</div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
