@@ -99,15 +99,17 @@ export default function StatementsPage() {
                       <TableRow key={account.name}>
                         <TableCell className="font-medium sticky left-0 bg-white z-10 border-r border-gray-200">
                           <div>
-                            <div className="font-medium">{account.name}</div>
-                            <div className="text-xs text-gray-500 space-y-0.5">
+                            <div className="font-medium">
+                              {account.name}
                               {account.apr && (
-                                <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
-                              )}
-                              {account.dueDate && (
-                                <div>Due: {account.dueDate}th</div>
+                                <span className="text-xs text-gray-500 ml-2">
+                                  {account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%
+                                </span>
                               )}
                             </div>
+                            {account.dueDate && (
+                              <div className="text-xs text-gray-500">Due: {account.dueDate}th</div>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="sticky left-[150px] bg-white z-10 border-r border-gray-200">
@@ -130,28 +132,26 @@ export default function StatementsPage() {
                               <div className="relative">
                                 <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
                                 <Input
-                                  type="number"
+                                  type="text"
                                   defaultValue={
-                                    account.name === "Checking Account" ? "12345.67" :
-                                    account.name === "Savings Account" ? "25890.12" :
-                                    "2456.78"
+                                    account.name === "Checking Account" ? "12,345.67" :
+                                    account.name === "Savings Account" ? "25,890.12" :
+                                    "2,456.78"
                                   }
                                   className="w-28 text-center pl-6"
-                                  step="0.01"
                                 />
                                 <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
                               </div>
                               <div className="relative">
                                 <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
                                 <Input
-                                  type="number"
+                                  type="text"
                                   defaultValue={
                                     account.name === "Checking Account" ? "0.00" :
                                     account.name === "Savings Account" ? "95.43" :
                                     "47.23"
                                   }
                                   className="w-28 text-center text-xs pl-6"
-                                  step="0.01"
                                 />
                                 <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
                               </div>
