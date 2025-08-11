@@ -155,7 +155,7 @@ export function MonthlyCalendar() {
               <div
                 key={index}
                 onClick={() => handleDayClick(day)}
-                className={`h-10 sm:h-14 border rounded-lg p-1 cursor-pointer transition-colors hover:bg-gray-50 ${
+                className={`h-12 sm:h-14 border rounded-lg p-1 cursor-pointer transition-colors hover:bg-gray-50 ${
                   !isCurrentMonth ? 'cursor-not-allowed' : ''
                 } ${
                   isSelected || isTodayDate
@@ -198,7 +198,7 @@ export function MonthlyCalendar() {
                   {/* Show ending balance for days with transactions */}
                   {transactions.length > 0 && isCurrentMonth && (
                     <div className="mt-auto">
-                      <div className="text-[9px] text-center text-gray-600 font-medium truncate px-1 leading-tight">
+                      <div className="text-[8px] text-center text-gray-600 font-medium truncate leading-none">
                         {formatCurrencyWhole(getDailyBalance(day))}
                       </div>
                     </div>
