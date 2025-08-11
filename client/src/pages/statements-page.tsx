@@ -20,9 +20,9 @@ export default function StatementsPage() {
   ];
 
   const accounts = [
-    { name: "Checking Account", type: "Asset", accountType: "Checking" },
-    { name: "Savings Account", type: "Asset", accountType: "Savings" },
-    { name: "Credit Card", type: "Debt", accountType: "Credit Card" },
+    { name: "Checking Account", type: "Asset", accountType: "Checking", apr: null, dueDate: null },
+    { name: "Savings Account", type: "Asset", accountType: "Savings", apr: 4.25, dueDate: null },
+    { name: "Credit Card", type: "Debt", accountType: "Credit Card", apr: 24.99, dueDate: 15 },
   ];
 
   const toggleMonth = (monthValue: string) => {
@@ -97,7 +97,19 @@ export default function StatementsPage() {
                   <TableBody>
                     {accounts.map((account, accountIndex) => (
                       <TableRow key={account.name}>
-                        <TableCell className="font-medium sticky left-0 bg-white z-10 border-r">{account.name}</TableCell>
+                        <TableCell className="font-medium sticky left-0 bg-white z-10 border-r">
+                          <div>
+                            <div className="font-medium">{account.name}</div>
+                            <div className="text-xs text-gray-500 space-y-0.5">
+                              {account.apr && (
+                                <div>APR: {account.apr}%</div>
+                              )}
+                              {account.dueDate && (
+                                <div>Due: {account.dueDate}th</div>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
                         <TableCell className="sticky left-[200px] bg-white z-10 border-r">
                           <div className="space-y-2">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium block text-center ${
