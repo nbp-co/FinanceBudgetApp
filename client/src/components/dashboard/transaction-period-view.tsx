@@ -130,8 +130,9 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
 
   return (
     <div className="space-y-6">
-      {/* Period Navigation Header */}
+      {/* Combined Section */}
       <Card>
+        {/* Navigation Header */}
         <CardHeader className="pb-3 pt-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -183,11 +184,9 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
             </div>
           </div>
         </CardHeader>
-      </Card>
 
-      {/* Period Summary Cards */}
-      <Card className="mb-6">
-        <CardContent className="p-4 sm:p-6">
+        {/* Period Summary Cards */}
+        <CardContent className="px-6 py-4 border-b">
           <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-2xl mx-auto">
             <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm">
               <p className="text-xs font-medium text-gray-600 truncate">Income</p>
@@ -225,11 +224,9 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
             </div>
           </div>
         </CardContent>
-      </Card>
 
-      {/* Transactions List */}
-      <Card>
-        <CardHeader>
+        {/* Transactions List Header */}
+        <CardHeader className="pb-0">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Transactions ({periodTransactions.length})</CardTitle>
             <Button
