@@ -135,6 +135,19 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
         <CardHeader className="pb-3 pt-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
+              <Select value={accountFilter} onValueChange={onAccountFilterChange}>
+                <SelectTrigger className="w-32 h-8">
+                  <SelectValue placeholder="All Accounts" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  <SelectItem value="assets">Assets Only</SelectItem>
+                  <SelectItem value="debts">Debts Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" onClick={() => navigatePeriod("prev")}>
                 <ChevronLeft className="h-3 w-3" />
               </Button>
@@ -146,27 +159,27 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
               </Button>
             </div>
             
-            <div className="flex items-center space-x-2">
-              <Select value={viewType} onValueChange={(value: "week" | "month") => setViewType(value)}>
-                <SelectTrigger className="w-24 h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="week">Week</SelectItem>
-                  <SelectItem value="month">Month</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={accountFilter} onValueChange={onAccountFilterChange}>
-                <SelectTrigger className="w-32 h-8">
-                  <SelectValue placeholder="All Accounts" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Accounts</SelectItem>
-                  <SelectItem value="assets">Assets Only</SelectItem>
-                  <SelectItem value="debts">Debts Only</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center space-x-1 bg-gray-100 rounded-md p-1">
+              <button
+                onClick={() => setViewType("month")}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  viewType === "month" 
+                    ? "bg-white text-gray-900 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Month
+              </button>
+              <button
+                onClick={() => setViewType("week")}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  viewType === "week" 
+                    ? "bg-white text-gray-900 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Week
+              </button>
             </div>
           </div>
         </CardHeader>
