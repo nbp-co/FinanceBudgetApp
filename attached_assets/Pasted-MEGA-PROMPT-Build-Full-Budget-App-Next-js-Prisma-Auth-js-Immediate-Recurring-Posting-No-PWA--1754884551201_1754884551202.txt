@@ -1,0 +1,231 @@
+MEGA PROMPT — Build Full Budget App (Next.js, Prisma, Auth.js, Immediate Recurring Posting, No PWA)
+
+Project Setup
+- Create new repo "budget-app" with:
+  - Next.js 14 (App Router) + TypeScript
+  - Tailwind CSS + shadcn/ui (teal/white theme, mobile-first; bottom nav on mobile, fixed full left nav on desktop)
+  - ESLint + Prettier
+  - Prisma + Postgres (Replit Postgres or Neon)
+  - Auth.js v5 (Credentials w/ bcrypt + Google OAuth)
+  - Zod, Recharts, rrule, decimal.js
+  - Vitest + Playwright
+- Scripts: dev, build, start, db:migrate, db:seed, test, lint
+- .env.example:
+  DATABASE_URL=
+  NEXTAUTH_URL=http://localhost:3000
+  NEXTAUTH_SECRET=
+  GOOGLE_CLIENT_ID=
+  GOOGLE_CLIENT_SECRET=
+  MATERIALIZE_MONTHS_AHEAD=36
+- Add .replit & replit.nix (Node 20). Commit initial scaffold.
+
+Database Schema (Prisma)
+Replace prisma/schema.prisma with:
+  datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+  generator client { provider = "prisma-client-js" }
+
+  enum AccountType { ASSET DEBT }
+  enum TxnType { INCOME EXPENSE TRANSFER }
+
+  model User {
+    id        String   @id @default(cuid())
+    email     String   @unique
+    passwordHash String?
+    name      String?
+    tz        String   @default("UTC")
+    createdAt DateTime @default(now())
+    accounts  Account[]
+    categories Category[]
+    transactions Transaction[]
+    recurring  RecurringRule[]
+  }
+
+  model Account {
+    id        String   @id @default(cuid())
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    name      String
+    type      AccountType
+    currency  String   @default("USD")
+    openingBalance Decimal @default(0)
+    aprApy    Decimal?
+    compound  String?
+    rewardsEnabled Boolean  @default(false)
+    rewardsBalance Int?
+    creditLimit Decimal?
+    statementDay Int?
+    paymentDueDay Int?
+    archived  Boolean @default(false)
+    createdAt DateTime @default(now())
+    transactionsFrom Transaction[] @relation("FromAccount")
+    transactionsTo   Transaction[] @relation("ToAccount")
+    statements MonthlyStatement[]
+    interestSnaps InterestSnapshot[]
+    @@index([userId, type])
+  }
+
+  model Category {
+    id      String @id @default(cuid())
+    userId  String
+    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    name    String
+    kind    TxnType
+    @@index([userId, kind, name])
+  }
+
+  model Transaction {
+    id          String   @id @default(cuid())
+    userId      String
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    accountId   String
+    account     Account  @relation("FromAccount", fields: [accountId], references: [id])
+    toAccountId String?
+    toAccount   Account? @relation("ToAccount", fields: [toAccountId], references: [id])
+    type        TxnType
+    amount      Decimal
+    currency    String   @default("USD")
+    date        DateTime
+    description String?
+    categoryId  String?
+    category    Category? @relation(fields: [categoryId], references: [id])
+    cleared     Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    recurringId String?
+    @@index([userId, date])
+  }
+
+  model RecurringRule {
+    id          String   @id @default(cuid())
+    userId      String
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    accountId   String
+    account     Account  @relation(fields: [accountId], references: [id])
+    templateType   TxnType
+    templateAmount Decimal
+    templateDesc   String?
+    templateCategoryId String?
+    freq        String   // daily|weekly|biweekly|monthly|custom
+    interval    Int      @default(1)
+    byMonthDay  Int?
+    startDate   DateTime
+    endDate     DateTime?
+    timezone    String?
+    active      Boolean  @default(true)
+    createdAt   DateTime @default(now())
+  }
+
+  model MonthlyStatement {
+    id               String   @id @default(cuid())
+    accountId        String
+    account          Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+    periodStart      DateTime
+    periodEnd        DateTime
+    statementBalance Decimal
+    interestCharged  Decimal
+    createdAt        DateTime @default(now())
+    @@unique([accountId, periodStart, periodEnd])
+  }
+
+  model InterestSnapshot {
+    id        String   @id @default(cuid())
+    accountId String
+    account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+    date      DateTime
+    accrued   Decimal
+    createdAt DateTime @default(now())
+    @@unique([accountId, date])
+  }
+
+- prisma/seed.ts: test user (test@demo.dev / test1234), 1 asset, 1 debt account, categories Salary (INCOME), Groceries (EXPENSE). Migrate & seed.
+
+Auth
+- Auth.js with Credentials (bcrypt) + Google OAuth
+- JWT sessions; attach userId, tz
+- Protect /app/**; public /login and /register
+- Minimal login/register/logout UI
+
+API Routes
+- /api/accounts (CRUD; archive instead of delete)
+- /api/categories (CRUD)
+- /api/transactions (GET by date range/account/type/category, POST, PATCH, DELETE)
+- /api/recurring (CRUD with immediate materialization — see below)
+- /api/statements/bulk
+- /api/summary?month=YYYY-MM&accountType=ASSET|DEBT&accountIds=comma,separated
+  - All accounts in list must match accountType else 400
+  - Totals (INCOME, EXPENSE, NET) + daily balances for range
+- /api/interest/projected?accountType=ASSET|DEBT&accountIds=...
+  - Compute projected from transactions in range (including all future materialized recurrences)
+
+Immediate Recurring Materialization (No Cron)
+- On create/update of RecurringRule:
+  - Backfill from startDate → today
+  - Pre-materialize to today + MATERIALIZE_MONTHS_AHEAD (default 36 months)
+  - Use deterministic externalId (ruleId + isoDate) to upsert; prevents duplicates
+- On read (transactions/summary):
+  - If requested range goes beyond pre-materialized horizon, auto-extend materialization on demand
+- On delete:
+  - Default: keep existing transactions; optional cascadeDeleteInstances=true to remove all instances (past+future) of that rule
+- On edit:
+  - affect="future": replace all future instances from effectiveDate forward
+  - affect="all": replace past+future
+- Bi-weekly = weekly with interval=2
+- All instances are normal posted transactions — no scheduled/virtual distinction
+
+Manual Balance Adjustment
+- Implement "Set balance as of date" by creating TRANSFER to/from hidden `Reconciliation` account
+- If desired balance > derived → transfer from Reconciliation to account; if lower → transfer from account to Reconciliation
+- Exclude Reconciliation from UI and summaries
+
+Navigation Layout
+- Mobile: bottom nav (fixed) with icons+labels for Home, Accounts, Transactions, Analysis, Summary, Statements, Settings/Profile
+- Desktop: fixed full-height left vertical nav, always visible, showing all menu items with icons+labels; no collapsing; current page highlighted; teal/white style via shadcn/ui
+
+UI Pages
+- Home (/app)
+  - Month calendar only (Sunday first day, TZ-aware)
+  - Account switcher: All Accounts, or select single account; filter by type (Assets/Debts)
+  - Totals and transaction list reflect selection
+  - FAB to add transaction
+- Accounts (/app/accounts)
+  - Asset and Debt sections
+  - Rows: name, derived balance, projected interest, rewards balance/expiry (editable if rewardsEnabled)
+  - Add Account modal with all fields
+- New Transaction (/app/transactions/new)
+  - Type toggle: Income | Expense | Transfer
+  - Fields: description, amount, date, account, toAccount (for Transfer), optional category, cleared switch
+  - Recurring switch → builder (daily/weekly/biweekly/monthly/custom; interval; byMonthDay)
+  - Save = create rule + materialize instances
+- Transactions List (/app/transactions)
+  - Filters: date range, account, type, category; infinite scroll
+- Analysis (/app/analysis)
+  - Type selector: Assets | Debts (one required)
+  - Multi-select accounts (only of selected type)
+  - Charts: Income vs Expense trend; Expense by Category (pie)
+- Monthly Summary (/app/summary)
+  - Same type/account selectors as Analysis
+  - Header with prev/next month nav
+  - Cards: Income, Expense, Net; top transactions list
+- Statements (/app/statements)
+  - Month picker → table of accounts with statement balance, interest, rewards (optional)
+  - Bulk save to /api/statements/bulk
+
+Aggregations & Balances
+- Balance = opening + Σ(income) − Σ(expense) + net transfers
+- Month boundaries: 1st to end; TZ-aware; Sunday week start
+- Transfers excluded from income/expense totals
+
+Validation, UX, and Tests
+- Zod constraints: day fields 1–31; rewardsBalance ≥ 0; positive amounts; freq enum includes biweekly
+- Access control: enforce userId ownership
+- UX: empty states, skeletons, toasts; error boundaries and surfaced API errors
+- Tests:
+  - Recurring materialization for past+future
+  - Auto-extension of materialization on read
+  - affect="future" vs affect="all" edit logic
+  - Balance adjustments via Reconciliation account
+  - Type filter in summary prevents mixing Assets/Debts
+
+Deploy
+- Replit Deployment (Node 20)
+- Set env vars for Postgres, NEXTAUTH, Google OAuth
+- Verify: login → add account → add recurring biweekly txn → navigate to future month → balances reflect recurrences → adjust balance via modal → analysis/summary filter by type & accounts
