@@ -335,7 +335,6 @@ export default function AccountsPage() {
           </div>
         </div>
         
-        <AddAccountDialog accountType="asset" />
         <BalanceAdjustmentDialog />
       </div>
     </AppShell>
