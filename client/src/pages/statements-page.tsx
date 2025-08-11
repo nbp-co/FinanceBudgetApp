@@ -102,7 +102,7 @@ export default function StatementsPage() {
                             <div className="font-medium">{account.name}</div>
                             <div className="text-xs text-gray-500 space-y-0.5">
                               {account.apr && (
-                                <div>APR: {account.apr}%</div>
+                                <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
                               )}
                               {account.dueDate && (
                                 <div>Due: {account.dueDate}th</div>
