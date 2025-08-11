@@ -123,12 +123,7 @@ export function MonthlyCalendar() {
               <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <div className="flex items-center space-x-3">
-                <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
-                <Button variant="ghost" size="sm" onClick={goToToday}>
-                  <Calendar className="h-4 w-4" />
-                </Button>
-              </div>
+              <CardTitle className="text-xl text-center">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
               <Button variant="ghost" size="icon" onClick={goToNextMonth}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -138,9 +133,17 @@ export function MonthlyCalendar() {
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1">
           {/* Day Headers */}
-          {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day) => (
-            <div key={day} className="text-center p-2 text-sm font-medium text-gray-500">
+          {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day, index) => (
+            <div key={day} className="text-center p-2 text-sm font-medium text-gray-500 relative">
               {day}
+              {/* Today icon positioned over FRI */}
+              {day === 'FRI' && (
+                <div className="absolute -top-1 -right-1">
+                  <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
+                    <Calendar className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
           
