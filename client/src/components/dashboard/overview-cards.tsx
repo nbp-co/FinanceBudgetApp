@@ -21,7 +21,7 @@ export function OverviewCards() {
               <ArrowUp className="mr-1 h-3 w-3" />
               5.2%
             </span>
-            <span className="text-gray-500 ml-1 sm:ml-2 truncate">from last month</span>
+            <span className="text-gray-500 ml-1 sm:ml-2 truncate">last mo</span>
           </div>
         </CardContent>
       </Card>
@@ -42,7 +42,7 @@ export function OverviewCards() {
               <TrendingDown className="mr-1 h-3 w-3" />
               2.1%
             </span>
-            <span className="text-gray-500 ml-1 sm:ml-2 truncate">from last month</span>
+            <span className="text-gray-500 ml-1 sm:ml-2 truncate">last mo</span>
           </div>
         </CardContent>
       </Card>
@@ -63,7 +63,7 @@ export function OverviewCards() {
               <ArrowUp className="mr-1 h-3 w-3" />
               8.7%
             </span>
-            <span className="text-gray-500 ml-1 sm:ml-2 truncate">from last month</span>
+            <span className="text-gray-500 ml-1 sm:ml-2 truncate">last mo</span>
           </div>
         </CardContent>
       </Card>
