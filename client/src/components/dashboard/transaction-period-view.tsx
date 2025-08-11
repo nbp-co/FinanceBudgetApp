@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, addWeeks, addMonths, subWeeks, subMonths } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 
@@ -74,6 +74,7 @@ interface TransactionPeriodViewProps {
 export function TransactionPeriodView({ accountFilter = "all", onAccountFilterChange }: TransactionPeriodViewProps) {
   const [viewType, setViewType] = useState<"week" | "month">("month");
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
   const getPeriodDates = () => {
     if (viewType === "week") {
@@ -206,7 +207,18 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
       {/* Transactions List */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Transactions ({periodTransactions.length})</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">Transactions ({periodTransactions.length})</CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+              className="flex items-center space-x-1 text-sm"
+            >
+              <span>Sort</span>
+              <ArrowUpDown className="h-3 w-3" />
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {periodTransactions.length === 0 ? (
@@ -216,7 +228,11 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
           ) : (
             <div className="space-y-3">
               {periodTransactions
-                .sort((a, b) => b.date.getTime() - a.date.getTime())
+                .sort((a, b) => {
+                  const dateA = a.date.getTime();
+                  const dateB = b.date.getTime();
+                  return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+                })
                 .map((transaction) => (
                   <div
                     key={transaction.id}
