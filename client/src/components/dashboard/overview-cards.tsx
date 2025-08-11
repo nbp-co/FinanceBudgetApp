@@ -12,7 +12,7 @@ export function OverviewCards() {
             <div className="flex items-center space-x-2">
               <p className="text-lg sm:text-xl font-bold text-green-600">{formatCurrencyWhole(24567.89)}</p>
               <div className="flex items-center text-xs text-green-600">
-                <ArrowUp className="mr-1 h-3 w-3" />
+                <ArrowUp className="mr-1 h-3 w-3 text-green-600" />
                 <span>5.2% MoM</span>
               </div>
             </div>
@@ -23,7 +23,7 @@ export function OverviewCards() {
             <div className="flex items-center space-x-2">
               <p className="text-lg sm:text-xl font-bold text-red-600">{formatCurrencyWhole(8234.12)}</p>
               <div className="flex items-center text-xs text-green-600">
-                <ArrowDown className="mr-1 h-3 w-3" />
+                <ArrowDown className="mr-1 h-3 w-3 text-green-600" />
                 <span>2.1% MoM</span>
               </div>
             </div>
@@ -34,7 +34,7 @@ export function OverviewCards() {
             <div className="flex items-center space-x-2">
               <p className="text-lg sm:text-xl font-bold text-primary">{formatCurrencyWhole(16333.77)}</p>
               <div className="flex items-center text-xs text-green-600">
-                <ArrowUp className="mr-1 h-3 w-3" />
+                <ArrowUp className="mr-1 h-3 w-3 text-green-600" />
                 <span>8.7% MoM</span>
               </div>
             </div>
