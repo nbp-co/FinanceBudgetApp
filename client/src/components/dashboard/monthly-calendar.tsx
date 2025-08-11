@@ -116,8 +116,8 @@ export function MonthlyCalendar() {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <div className="flex items-center space-x-3">
-                <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy')}</CardTitle>
-                <Button variant="outline" size="sm" onClick={goToToday}>
+                <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
+                <Button variant="ghost" size="sm" onClick={goToToday}>
                   <Calendar className="h-4 w-4" />
                 </Button>
               </div>
@@ -157,9 +157,9 @@ export function MonthlyCalendar() {
               >
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-center">
-                    <div className={`text-sm font-medium flex items-center justify-center w-6 h-6 rounded-full ${
+                    <div className={`text-sm font-medium flex items-center justify-center w-6 h-6 ${
                       isSelected
-                        ? 'bg-primary text-white'
+                        ? 'bg-primary text-white rounded-full'
                         : isTodayDate 
                           ? 'text-primary font-bold' 
                           : isCurrentMonth
