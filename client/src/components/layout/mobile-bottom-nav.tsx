@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { 
   Home, 
   Building, 
-  ArrowUpDown, 
   BarChart3, 
   Calendar,
   Settings 
@@ -13,7 +12,7 @@ const navigation = [
   { name: "Summary", href: "/summary", icon: Calendar },
   { name: "Calendar", href: "/", icon: Home },
   { name: "Accounts", href: "/accounts", icon: Building },
-  { name: "Transactions", href: "/transactions", icon: ArrowUpDown },
+  { name: "Analysis", href: "/analysis", icon: BarChart3 },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

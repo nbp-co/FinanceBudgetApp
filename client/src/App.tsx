@@ -9,7 +9,7 @@ import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import HomePage from "@/pages/home-page";
 import AccountsPage from "@/pages/accounts-page";
-import TransactionsPage from "@/pages/transactions-page";
+
 import AnalysisPage from "@/pages/analysis-page";
 import SummaryPage from "@/pages/summary-page";
 import StatementsPage from "@/pages/statements-page";
@@ -20,7 +20,7 @@ function Router() {
     <Switch>
       <ProtectedRoute path="/" component={HomePage} />
       <ProtectedRoute path="/accounts" component={AccountsPage} />
-      <ProtectedRoute path="/transactions" component={TransactionsPage} />
+
       <ProtectedRoute path="/analysis" component={AnalysisPage} />
       <ProtectedRoute path="/summary" component={SummaryPage} />
       <ProtectedRoute path="/statements" component={StatementsPage} />
