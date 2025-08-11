@@ -49,23 +49,23 @@ export function MonthlyCalendar() {
     
     // Mock some transactions with more detail
     if (dayOfMonth === 1) return [
-      { id: '1', type: 'income', amount: 4500, description: 'Salary Deposit', category: 'Salary', time: '09:00' }
+      { id: '1', type: 'income', amount: 4500, description: 'Salary Deposit', category: 'Salary' }
     ];
     if (dayOfMonth === 3) return [
-      { id: '2', type: 'expense', amount: 127, description: 'Grocery Shopping', category: 'Groceries', time: '14:30' },
-      { id: '3', type: 'income', amount: 50, description: 'Freelance Payment', category: 'Freelance', time: '16:00' }
+      { id: '2', type: 'expense', amount: 127, description: 'Grocery Shopping', category: 'Groceries' },
+      { id: '3', type: 'income', amount: 50, description: 'Freelance Payment', category: 'Freelance' }
     ];
     if (dayOfMonth === 5) return [
-      { id: '4', type: 'transfer', amount: 1000, description: 'Transfer to Savings', category: 'Transfer', time: '10:15' }
+      { id: '4', type: 'transfer', amount: 1000, description: 'Transfer to Savings', category: 'Transfer' }
     ];
     if (dayOfMonth === 10) return [
-      { id: '5', type: 'income', amount: 500, description: 'Investment Dividend', category: 'Investment', time: '08:00' },
-      { id: '6', type: 'expense', amount: 200, description: 'Utility Bill', category: 'Utilities', time: '11:30' },
-      { id: '7', type: 'transfer', amount: 300, description: 'Credit Card Payment', category: 'Transfer', time: '15:45' }
+      { id: '5', type: 'income', amount: 500, description: 'Investment Dividend', category: 'Investment' },
+      { id: '6', type: 'expense', amount: 200, description: 'Utility Bill', category: 'Utilities' },
+      { id: '7', type: 'transfer', amount: 300, description: 'Credit Card Payment', category: 'Transfer' }
     ];
     if (isToday(date)) return [
-      { id: '8', type: 'expense', amount: 85, description: 'Coffee & Lunch', category: 'Food', time: '12:15' },
-      { id: '9', type: 'expense', amount: 45, description: 'Gas Station', category: 'Transportation', time: '16:30' }
+      { id: '8', type: 'expense', amount: 85, description: 'Coffee & Lunch', category: 'Food' },
+      { id: '9', type: 'expense', amount: 45, description: 'Gas Station', category: 'Transportation' }
     ];
     return [];
   };
@@ -206,7 +206,7 @@ export function MonthlyCalendar() {
                   }`} />
                   <div>
                     <p className="font-medium text-sm text-gray-900">{transaction.description}</p>
-                    <p className="text-xs text-gray-500">{transaction.category} • {transaction.time}</p>
+                    <p className="text-xs text-gray-500">{transaction.category}</p>
                   </div>
                 </div>
                 <div className="text-right">
