@@ -14,7 +14,7 @@ import { useState } from "react";
 
 const accountFormSchema = z.object({
   name: z.string().min(1, "Account name is required"),
-  type: z.enum(["checking", "savings", "investment", "credit_card", "loan"]),
+  type: z.enum(["checking", "savings", "money_market", "investment", "credit_card", "loan", "line_of_credit"]),
   balance: z.string().min(1, "Balance is required"),
   description: z.string().optional(),
   interestRate: z.string().optional(),
@@ -118,12 +118,14 @@ export default function AccountsPage() {
                         <>
                           <SelectItem value="checking">Checking</SelectItem>
                           <SelectItem value="savings">Savings</SelectItem>
+                          <SelectItem value="money_market">Money Market</SelectItem>
                           <SelectItem value="investment">Investment</SelectItem>
                         </>
                       ) : (
                         <>
                           <SelectItem value="credit_card">Credit Card</SelectItem>
                           <SelectItem value="loan">Loan</SelectItem>
+                          <SelectItem value="line_of_credit">Line of Credit</SelectItem>
                         </>
                       )}
                     </SelectContent>
