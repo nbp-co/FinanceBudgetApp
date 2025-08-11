@@ -9,14 +9,20 @@ import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 
 export default function StatementsPage() {
-  const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11"]);
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
   const availableMonths = [
-    { value: "2024-12", label: "December 2024" },
-    { value: "2024-11", label: "November 2024" },
-    { value: "2024-10", label: "October 2024" },
-    { value: "2024-09", label: "September 2024" },
-    { value: "2024-08", label: "August 2024" },
-    { value: "2024-07", label: "July 2024" },
+    { value: "2024-12", label: "Dec 2024" },
+    { value: "2024-11", label: "Nov 2024" },
+    { value: "2024-10", label: "Oct 2024" },
+    { value: "2024-09", label: "Sep 2024" },
+    { value: "2024-08", label: "Aug 2024" },
+    { value: "2024-07", label: "Jul 2024" },
+  ];
+
+  const accounts = [
+    { name: "Checking Account", type: "Asset" },
+    { name: "Savings Account", type: "Asset" },
+    { name: "Credit Card", type: "Debt" },
   ];
 
   const toggleMonth = (monthValue: string) => {
@@ -67,91 +73,120 @@ export default function StatementsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-6">
-            {selectedMonths.map((monthValue) => {
-              const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
-              return (
-                <Card key={monthValue}>
-                  <CardHeader>
-                    <CardTitle>{monthLabel} Statements</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Account</TableHead>
-                          <TableHead>Type</TableHead>
-                          <TableHead>Statement Balance</TableHead>
-                          <TableHead>Interest Charged</TableHead>
+          <div className="space-y-8">
+            {/* Statement Balance Matrix */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Statement Balances</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[200px]">Account</TableHead>
+                        <TableHead className="w-[80px]">Type</TableHead>
+                        {selectedMonths.map(monthValue => {
+                          const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                          return (
+                            <TableHead key={monthValue} className="text-center min-w-[120px]">
+                              {monthLabel}
+                            </TableHead>
+                          );
+                        })}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {accounts.map((account, accountIndex) => (
+                        <TableRow key={account.name}>
+                          <TableCell className="font-medium">{account.name}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              account.type === 'Asset' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {account.type}
+                            </span>
+                          </TableCell>
+                          {selectedMonths.map(monthValue => (
+                            <TableCell key={`${account.name}-${monthValue}`} className="text-center">
+                              <Input
+                                type="number"
+                                defaultValue={
+                                  account.name === "Checking Account" ? "12345.67" :
+                                  account.name === "Savings Account" ? "25890.12" :
+                                  "2456.78"
+                                }
+                                className="w-28 text-center"
+                                step="0.01"
+                              />
+                            </TableCell>
+                          ))}
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className="font-medium">Checking Account</TableCell>
-                          <TableCell>Asset</TableCell>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Interest Charged Matrix */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Interest Charged</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[200px]">Account</TableHead>
+                        <TableHead className="w-[80px]">Type</TableHead>
+                        {selectedMonths.map(monthValue => {
+                          const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                          return (
+                            <TableHead key={monthValue} className="text-center min-w-[120px]">
+                              {monthLabel}
+                            </TableHead>
+                          );
+                        })}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {accounts.map((account, accountIndex) => (
+                        <TableRow key={account.name}>
+                          <TableCell className="font-medium">{account.name}</TableCell>
                           <TableCell>
-                            <Input 
-                              type="number" 
-                              defaultValue="12345.67" 
-                              className="w-32"
-                              step="0.01"
-                            />
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              account.type === 'Asset' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {account.type}
+                            </span>
                           </TableCell>
-                          <TableCell>
-                            <Input 
-                              type="number" 
-                              defaultValue="0.00" 
-                              className="w-28"
-                              step="0.01"
-                            />
-                          </TableCell>
+                          {selectedMonths.map(monthValue => (
+                            <TableCell key={`${account.name}-${monthValue}-interest`} className="text-center">
+                              <Input
+                                type="number"
+                                defaultValue={
+                                  account.name === "Checking Account" ? "0.00" :
+                                  account.name === "Savings Account" ? "95.43" :
+                                  "47.23"
+                                }
+                                className="w-28 text-center"
+                                step="0.01"
+                              />
+                            </TableCell>
+                          ))}
                         </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">Savings Account</TableCell>
-                          <TableCell>Asset</TableCell>
-                          <TableCell>
-                            <Input 
-                              type="number" 
-                              defaultValue="25890.12" 
-                              className="w-32"
-                              step="0.01"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Input 
-                              type="number" 
-                              defaultValue="95.43" 
-                              className="w-28"
-                              step="0.01"
-                            />
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">Credit Card</TableCell>
-                          <TableCell>Debt</TableCell>
-                          <TableCell>
-                            <Input 
-                              type="number" 
-                              defaultValue="2456.78" 
-                              className="w-32"
-                              step="0.01"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Input 
-                              type="number" 
-                              defaultValue="47.23" 
-                              className="w-28"
-                              step="0.01"
-                            />
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 
