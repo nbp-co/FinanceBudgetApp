@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { formatCurrencyWhole } from "@/lib/utils";
 
 export function OverviewCards() {
@@ -12,8 +13,11 @@ export function OverviewCards() {
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-green-600 truncate">{formatCurrencyWhole(24567.89)}</p>
             </div>
             <div className="mt-2 sm:mt-3 md:mt-4 flex items-center text-xs sm:text-sm">
-              <span className="text-green-600">5.2%</span>
-              <span className="text-gray-500 ml-1 sm:ml-2 truncate">last mo</span>
+              <span className="text-green-600 flex items-center">
+                <ArrowUp className="mr-1 h-3 w-3" />
+                5.2%
+              </span>
+              <span className="text-gray-500 ml-1 sm:ml-2 truncate">MoM</span>
             </div>
           </div>
 
@@ -23,8 +27,11 @@ export function OverviewCards() {
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-red-600 truncate">{formatCurrencyWhole(8234.12)}</p>
             </div>
             <div className="mt-2 sm:mt-3 md:mt-4 flex items-center text-xs sm:text-sm">
-              <span className="text-green-600">2.1%</span>
-              <span className="text-gray-500 ml-1 sm:ml-2 truncate">last mo</span>
+              <span className="text-green-600 flex items-center">
+                <ArrowDown className="mr-1 h-3 w-3" />
+                2.1%
+              </span>
+              <span className="text-gray-500 ml-1 sm:ml-2 truncate">MoM</span>
             </div>
           </div>
 
@@ -34,8 +41,11 @@ export function OverviewCards() {
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-primary truncate">{formatCurrencyWhole(16333.77)}</p>
             </div>
             <div className="mt-2 sm:mt-3 md:mt-4 flex items-center text-xs sm:text-sm">
-              <span className="text-green-600">8.7%</span>
-              <span className="text-gray-500 ml-1 sm:ml-2 truncate">last mo</span>
+              <span className="text-green-600 flex items-center">
+                <ArrowUp className="mr-1 h-3 w-3" />
+                8.7%
+              </span>
+              <span className="text-gray-500 ml-1 sm:ml-2 truncate">MoM</span>
             </div>
           </div>
         </div>
