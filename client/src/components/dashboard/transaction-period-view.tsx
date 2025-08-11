@@ -190,24 +190,12 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
           <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-2xl mx-auto">
             <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm">
               <p className="text-xs font-medium text-gray-600 truncate">Income</p>
-              <div className="flex items-center space-x-2">
-                <p className="text-lg sm:text-xl font-bold text-green-600">{formatCurrencyWhole(totals.income)}</p>
-                <div className="flex items-center text-xs text-green-600">
-                  <ArrowUp className="mr-1 h-3 w-3 text-green-600" />
-                  <span>15.3% MoM</span>
-                </div>
-              </div>
+              <p className="text-lg sm:text-xl font-bold text-green-600">{formatCurrencyWhole(totals.income)}</p>
             </div>
 
             <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm">
               <p className="text-xs font-medium text-gray-600 truncate">Expenses</p>
-              <div className="flex items-center space-x-2">
-                <p className="text-lg sm:text-xl font-bold text-red-600">{formatCurrencyWhole(totals.expenses)}</p>
-                <div className="flex items-center text-xs text-red-600">
-                  <ArrowUp className="mr-1 h-3 w-3 text-red-600" />
-                  <span>8.1% MoM</span>
-                </div>
-              </div>
+              <p className="text-lg sm:text-xl font-bold text-red-600">{formatCurrencyWhole(totals.expenses)}</p>
             </div>
 
             <div className="p-3 rounded-lg bg-white border border-gray-200 shadow-sm">
