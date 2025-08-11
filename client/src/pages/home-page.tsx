@@ -29,7 +29,7 @@ export default function HomePage() {
       {/* Floating Add Transaction Button */}
       <Button 
         onClick={() => setIsAddModalOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50"
+        className="fixed bottom-24 lg:bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50"
         size="icon"
       >
         <Plus className="h-6 w-6" />
