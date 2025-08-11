@@ -118,7 +118,7 @@ export function MonthlyCalendar() {
       {/* Calendar */}
       <div className="lg:col-span-2">
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
                 <ChevronLeft className="h-4 w-4" />
@@ -134,12 +134,12 @@ export function MonthlyCalendar() {
               </Button>
             </div>
           </CardHeader>
-      <CardContent>
+      <CardContent className="pt-2">
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1">
           {/* Day Headers */}
           {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day) => (
-            <div key={day} className="text-center p-2 text-sm font-medium text-gray-500">
+            <div key={day} className="text-center p-1 text-xs font-medium text-gray-500">
               {day}
             </div>
           ))}
@@ -155,7 +155,7 @@ export function MonthlyCalendar() {
               <div
                 key={index}
                 onClick={() => handleDayClick(day)}
-                className={`h-12 sm:h-16 border rounded-lg p-1 cursor-pointer transition-colors hover:bg-gray-50 ${
+                className={`h-10 sm:h-14 border rounded-lg p-1 cursor-pointer transition-colors hover:bg-gray-50 ${
                   !isCurrentMonth ? 'cursor-not-allowed' : ''
                 } ${
                   isSelected || isTodayDate
@@ -198,7 +198,7 @@ export function MonthlyCalendar() {
                   {/* Show ending balance for days with transactions */}
                   {transactions.length > 0 && isCurrentMonth && (
                     <div className="mt-auto">
-                      <div className="text-[10px] text-center text-gray-600 font-medium truncate px-1 leading-3">
+                      <div className="text-[9px] text-center text-gray-600 font-medium truncate px-1 leading-tight">
                         {formatCurrencyWhole(getDailyBalance(day))}
                       </div>
                     </div>
@@ -211,19 +211,13 @@ export function MonthlyCalendar() {
         
         {/* Balance Bar for Selected Day */}
         {selectedDate && (
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Balance for {format(selectedDate, 'EEEE, MMM d')}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-lg font-bold text-primary">
-                  {formatCurrency(getDailyBalance(selectedDate))}
-                </p>
-              </div>
-            </div>
+          <div className="mt-2 p-2 bg-gray-50 rounded border text-center">
+            <span className="text-xs text-gray-600 mr-2">
+              Balance for {format(selectedDate, 'EEEE, MMM d')}
+            </span>
+            <span className="text-sm font-bold text-primary">
+              {formatCurrency(getDailyBalance(selectedDate))}
+            </span>
           </div>
         )}
       </CardContent>
