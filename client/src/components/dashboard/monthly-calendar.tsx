@@ -174,9 +174,6 @@ export function MonthlyCalendar() {
         <CardTitle className="text-lg">
           {selectedDate ? format(selectedDate, 'EEEE, MMM d') : 'Select a day'}
         </CardTitle>
-        {selectedDate && isToday(selectedDate) && (
-          <span className="text-sm text-primary font-medium">Today</span>
-        )}
       </CardHeader>
       <CardContent>
         {selectedDayTransactions.length > 0 ? (
