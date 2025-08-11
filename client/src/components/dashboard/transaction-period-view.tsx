@@ -122,7 +122,7 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
 
   const formatPeriodTitle = () => {
     if (viewType === "week") {
-      return `Week of ${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`;
+      return `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`;
     } else {
       return format(start, "MMMM yyyy");
     }
@@ -161,16 +161,6 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
             
             <div className="flex items-center space-x-1 bg-gray-100 rounded-md p-1">
               <button
-                onClick={() => setViewType("month")}
-                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  viewType === "month" 
-                    ? "bg-white text-gray-900 shadow-sm" 
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                Month
-              </button>
-              <button
                 onClick={() => setViewType("week")}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                   viewType === "week" 
@@ -179,6 +169,16 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
                 }`}
               >
                 Week
+              </button>
+              <button
+                onClick={() => setViewType("month")}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  viewType === "month" 
+                    ? "bg-white text-gray-900 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Month
               </button>
             </div>
           </div>
