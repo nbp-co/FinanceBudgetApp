@@ -132,7 +132,7 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
       {/* Period Navigation Header */}
       <Card>
         <CardHeader className="pb-3 pt-3">
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" onClick={() => navigatePeriod("prev")}>
                 <ChevronLeft className="h-3 w-3" />
