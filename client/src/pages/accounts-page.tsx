@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Building, CreditCard } from "lucide-react";
+import { Plus, Building, CreditCard, Edit } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 
@@ -21,10 +21,18 @@ const accountFormSchema = z.object({
   creditLimit: z.string().optional(),
 });
 
+const balanceAdjustmentSchema = z.object({
+  newBalance: z.string().min(1, "New balance is required"),
+  reason: z.string().optional(),
+});
+
 type AccountFormData = z.infer<typeof accountFormSchema>;
+type BalanceAdjustmentData = z.infer<typeof balanceAdjustmentSchema>;
 
 export default function AccountsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isBalanceDialogOpen, setIsBalanceDialogOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<{ name: string; balance: number } | null>(null);
   
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountFormSchema),
@@ -38,11 +46,33 @@ export default function AccountsPage() {
     },
   });
 
+  const balanceForm = useForm<BalanceAdjustmentData>({
+    resolver: zodResolver(balanceAdjustmentSchema),
+    defaultValues: {
+      newBalance: "",
+      reason: "",
+    },
+  });
+
   const handleSubmit = (data: AccountFormData) => {
     console.log("Creating account:", data);
     // Handle account creation here
     setIsDialogOpen(false);
     form.reset();
+  };
+
+  const handleBalanceAdjustment = (data: BalanceAdjustmentData) => {
+    console.log("Adjusting balance for", selectedAccount?.name, "to", data.newBalance, "Reason:", data.reason);
+    // Handle balance adjustment here
+    setIsBalanceDialogOpen(false);
+    setSelectedAccount(null);
+    balanceForm.reset();
+  };
+
+  const openBalanceAdjustment = (accountName: string, currentBalance: number) => {
+    setSelectedAccount({ name: accountName, balance: currentBalance });
+    balanceForm.setValue("newBalance", currentBalance.toString());
+    setIsBalanceDialogOpen(true);
   };
 
   const AddAccountDialog = ({ accountType }: { accountType: "asset" | "debt" }) => (
@@ -177,6 +207,58 @@ export default function AccountsPage() {
     </Dialog>
   );
 
+  const BalanceAdjustmentDialog = () => (
+    <Dialog open={isBalanceDialogOpen} onOpenChange={setIsBalanceDialogOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Adjust Balance - {selectedAccount?.name}</DialogTitle>
+        </DialogHeader>
+        <Form {...balanceForm}>
+          <form onSubmit={balanceForm.handleSubmit(handleBalanceAdjustment)} className="space-y-4">
+            <div className="text-sm text-gray-600">
+              Current Balance: {selectedAccount && formatCurrency(selectedAccount.balance)}
+            </div>
+            
+            <FormField
+              control={balanceForm.control}
+              name="newBalance"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>New Balance</FormLabel>
+                  <FormControl>
+                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={balanceForm.control}
+              name="reason"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Reason (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Bank reconciliation, manual correction" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsBalanceDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Update Balance</Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
@@ -197,9 +279,18 @@ export default function AccountsPage() {
                     <h3 className="font-semibold text-gray-900">Checking Account</h3>
                     <p className="text-sm text-gray-600">Primary checking account</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
-                    <p className="text-sm text-gray-600">Available Balance</p>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right">
+                      <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
+                      <p className="text-sm text-gray-600">Available Balance</p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => openBalanceAdjustment("Checking Account", 12345.67)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -212,9 +303,18 @@ export default function AccountsPage() {
                     <h3 className="font-semibold text-gray-900">Savings Account</h3>
                     <p className="text-sm text-gray-600">High-yield savings • 4.5% APY</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
-                    <p className="text-sm text-gray-600">Available Balance</p>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right">
+                      <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
+                      <p className="text-sm text-gray-600">Available Balance</p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => openBalanceAdjustment("Savings Account", 25890.12)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -239,15 +339,27 @@ export default function AccountsPage() {
                     <h3 className="font-semibold text-gray-900">Credit Card</h3>
                     <p className="text-sm text-gray-600">Visa •••• 1234 • 22.99% APR</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
-                    <p className="text-sm text-gray-600">Current Balance</p>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right">
+                      <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
+                      <p className="text-sm text-gray-600">Current Balance</p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => openBalanceAdjustment("Credit Card", 2456.78)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
+        
+        <AddAccountDialog accountType="asset" />
+        <BalanceAdjustmentDialog />
       </div>
     </AppShell>
   );
