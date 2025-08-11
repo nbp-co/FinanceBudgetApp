@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, ArrowUp, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowUp, Wallet, CreditCard, PiggyBank } from "lucide-react";
 import { formatCurrencyWhole } from "@/lib/utils";
 
 export function OverviewCards() {
@@ -13,7 +13,7 @@ export function OverviewCards() {
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-green-600 truncate">{formatCurrencyWhole(24567.89)}</p>
             </div>
             <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 ml-2">
-              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-green-600" />
+              <Wallet className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-green-600" />
             </div>
           </div>
           <div className="mt-2 sm:mt-3 md:mt-4 flex items-center text-xs sm:text-sm">
@@ -34,7 +34,7 @@ export function OverviewCards() {
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-red-600 truncate">{formatCurrencyWhole(8234.12)}</p>
             </div>
             <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 ml-2">
-              <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-red-600" />
+              <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-red-600" />
             </div>
           </div>
           <div className="mt-2 sm:mt-3 md:mt-4 flex items-center text-xs sm:text-sm">
@@ -55,7 +55,7 @@ export function OverviewCards() {
               <p className="text-lg sm:text-2xl md:text-3xl font-bold text-primary truncate">{formatCurrencyWhole(16333.77)}</p>
             </div>
             <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 ml-2">
-              <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
+              <PiggyBank className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
             </div>
           </div>
           <div className="mt-2 sm:mt-3 md:mt-4 flex items-center text-xs sm:text-sm">
