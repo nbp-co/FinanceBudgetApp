@@ -206,7 +206,7 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
       {/* Transactions List */}
       <Card>
         <CardHeader>
-          <CardTitle>Transactions ({periodTransactions.length})</CardTitle>
+          <CardTitle className="text-base">Transactions ({periodTransactions.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {periodTransactions.length === 0 ? (
