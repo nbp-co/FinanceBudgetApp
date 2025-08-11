@@ -8,11 +8,7 @@ export default function AccountsPage() {
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Accounts</h1>
-            <p className="text-gray-600">Manage your financial accounts</p>
-          </div>
+        <div className="flex justify-end mb-6">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Account

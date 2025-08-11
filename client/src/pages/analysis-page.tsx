@@ -24,11 +24,7 @@ export default function AnalysisPage() {
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Analysis</h1>
-            <p className="text-gray-600">Analyze your spending patterns and trends</p>
-          </div>
+        <div className="flex justify-end mb-6">
           <div className="flex items-center space-x-3">
             <Select defaultValue="assets">
               <SelectTrigger className="w-[140px]">

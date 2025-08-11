@@ -11,18 +11,6 @@ export default function HomePage() {
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        {/* Page Header */}
-        <div className="mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
-              <p className="text-gray-600">View your transactions and upcoming events</p>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Calendar */}
         <MonthlyCalendar />
       </div>
 

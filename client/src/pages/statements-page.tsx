@@ -11,11 +11,7 @@ export default function StatementsPage() {
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Monthly Statements</h1>
-            <p className="text-gray-600">Review and update monthly account statements</p>
-          </div>
+        <div className="flex justify-end mb-6">
           <div className="flex items-center space-x-3">
             <Select defaultValue="2024-11">
               <SelectTrigger className="w-[160px]">
