@@ -6,10 +6,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Save, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function StatementsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
+  const [sortBy, setSortBy] = useState<string>('type');
+  const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>(['Checking', 'Savings', 'Money Market', 'Credit Card', 'Mortgage', 'Auto Loan']);
   const availableMonths = [
     { value: "2024-12", label: "Dec 2024" },
     { value: "2024-11", label: "Nov 2024" },
@@ -38,10 +43,25 @@ export default function StatementsPage() {
     return a.accountType.localeCompare(b.accountType);
   });
 
-  // Filter accounts based on selected types
-  const accounts = sortedAccounts.filter(account => 
-    selectedAccountTypes.includes(account.type)
+  // Filter accounts based on selected types and subtypes
+  const filteredAccounts = sortedAccounts.filter(account => 
+    selectedAccountTypes.includes(account.type) && selectedSubTypes.includes(account.accountType)
   );
+
+  // Sort accounts based on selected sort option
+  const accounts = [...filteredAccounts].sort((a, b) => {
+    if (sortBy === 'type') {
+      // First sort by Asset vs Debt (Debt first to match image)
+      if (a.type !== b.type) {
+        return a.type === 'Debt' ? -1 : 1;
+      }
+      // Then sort by account type within each group
+      return a.accountType.localeCompare(b.accountType);
+    } else if (sortBy === 'name') {
+      return a.name.localeCompare(b.name);
+    }
+    return 0;
+  });
 
   const toggleMonth = (monthValue: string) => {
     setSelectedMonths(prev => 
@@ -59,71 +79,129 @@ export default function StatementsPage() {
     );
   };
 
+  const toggleSubType = (subType: string) => {
+    setSelectedSubTypes(prev => 
+      prev.includes(subType) 
+        ? prev.filter(t => t !== subType)
+        : [...prev, subType]
+    );
+  };
+
 
 
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-6">Monthly Statements</h1>
-          
-          {/* Enhanced Filter Controls */}
-          <div className="flex items-center justify-between gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm mb-6">
+        <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg mb-6">
+          <Collapsible defaultOpen={true}>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl font-bold text-gray-900">Monthly Statements</h1>
+                </div>
+                <ChevronDown className="h-5 w-5 text-gray-600" />
+              </div>
+            </CollapsibleTrigger>
             
-            {/* Account Type Filter */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Account Types:</label>
-              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
-                {['Asset', 'Debt'].map((type) => (
-                  <Button
-                    key={type}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleAccountType(type)}
-                    className={`h-8 px-3 text-xs ${
-                      selectedAccountTypes.includes(type)
-                        ? 'bg-white text-blue-700 hover:bg-white shadow-sm' 
-                        : 'text-gray-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    {type}
-                  </Button>
-                ))}
-              </div>
-            </div>
+            <CollapsibleContent>
+              <CardContent className="pt-0 pb-4 space-y-6">
+                {/* Filter Controls */}
+                <div className="grid gap-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  
+                  {/* Account Types */}
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Account Types:</Label>
+                    <div className="flex gap-4">
+                      {['Asset', 'Debt'].map((type) => (
+                        <div key={type} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`type-${type}`}
+                            checked={selectedAccountTypes.includes(type)}
+                            onCheckedChange={() => toggleAccountType(type)}
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <Label htmlFor={`type-${type}`} className="text-sm cursor-pointer">
+                            {type}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-            {/* Month Selection */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Months:</label>
-              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1 max-w-md overflow-x-auto">
-                {availableMonths.map((month) => (
-                  <Button
-                    key={month.value}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleMonth(month.value)}
-                    className={`h-8 px-2 text-xs whitespace-nowrap ${
-                      selectedMonths.includes(month.value)
-                        ? 'bg-white text-blue-700 hover:bg-white shadow-sm' 
-                        : 'text-gray-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    {month.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
+                  {/* Sort By */}
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Sort by:</Label>
+                    <RadioGroup value={sortBy} onValueChange={setSortBy} className="flex gap-6">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="type" id="sort-type" className="border-teal-600 text-teal-600" />
+                        <Label htmlFor="sort-type" className="text-sm cursor-pointer">
+                          Type (Debt → Asset)
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="name" id="sort-name" className="border-teal-600 text-teal-600" />
+                        <Label htmlFor="sort-name" className="text-sm cursor-pointer">
+                          Name (A → Z)
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
 
-            {/* Save Button */}
-            <Button 
-              disabled={selectedMonths.length === 0}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Save All ({selectedMonths.length})
-            </Button>
-          </div>
-        </div>
+                  {/* Filter by Sub-type */}
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Filter by Sub-type:</Label>
+                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                      {['Checking', 'Business Checking', 'Savings', 'Money Market', 'Investment', 'Credit Card', 'Mortgage', 'Auto Loan', 'Student Loan', 'Line of Credit', 'Taxes'].map((subType) => (
+                        <div key={subType} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`subtype-${subType}`}
+                            checked={selectedSubTypes.includes(subType)}
+                            onCheckedChange={() => toggleSubType(subType)}
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <Label htmlFor={`subtype-${subType}`} className="text-sm cursor-pointer">
+                            {subType}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Select months to edit */}
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                      {availableMonths.map((month) => (
+                        <div key={month.value} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`month-${month.value}`}
+                            checked={selectedMonths.includes(month.value)}
+                            onCheckedChange={() => toggleMonth(month.value)}
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                            {month.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Save Button */}
+                  <div className="flex justify-end pt-2">
+                    <Button 
+                      disabled={selectedMonths.length === 0}
+                      className="bg-teal-600 hover:bg-teal-700 text-white"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Save All ({selectedMonths.length})
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
+        </Card>
 
         {selectedMonths.length === 0 ? (
           <Card>
