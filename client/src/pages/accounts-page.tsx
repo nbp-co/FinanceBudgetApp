@@ -1426,12 +1426,12 @@ export default function AccountsPage() {
                             </p>
                           </div>
                           
-                          <div className="flex items-center space-x-1 flex-shrink-0">
+                          <div className="flex items-center gap-0.5 flex-shrink-0">
                             <Button
                               id={`chart-toggle-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
                               variant="ghost"
                               size="sm"
-                              className="h-7 w-7 p-0"
+                              className="h-6 w-6 p-0"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -1444,7 +1444,7 @@ export default function AccountsPage() {
                               id={`notes-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
                               variant="ghost"
                               size="sm"
-                              className="h-7 w-7 p-0"
+                              className="h-6 w-6 p-0"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -1457,7 +1457,7 @@ export default function AccountsPage() {
                               id={`edit-payment-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
                               variant="ghost"
                               size="sm"
-                              className="h-7 w-7 p-0"
+                              className="h-6 w-6 p-0"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
