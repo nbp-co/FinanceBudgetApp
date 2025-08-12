@@ -1680,7 +1680,7 @@ export default function AccountsPage() {
                         {/* Navigation Controls */}
                         <div className="flex items-center gap-2 mr-auto">
                           <label className="text-sm font-medium text-gray-700">Period:</label>
-                          <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                          <div className="flex items-center gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1690,9 +1690,6 @@ export default function AccountsPage() {
                             >
                               <ChevronLeft className="h-4 w-4" />
                             </Button>
-                            <span className="text-xs px-2 text-gray-700 font-medium">
-                              {summaryMonthOffset === 0 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
-                            </span>
                             <Button
                               variant="ghost"
                               size="sm"
