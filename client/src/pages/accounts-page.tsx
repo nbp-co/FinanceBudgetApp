@@ -979,7 +979,7 @@ export default function AccountsPage() {
                                     </TableCell>
 
                                     {selectedMonths.map(monthValue => (
-                                      <TableCell key={`${account.name}-${monthValue}`} className="text-center">
+                                      <TableCell key={`${account.name}-${monthValue}`} className="text-center border-r border-gray-200">
                                         <div className="space-y-1">
                                           <div className="relative">
                                             <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>

@@ -322,7 +322,7 @@ export default function StatementsPage() {
                             </TableCell>
 
                             {selectedMonths.map((monthValue, monthIndex) => (
-                              <TableCell key={`${account.name}-${monthValue}`} className={`py-6 px-4 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
+                              <TableCell key={`${account.name}-${monthValue}`} className="py-6 px-4 border-r border-gray-200">
                                 <div className="space-y-4">
                                   <div>
                                     <div className="text-xs text-gray-400 font-medium mb-2">B</div>
