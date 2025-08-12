@@ -160,15 +160,15 @@ export default function StatementsPage() {
                         <TableCell className="font-medium sticky left-0 bg-white z-20">
                           <div>
                             <div className="font-medium">{account.name}</div>
-                            <div className="flex flex-wrap gap-1 mt-1 mb-2">
-                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            <div className="flex flex-wrap justify-center gap-1 mt-1 mb-2">
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium text-center ${
                                 account.type === 'Asset' 
                                   ? 'bg-green-100 text-green-800' 
                                   : 'bg-red-100 text-red-800'
                               }`}>
                                 {account.type}
                               </span>
-                              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 text-center">
                                 {account.accountType}
                               </span>
                             </div>
