@@ -59,6 +59,11 @@ export default function AccountsPage() {
   const [expandedCharts, setExpandedCharts] = useState<{ [accountName: string]: boolean }>({});
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [selectedDebtAccount, setSelectedDebtAccount] = useState<string | null>(null);
+  
+  // Debt sort/filter state
+  const [debtSortBy, setDebtSortBy] = useState<'name' | 'balance' | 'interest' | 'payoff'>('balance');
+  const [debtFilterBy, setDebtFilterBy] = useState<string[]>([]);
+  const [showOnlyScheduled, setShowOnlyScheduled] = useState(false);
 
   // Statements data
   const availableMonths = [
@@ -368,6 +373,58 @@ export default function AccountsPage() {
   const openPaymentDialog = (accountName: string) => {
     setSelectedDebtAccount(accountName);
     setIsPaymentDialogOpen(true);
+  };
+
+  // Debt filtering and sorting functions
+  const getFilteredAndSortedDebtAccounts = () => {
+    let debtAccounts = getDebtAccounts();
+
+    // Filter by sub-type
+    if (debtFilterBy.length > 0) {
+      debtAccounts = debtAccounts.filter(account => 
+        debtFilterBy.includes(account.subType || 'Other')
+      );
+    }
+
+    // Filter by scheduled payments
+    if (showOnlyScheduled) {
+      debtAccounts = debtAccounts.filter(account => 
+        paymentSchedules[account.name] !== undefined
+      );
+    }
+
+    // Sort accounts
+    debtAccounts.sort((a, b) => {
+      const aBalance = getBalance(a.name);
+      const bBalance = getBalance(b.name);
+      const aPayment = paymentSchedules[a.name]?.amount || (aBalance * 0.02);
+      const bPayment = paymentSchedules[b.name]?.amount || (bBalance * 0.02);
+      const aPayoffInfo = calculatePayoffDate(aBalance, a.apr || 0, aPayment);
+      const bPayoffInfo = calculatePayoffDate(bBalance, b.apr || 0, bPayment);
+
+      switch (debtSortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'balance':
+          return bBalance - aBalance; // Highest balance first
+        case 'interest':
+          const aInterest = (a.apr || 0) * aBalance / 100 / 12;
+          const bInterest = (b.apr || 0) * bBalance / 100 / 12;
+          return bInterest - aInterest; // Highest interest first
+        case 'payoff':
+          const aMonths = aPayoffInfo?.months || 999;
+          const bMonths = bPayoffInfo?.months || 999;
+          return aMonths - bMonths; // Shortest payoff first
+        default:
+          return 0;
+      }
+    });
+
+    return debtAccounts;
+  };
+
+  const getUniqueDebtSubTypes = () => {
+    return Array.from(new Set(getDebtAccounts().map(account => account.subType || 'Other')));
   };
   
   const form = useForm<AccountFormData>({
@@ -1012,6 +1069,69 @@ export default function AccountsPage() {
                 </Button>
               </div>
 
+              {/* Sort and Filter Controls */}
+              {getDebtAccounts().length > 0 && (
+                <Card className="p-4">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                      <Select value={debtSortBy} onValueChange={(value: 'name' | 'balance' | 'interest' | 'payoff') => setDebtSortBy(value)}>
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="name">Name</SelectItem>
+                          <SelectItem value="balance">Balance</SelectItem>
+                          <SelectItem value="interest">Interest</SelectItem>
+                          <SelectItem value="payoff">Payoff Time</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {getUniqueDebtSubTypes().length > 1 && (
+                      <div className="flex items-center space-x-2">
+                        <label className="text-sm font-medium text-gray-700">Filter:</label>
+                        <div className="flex flex-wrap gap-2">
+                          {getUniqueDebtSubTypes().map(subType => (
+                            <div key={subType} className="flex items-center space-x-1">
+                              <Checkbox
+                                id={`filter-${subType}`}
+                                checked={debtFilterBy.includes(subType)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setDebtFilterBy(prev => [...prev, subType]);
+                                  } else {
+                                    setDebtFilterBy(prev => prev.filter(type => type !== subType));
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`filter-${subType}`} className="text-sm text-gray-700">
+                                {subType}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="scheduled-only"
+                        checked={showOnlyScheduled}
+                        onCheckedChange={(checked) => setShowOnlyScheduled(!!checked)}
+                      />
+                      <label htmlFor="scheduled-only" className="text-sm text-gray-700">
+                        Only show scheduled payments
+                      </label>
+                    </div>
+
+                    <div className="text-sm text-gray-500">
+                      {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
+                    </div>
+                  </div>
+                </Card>
+              )}
+
               {/* Debt Summary Card */}
               {getDebtAccounts().length > 0 && (
                 <Card className="bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
@@ -1059,7 +1179,7 @@ export default function AccountsPage() {
               )}
 
               <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {getDebtAccounts().map(account => {
+                {getFilteredAndSortedDebtAccounts().map(account => {
                   const balance = getBalance(account.name);
                   const monthlyPayment = paymentSchedules[account.name]?.amount || (balance * 0.02); // Default 2% of balance
                   const payoffInfo = calculatePayoffDate(balance, account.apr || 0, monthlyPayment);
@@ -1209,7 +1329,7 @@ export default function AccountsPage() {
                 })}
               </div>
               
-              {getDebtAccounts().length === 0 && (
+              {getFilteredAndSortedDebtAccounts().length === 0 && getDebtAccounts().length === 0 && (
                 <Card>
                   <CardContent className="text-center py-12">
                     <div className="text-gray-400 mb-4">
@@ -1217,6 +1337,24 @@ export default function AccountsPage() {
                     </div>
                     <p className="text-gray-600 text-lg">No debt accounts found</p>
                     <p className="text-gray-500 text-sm">Add debt accounts in the My Accounts tab to track payoff progress</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {getFilteredAndSortedDebtAccounts().length === 0 && getDebtAccounts().length > 0 && (
+                <Card>
+                  <CardContent className="text-center py-8">
+                    <p className="text-gray-600">No accounts match the current filters</p>
+                    <Button 
+                      variant="outline" 
+                      className="mt-2"
+                      onClick={() => {
+                        setDebtFilterBy([]);
+                        setShowOnlyScheduled(false);
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
                   </CardContent>
                 </Card>
               )}
