@@ -99,8 +99,12 @@ export default function AccountsPage() {
     'Money Market': '#3b82f6', // blue
   };
 
-  // Get unique sub-types for filtering
-  const allSubTypes = [...new Set(allAccounts.map(account => account.accountType))];
+  // Get unique sub-types for filtering based on selected account types
+  const availableSubTypes = [...new Set(
+    allAccounts
+      .filter(account => selectedAccountTypes.includes(account.type))
+      .map(account => account.accountType)
+  )];
 
   // Sort accounts based on sortBy preference
   const sortedAccounts = allAccounts.sort((a, b) => {
@@ -194,11 +198,23 @@ export default function AccountsPage() {
   };
 
   const toggleAccountType = (accountType: string) => {
-    setSelectedAccountTypes(prev => 
-      prev.includes(accountType) 
+    setSelectedAccountTypes(prev => {
+      const newTypes = prev.includes(accountType) 
         ? prev.filter(t => t !== accountType)
-        : [...prev, accountType]
-    );
+        : [...prev, accountType];
+      
+      // Clear sub-type selections that are no longer available
+      const newAvailableSubTypes = [...new Set(
+        allAccounts
+          .filter(account => newTypes.includes(account.type))
+          .map(account => account.accountType)
+      )];
+      setSelectedSubTypes(current => 
+        current.filter(subType => newAvailableSubTypes.includes(subType))
+      );
+      
+      return newTypes;
+    });
     setCurrentPage(0); // Reset to first page when filter changes
   };
 
@@ -556,20 +572,22 @@ export default function AccountsPage() {
                         </div>
                       </div>
 
-                      <div>
-                        <p className="text-sm text-gray-600 mb-2">Filter by Sub-type:</p>
-                        <div className="flex flex-wrap gap-4">
-                          {allSubTypes.map(subType => (
-                            <label key={subType} className="flex items-center space-x-2">
-                              <Checkbox
-                                checked={selectedSubTypes.includes(subType)}
-                                onCheckedChange={() => toggleSubType(subType)}
-                              />
-                              <span className="text-sm text-gray-700">{subType}</span>
-                            </label>
-                          ))}
+                      {availableSubTypes.length > 0 && (
+                        <div>
+                          <p className="text-sm text-gray-600 mb-2">Filter by Sub-type:</p>
+                          <div className="flex flex-wrap gap-4">
+                            {availableSubTypes.map(subType => (
+                              <label key={subType} className="flex items-center space-x-2">
+                                <Checkbox
+                                  checked={selectedSubTypes.includes(subType)}
+                                  onCheckedChange={() => toggleSubType(subType)}
+                                />
+                                <span className="text-sm text-gray-700">{subType}</span>
+                              </label>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
