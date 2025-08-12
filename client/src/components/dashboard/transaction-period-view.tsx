@@ -75,6 +75,8 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
   const [viewType, setViewType] = useState<"week" | "month">("month");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+  const [currentPage, setCurrentPage] = useState(0);
+  const transactionsPerPage = 5;
 
   const getPeriodDates = () => {
     if (viewType === "week") {
@@ -96,6 +98,7 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
     } else {
       setCurrentDate(direction === "next" ? addMonths(currentDate, 1) : subMonths(currentDate, 1));
     }
+    resetPagination();
   };
 
   const { start, end } = getPeriodDates();
@@ -104,6 +107,24 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
   const periodTransactions = mockTransactions.filter(transaction => 
     transaction.date >= start && transaction.date <= end
   );
+
+  // Sort transactions
+  const sortedTransactions = periodTransactions.sort((a, b) => {
+    const dateA = a.date.getTime();
+    const dateB = b.date.getTime();
+    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+  });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(sortedTransactions.length / transactionsPerPage);
+  const startIndex = currentPage * transactionsPerPage;
+  const endIndex = startIndex + transactionsPerPage;
+  const paginatedTransactions = sortedTransactions.slice(startIndex, endIndex);
+
+  // Reset pagination when period or sort changes
+  const resetPagination = () => {
+    setCurrentPage(0);
+  };
 
   // Calculate totals
   const totals = periodTransactions.reduce(
@@ -268,7 +289,10 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+              onClick={() => {
+                setSortOrder(sortOrder === "desc" ? "asc" : "desc");
+                resetPagination();
+              }}
               className="flex items-center space-x-1 text-sm"
             >
               <span>Sort</span>
@@ -286,14 +310,9 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
               No transactions found for this period
             </div>
           ) : (
-            <div className="space-y-3">
-              {periodTransactions
-                .sort((a, b) => {
-                  const dateA = a.date.getTime();
-                  const dateB = b.date.getTime();
-                  return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
-                })
-                .map((transaction) => (
+            <>
+              <div className="space-y-3">
+                {paginatedTransactions.map((transaction) => (
                   <div
                     key={transaction.id}
                     className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 hover:bg-gray-100 transition-colors"
@@ -328,7 +347,38 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
                     </div>
                   </div>
                 ))}
-            </div>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                  <div className="text-sm text-gray-600">
+                    Showing {startIndex + 1}-{Math.min(endIndex, periodTransactions.length)} of {periodTransactions.length}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 0}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm font-medium">
+                      Page {currentPage + 1} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages - 1}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
