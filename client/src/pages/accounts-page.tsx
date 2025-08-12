@@ -1432,13 +1432,13 @@ export default function AccountsPage() {
                                     }}
                                     axisLine={false}
                                     tickLine={false}
-                                    width={45}
+                                    width={60}
                                     label={{ 
                                       value: 'Balance', 
                                       angle: -90, 
-                                      position: 'outside',
-                                      offset: -5,
-                                      style: { textAnchor: 'middle', fontSize: '10px', fill: '#6b7280' }
+                                      position: 'insideLeft',
+                                      offset: 10,
+                                      style: { textAnchor: 'middle', fontSize: '9px', fill: '#6b7280' }
                                     }}
                                     domain={(() => {
                                       const values = projectionData.map(d => d.balance);
@@ -1934,7 +1934,7 @@ export default function AccountsPage() {
                                 margin={{
                                   top: 20,
                                   right: 30,
-                                  left: 50,
+                                  left: 20,
                                   bottom: 5,
                                 }}
                               >
@@ -1949,12 +1949,13 @@ export default function AccountsPage() {
                                 <YAxis 
                                   tick={{ fontSize: 12 }}
                                   tickFormatter={(value) => `$${value > 10000 ? `${(value/1000).toFixed(1)}k` : value.toLocaleString()}`}
+                                  width={80}
                                   label={{ 
                                     value: summaryChartMode === 'balance' ? 'Debt Balance' : 'Monthly Interest', 
                                     angle: -90, 
-                                    position: 'outside',
-                                    offset: -10,
-                                    style: { textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }
+                                    position: 'insideLeft',
+                                    offset: 15,
+                                    style: { textAnchor: 'middle', fontSize: '11px', fill: '#6b7280' }
                                   }}
                                 />
                                 <RechartsTooltip 
