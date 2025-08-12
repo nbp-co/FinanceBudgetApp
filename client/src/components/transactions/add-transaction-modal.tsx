@@ -115,6 +115,41 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
             />
           </div>
           
+          {/* Recurring Options - moved directly under recurring toggle */}
+          {isRecurring && (
+            <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
+              <div>
+                <Label htmlFor="frequency">Frequency</Label>
+                <Select value={formData.frequency} onValueChange={(value) => handleInputChange("frequency", value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="daily">Daily</SelectItem>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {formData.frequency === "custom" && (
+                <div>
+                  <Label htmlFor="interval">Interval (days)</Label>
+                  <Input
+                    id="interval"
+                    type="number"
+                    min="1"
+                    value={formData.interval}
+                    onChange={(e) => handleInputChange("interval", e.target.value)}
+                    placeholder="Enter number of days"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          
           {/* Account Selection */}
           <div>
             <Label htmlFor="account">
@@ -174,43 +209,6 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
                   )}
                 </SelectContent>
               </Select>
-            </div>
-          )}
-          
-
-          
-          {/* Recurring Options */}
-          {isRecurring && (
-            <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
-              <div>
-                <Label htmlFor="frequency">Frequency</Label>
-                <Select value={formData.frequency} onValueChange={(value) => handleInputChange("frequency", value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="custom">Custom</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {formData.frequency === "custom" && (
-                <div>
-                  <Label htmlFor="interval">Interval (days)</Label>
-                  <Input
-                    id="interval"
-                    type="number"
-                    min="1"
-                    value={formData.interval}
-                    onChange={(e) => handleInputChange("interval", e.target.value)}
-                    placeholder="Enter number of days"
-                  />
-                </div>
-              )}
             </div>
           )}
           
