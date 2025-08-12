@@ -275,13 +275,19 @@ export default function StatementsPage() {
                   <div className="overflow-x-auto rounded-lg border-2 border-gray-300 shadow-sm">
                     <Table className="border-separate border-spacing-0">
                       <TableHeader>
-                        <TableRow className="bg-gray-400 h-10 border-none">
-                          <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">ACCOUNT</TableHead>
+                        <TableRow className="border-none">
+                          <TableHead className="font-bold text-gray-800 py-4 px-4 bg-gray-200 border-r border-gray-300 rounded-tl-lg">
+                            ACCOUNT
+                          </TableHead>
                           {selectedMonths.map((monthValue, index) => {
                             const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                            const [month, year] = monthLabel.split(' ');
                             return (
-                              <TableHead key={monthValue} className={`text-center font-bold text-white py-3 px-3 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
-                                {monthLabel.toUpperCase()}
+                              <TableHead key={monthValue} className={`text-center py-4 px-3 bg-gray-400 text-white font-bold ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                                <div className="flex flex-col items-center">
+                                  <div className="text-sm font-bold">{month.slice(0, 3).toUpperCase()}</div>
+                                  <div className="text-sm font-bold">{year}</div>
+                                </div>
                               </TableHead>
                             );
                           })}
