@@ -79,16 +79,26 @@ export default function SettingsPage() {
                 <Label htmlFor="birthyear">Year Born</Label>
                 <Input 
                   id="birthyear" 
-                  type="number" 
-                  min="1900"
-                  max="2024"
+                  type="text" 
+                  maxLength={4}
+                  pattern="[0-9]{4}"
                   placeholder="1990" 
-                  title="Please enter a year between 1900 and 2024"
+                  title="Please enter exactly 4 digits (1900-2024)"
                   onInput={(e) => {
                     const target = e.target as HTMLInputElement;
-                    const value = parseInt(target.value);
-                    if (value && (value < 1900 || value > 2024)) {
-                      target.setCustomValidity('Year must be between 1900 and 2024');
+                    // Only allow digits
+                    target.value = target.value.replace(/\D/g, '');
+                    
+                    // Validate length and range
+                    if (target.value.length === 4) {
+                      const year = parseInt(target.value);
+                      if (year < 1900 || year > 2024) {
+                        target.setCustomValidity('Year must be between 1900 and 2024');
+                      } else {
+                        target.setCustomValidity('');
+                      }
+                    } else if (target.value.length > 0) {
+                      target.setCustomValidity('Year must be exactly 4 digits');
                     } else {
                       target.setCustomValidity('');
                     }
