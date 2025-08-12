@@ -9,13 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const accountFormSchema = z.object({
   name: z.string().min(1, "Account name is required"),
@@ -516,22 +517,38 @@ export default function AccountsPage() {
                                             />
                                             <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
                                           </div>
-                                          <div className="relative">
-                                            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
-                                            <Input
-                                              type="text"
-                                              defaultValue={
-                                                account.name === "Checking Account" ? "0.00" :
-                                                account.name === "Savings Account" ? "95.43" :
-                                                account.name === "Money Market" ? "25.18" :
-                                                account.name === "Credit Card" ? "47.23" :
-                                                account.name === "Mortgage" ? "1,542.88" :
-                                                "78.95"
-                                              }
-                                              className="w-28 text-center text-xs pl-6"
-                                            />
-                                            <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
-                                          </div>
+                                          <TooltipProvider>
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <div className="relative">
+                                                  <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
+                                                  <Input
+                                                    type="text"
+                                                    defaultValue={
+                                                      account.name === "Checking Account" ? "0.00" :
+                                                      account.name === "Savings Account" ? "95.43" :
+                                                      account.name === "Money Market" ? "25.18" :
+                                                      account.name === "Credit Card" ? "47.23" :
+                                                      account.name === "Mortgage" ? "1,542.88" :
+                                                      "78.95"
+                                                    }
+                                                    className="w-28 text-center text-xs pl-6"
+                                                  />
+                                                  <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
+                                                </div>
+                                              </TooltipTrigger>
+                                              <TooltipContent 
+                                                side="top" 
+                                                className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg"
+                                              >
+                                                <p className="font-medium">{account.name}</p>
+                                                <p className="text-xs opacity-90">
+                                                  {monthValue.slice(0, 3)} {monthValue.slice(-4)} Interest
+                                                  {account.apr && ` (${account.type === 'Asset' ? 'APY' : 'APR'}: ${account.apr}%)`}
+                                                </p>
+                                              </TooltipContent>
+                                            </Tooltip>
+                                          </TooltipProvider>
                                         </div>
                                       </TableCell>
                                     ))}
@@ -577,14 +594,31 @@ export default function AccountsPage() {
                         tick={{ fontSize: 12 }}
                         tickFormatter={(value) => `$${value}`}
                       />
-                      <Tooltip 
-                        formatter={(value) => [`$${value}`, '']}
-                        labelStyle={{ color: '#374151' }}
-                        contentStyle={{ 
-                          backgroundColor: '#f9fafb',
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '6px'
+                      <RechartsTooltip 
+                        formatter={(value, name) => [`$${value}`, `${name} Interest`]}
+                        labelFormatter={(label) => `Month: ${label}`}
+                        labelStyle={{ 
+                          color: '#374151',
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          marginBottom: '4px'
                         }}
+                        contentStyle={{ 
+                          backgroundColor: '#ffffff',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                          padding: '12px',
+                          minWidth: '180px',
+                          fontSize: '13px'
+                        }}
+                        itemStyle={{
+                          color: '#374151',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          padding: '2px 0'
+                        }}
+                        cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
                       />
                       <Legend />
                       <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />

@@ -8,7 +8,7 @@ import { Save, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function StatementsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
@@ -312,14 +312,31 @@ export default function StatementsPage() {
                     tick={{ fontSize: 12 }}
                     tickFormatter={(value) => `$${value}`}
                   />
-                  <Tooltip 
-                    formatter={(value) => [`$${value}`, '']}
-                    labelStyle={{ color: '#374151' }}
-                    contentStyle={{ 
-                      backgroundColor: '#f9fafb',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px'
+                  <RechartsTooltip 
+                    formatter={(value, name) => [`$${value}`, `${name} Interest`]}
+                    labelFormatter={(label) => `Month: ${label}`}
+                    labelStyle={{ 
+                      color: '#374151',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      marginBottom: '4px'
                     }}
+                    contentStyle={{ 
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                      padding: '12px',
+                      minWidth: '180px',
+                      fontSize: '13px'
+                    }}
+                    itemStyle={{
+                      color: '#374151',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      padding: '2px 0'
+                    }}
+                    cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
                   />
                   <Legend />
                   <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
