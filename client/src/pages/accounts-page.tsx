@@ -1115,6 +1115,42 @@ export default function AccountsPage() {
                             <div className="text-center">
                               <p className="text-sm text-red-600 font-medium">Total Debt</p>
                               <p className="text-xl font-bold text-red-800">${summary.totalDebt.toLocaleString()}</p>
+                              <p className="text-xs text-red-600">
+                                ${(() => {
+                                  const debtAccounts = getDebtAccounts();
+                                  let totalStartBalance = 0;
+                                  
+                                  debtAccounts.forEach(account => {
+                                    const statements = (monthlyStatements || []).filter(s => s.accountId === account.id);
+                                    if (statements.length > 0) {
+                                      // Find January statement or earliest available
+                                      const januaryStatement = statements.find(s => {
+                                        const date = new Date(s.year, s.month - 1);
+                                        return date.getMonth() === 0 && date.getFullYear() === new Date().getFullYear();
+                                      });
+                                      
+                                      if (januaryStatement) {
+                                        totalStartBalance += Math.abs(januaryStatement.startingBalance);
+                                      } else {
+                                        // Use earliest available statement
+                                        const sortedStatements = statements.sort((a, b) => {
+                                          const dateA = new Date(a.year, a.month - 1);
+                                          const dateB = new Date(b.year, b.month - 1);
+                                          return dateA.getTime() - dateB.getTime();
+                                        });
+                                        if (sortedStatements[0]) {
+                                          totalStartBalance += Math.abs(sortedStatements[0].startingBalance);
+                                        }
+                                      }
+                                    } else {
+                                      // No statements, use current balance
+                                      totalStartBalance += Math.abs(account.balance);
+                                    }
+                                  });
+                                  
+                                  return Math.round(totalStartBalance).toLocaleString();
+                                })()} from Jan/earliest
+                              </p>
                             </div>
                             <div className="text-center">
                               <p className="text-sm text-orange-600 font-medium">Est. Monthly Interest</p>
