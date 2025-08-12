@@ -1110,16 +1110,13 @@ export default function AccountsPage() {
                   className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
                   onClick={() => !hideDebtPayoffInfo && setShowDebtPayoffInfo(true)}
                 >
-                  Debt Payoff
+                  Debt Overview
                 </h2>
               </div>
 
               {/* Debt Summary Card */}
               {getDebtAccounts().length > 0 && (
                 <Card className="bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
-                  <CardHeader>
-                    <CardTitle className="text-red-800">Debt Overview</CardTitle>
-                  </CardHeader>
                   <CardContent className="py-3">
                     <div className="grid md:grid-cols-4 gap-3">
                       {(() => {
@@ -1636,7 +1633,7 @@ export default function AccountsPage() {
         <Dialog open={showDebtPayoffInfo} onOpenChange={setShowDebtPayoffInfo}>
           <DialogContent className="sm:max-w-md animate-in fade-in-0 zoom-in-95 duration-300">
             <DialogHeader>
-              <DialogTitle className="text-blue-600">Debt Payoff</DialogTitle>
+              <DialogTitle className="text-blue-600">Debt Overview</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-gray-600">
