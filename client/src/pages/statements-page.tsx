@@ -200,21 +200,12 @@ export default function StatementsPage() {
                 Save All ({selectedMonths.length})
               </Button>
             </div>
-          </CardContent>
-        </Card>
-
-        {selectedMonths.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <p className="text-gray-500">Select one or more months above to edit statements</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
-            <CardContent className="p-4 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Monthly Statements</h3>
-              
-              <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+            {selectedMonths.length === 0 ? (
+              <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <p className="text-gray-500">Select one or more months above to edit statements</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm bg-white">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-400 h-6 border-none">
@@ -306,9 +297,9 @@ export default function StatementsPage() {
                   </TableBody>
                 </Table>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AppShell>
   );
