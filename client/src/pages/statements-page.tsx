@@ -63,55 +63,43 @@ export default function StatementsPage() {
     );
   };
 
-  // Interest data by month and account sub-type
+  // Interest data by month - debt accounts only
   const interestData = [
     {
       month: 'Jul 2024',
       'Credit Card': 47.23,
       'Mortgage': 1542.88,
       'Auto Loan': 78.95,
-      'Savings': 95.43,
-      'Money Market': 25.18,
     },
     {
       month: 'Aug 2024',
       'Credit Card': 47.23,
       'Mortgage': 1542.88,
       'Auto Loan': 78.95,
-      'Savings': 95.43,
-      'Money Market': 25.18,
     },
     {
       month: 'Sep 2024',
       'Credit Card': 47.23,
       'Mortgage': 1542.88,
       'Auto Loan': 78.95,
-      'Savings': 95.43,
-      'Money Market': 25.18,
     },
     {
       month: 'Oct 2024',
       'Credit Card': 47.23,
       'Mortgage': 1542.88,
       'Auto Loan': 78.95,
-      'Savings': 95.43,
-      'Money Market': 25.18,
     },
     {
       month: 'Nov 2024',
       'Credit Card': 47.23,
       'Mortgage': 1542.88,
       'Auto Loan': 78.95,
-      'Savings': 95.43,
-      'Money Market': 25.18,
     },
     {
       month: 'Dec 2024',
       'Credit Card': 47.23,
       'Mortgage': 1542.88,
       'Auto Loan': 78.95,
-      'Savings': 95.43,
-      'Money Market': 25.18,
     },
   ];
 
@@ -295,10 +283,10 @@ export default function StatementsPage() {
           </Collapsible>
         )}
 
-        {/* Interest Chart */}
+        {/* Interest Chart - Debt Accounts Only */}
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle>Monthly Interest by Account Type</CardTitle>
+            <CardTitle>Monthly Interest Expense by Debt Account</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">
@@ -337,8 +325,6 @@ export default function StatementsPage() {
                   <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
                   <Bar dataKey="Mortgage" stackId="a" fill={chartColors['Mortgage']} />
                   <Bar dataKey="Auto Loan" stackId="a" fill={chartColors['Auto Loan']} />
-                  <Bar dataKey="Savings" stackId="a" fill={chartColors['Savings']} />
-                  <Bar dataKey="Money Market" stackId="a" fill={chartColors['Money Market']} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
