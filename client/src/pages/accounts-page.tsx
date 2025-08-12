@@ -1312,7 +1312,7 @@ export default function AccountsPage() {
                               <p className="text-xs text-gray-600">
                                 <span className="font-semibold text-red-600">${balance.toLocaleString()}</span>
                               </p>
-                              {account.apr && <p className="text-xs text-gray-600">{account.apr}% APR</p>}
+                              {account.apr && <p className="text-xs text-gray-600 whitespace-nowrap">{account.apr}% APR</p>}
                             </div>
                           </div>
                           
