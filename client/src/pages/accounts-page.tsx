@@ -80,7 +80,7 @@ export default function AccountsPage() {
   // Debt summary view mode state
   const [summaryViewMode, setSummaryViewMode] = useState<'table' | 'chart'>('table');
   const [summaryChartMode, setSummaryChartMode] = useState<'balance' | 'interest'>('balance');
-  const [summaryMonthOffset, setSummaryMonthOffset] = useState(0); // 0 = current 6 months, -1 = previous 6, +1 = next 6
+  const [summaryMonthOffset, setSummaryMonthOffset] = useState(1); // 1 = JUL-DEC 2024, 0 = JAN-JUN 2024, -1 = JUL-DEC 2023, -2 = JAN-JUN 2023
 
   // Mock monthly statements data for debt overview calculation
   const monthlyStatements = [
@@ -1665,7 +1665,9 @@ export default function AccountsPage() {
                       <div className="flex items-center gap-3">
                         <h3 className="text-lg font-semibold text-gray-900">Debt by Type - Monthly Summary</h3>
                         <span className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
-                          {summaryMonthOffset === 0 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
+                          {summaryMonthOffset === 1 ? 'JUL-DEC 2024' : 
+                           summaryMonthOffset === 0 ? 'JAN-JUN 2024' :
+                           summaryMonthOffset === -1 ? 'JUL-DEC 2023' : 'JAN-JUN 2023'}
                         </span>
                       </div>
                       <ChevronDown className="h-5 w-5 text-gray-600" />
@@ -1684,14 +1686,16 @@ export default function AccountsPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setSummaryMonthOffset(Math.max(summaryMonthOffset - 1, -1))}
-                              disabled={summaryMonthOffset <= -1}
+                              onClick={() => setSummaryMonthOffset(Math.max(summaryMonthOffset - 1, -2))}
+                              disabled={summaryMonthOffset <= -2}
                               className="h-8 w-8 p-0 text-gray-600 hover:bg-slate-200 disabled:opacity-50"
                             >
                               <ChevronLeft className="h-4 w-4" />
                             </Button>
                             <span className="text-sm px-3 text-gray-700 font-medium">
-                              {summaryMonthOffset === 0 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
+                              {summaryMonthOffset === 1 ? 'JUL-DEC 2024' : 
+                               summaryMonthOffset === 0 ? 'JAN-JUN 2024' :
+                               summaryMonthOffset === -1 ? 'JUL-DEC 2023' : 'JAN-JUN 2023'}
                             </span>
                             <Button
                               variant="ghost"
@@ -1778,9 +1782,13 @@ export default function AccountsPage() {
                           <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-500">DEBT BY TYPE</TableHead>
                           {(() => {
                             const months = [];
-                            const monthLabels = summaryMonthOffset === 0 
+                            const monthLabels = summaryMonthOffset === 1 
                               ? ['JUL 2024', 'AUG 2024', 'SEP 2024', 'OCT 2024', 'NOV 2024', 'DEC 2024']
-                              : ['JAN 2024', 'FEB 2024', 'MAR 2024', 'APR 2024', 'MAY 2024', 'JUN 2024'];
+                              : summaryMonthOffset === 0
+                              ? ['JAN 2024', 'FEB 2024', 'MAR 2024', 'APR 2024', 'MAY 2024', 'JUN 2024']
+                              : summaryMonthOffset === -1
+                              ? ['JUL 2023', 'AUG 2023', 'SEP 2023', 'OCT 2023', 'NOV 2023', 'DEC 2023']
+                              : ['JAN 2023', 'FEB 2023', 'MAR 2023', 'APR 2023', 'MAY 2023', 'JUN 2023'];
                             
                             monthLabels.forEach((label, index) => {
                               months.push(
@@ -1881,9 +1889,13 @@ export default function AccountsPage() {
                         const chartData = [];
                         
                         // Prepare data for chart using JAN-JUN and JUL-DEC periods
-                        const monthLabels = summaryMonthOffset === 0 
+                        const monthLabels = summaryMonthOffset === 1 
                           ? ['Jul 2024', 'Aug 2024', 'Sep 2024', 'Oct 2024', 'Nov 2024', 'Dec 2024']
-                          : ['Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024'];
+                          : summaryMonthOffset === 0
+                          ? ['Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024']
+                          : summaryMonthOffset === -1
+                          ? ['Jul 2023', 'Aug 2023', 'Sep 2023', 'Oct 2023', 'Nov 2023', 'Dec 2023']
+                          : ['Jan 2023', 'Feb 2023', 'Mar 2023', 'Apr 2023', 'May 2023', 'Jun 2023'];
                         
                         monthLabels.forEach(monthLabel => {
                           const monthData: any = { month: monthLabel };
