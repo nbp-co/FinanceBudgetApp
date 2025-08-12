@@ -14,7 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/compon
 export default function StatementsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
-  const [sortBy, setSortBy] = useState<string>('type');
+  const [sortBy, setSortBy] = useState<'name' | 'type' | 'name-reverse' | 'type-reverse'>('type');
   const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>(['Checking', 'Savings', 'Money Market', 'Credit Card', 'Mortgage', 'Auto Loan']);
   const availableMonths = [
     { value: "2024-12", label: "Dec 2024" },
@@ -58,8 +58,17 @@ export default function StatementsPage() {
       }
       // Then sort by account type within each group
       return a.accountType.localeCompare(b.accountType);
+    } else if (sortBy === 'type-reverse') {
+      // First sort by Asset vs Debt (Asset first)
+      if (a.type !== b.type) {
+        return a.type === 'Asset' ? -1 : 1;
+      }
+      // Then sort by account type within each group
+      return a.accountType.localeCompare(b.accountType);
     } else if (sortBy === 'name') {
       return a.name.localeCompare(b.name);
+    } else if (sortBy === 'name-reverse') {
+      return b.name.localeCompare(a.name);
     }
     return 0;
   });
@@ -190,11 +199,14 @@ export default function StatementsPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="min-w-[140px] justify-between">
-                            {sortBy === 'type' ? 'Type (Debt → Asset)' : 'Name (A → Z)'}
+                            {sortBy === 'type' ? 'Type (Debt → Asset)' : 
+                             sortBy === 'type-reverse' ? 'Type (Asset → Debt)' :
+                             sortBy === 'name' ? 'Name (A → Z)' : 
+                             sortBy === 'name-reverse' ? 'Name (Z → A)' : 'Type (Debt → Asset)'}
                             <ChevronDown className="h-4 w-4 ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-48 p-2" align="start">
+                        <DropdownMenuContent className="w-56 p-2" align="start">
                           <RadioGroup value={sortBy} onValueChange={setSortBy} className="space-y-2">
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="type" id="sort-type" className="border-teal-600 text-teal-600" />
@@ -203,9 +215,21 @@ export default function StatementsPage() {
                               </Label>
                             </div>
                             <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="type-reverse" id="sort-type-reverse" className="border-teal-600 text-teal-600" />
+                              <Label htmlFor="sort-type-reverse" className="text-sm cursor-pointer">
+                                Type (Asset → Debt)
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
                               <RadioGroupItem value="name" id="sort-name" className="border-teal-600 text-teal-600" />
                               <Label htmlFor="sort-name" className="text-sm cursor-pointer">
                                 Name (A → Z)
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="name-reverse" id="sort-name-reverse" className="border-teal-600 text-teal-600" />
+                              <Label htmlFor="sort-name-reverse" className="text-sm cursor-pointer">
+                                Name (Z → A)
                               </Label>
                             </div>
                           </RadioGroup>

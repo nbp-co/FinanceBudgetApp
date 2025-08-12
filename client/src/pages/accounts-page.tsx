@@ -51,7 +51,7 @@ export default function AccountsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
   const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<'name' | 'type'>('type');
+  const [sortBy, setSortBy] = useState<'name' | 'type' | 'name-reverse' | 'type-reverse'>('type');
   const [isStatementsOpen, setIsStatementsOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const accountsPerPage = 5;
@@ -152,6 +152,15 @@ export default function AccountsPage() {
   const sortedAccounts = allAccounts.sort((a, b) => {
     if (sortBy === 'name') {
       return a.name.localeCompare(b.name);
+    } else if (sortBy === 'name-reverse') {
+      return b.name.localeCompare(a.name);
+    } else if (sortBy === 'type-reverse') {
+      // First by type (Asset first, then Debt)
+      if (a.type !== b.type) {
+        return a.type === 'Asset' ? -1 : 1;
+      }
+      // Then by account sub-type within same type
+      return a.accountType.localeCompare(b.accountType);
     } else { // sortBy === 'type'
       // First by type (Debt first, then Asset)
       if (a.type !== b.type) {
@@ -269,7 +278,7 @@ export default function AccountsPage() {
     setCurrentPage(0); // Reset to first page when filter changes
   };
 
-  const handleSortChange = (newSortBy: 'name' | 'type') => {
+  const handleSortChange = (newSortBy: 'name' | 'type' | 'name-reverse' | 'type-reverse') => {
     setSortBy(newSortBy);
     setCurrentPage(0); // Reset to first page when sort changes
   };
@@ -870,11 +879,14 @@ export default function AccountsPage() {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="outline" className="min-w-[140px] justify-between">
-                                {sortBy === 'type' ? 'Type (Debt → Asset)' : 'Name (A → Z)'}
+                                {sortBy === 'type' ? 'Type (Debt → Asset)' : 
+                                 sortBy === 'type-reverse' ? 'Type (Asset → Debt)' :
+                                 sortBy === 'name' ? 'Name (A → Z)' : 
+                                 sortBy === 'name-reverse' ? 'Name (Z → A)' : 'Type (Debt → Asset)'}
                                 <ChevronDown className="h-4 w-4 ml-2" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-48 p-2" align="start">
+                            <DropdownMenuContent className="w-56 p-2" align="start">
                               <RadioGroup value={sortBy} onValueChange={handleSortChange} className="space-y-2">
                                 <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="type" id="acc-sort-type" />
@@ -883,9 +895,21 @@ export default function AccountsPage() {
                                   </Label>
                                 </div>
                                 <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="type-reverse" id="acc-sort-type-reverse" />
+                                  <Label htmlFor="acc-sort-type-reverse" className="text-sm cursor-pointer">
+                                    Type (Asset → Debt)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="name" id="acc-sort-name" />
                                   <Label htmlFor="acc-sort-name" className="text-sm cursor-pointer">
                                     Name (A → Z)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="name-reverse" id="acc-sort-name-reverse" />
+                                  <Label htmlFor="acc-sort-name-reverse" className="text-sm cursor-pointer">
+                                    Name (Z → A)
                                   </Label>
                                 </div>
                               </RadioGroup>
