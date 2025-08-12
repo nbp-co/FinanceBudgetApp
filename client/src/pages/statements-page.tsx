@@ -128,39 +128,73 @@ export default function StatementsPage() {
 
                 {/* Controls */}
                 <div className="flex justify-between items-center gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-                  {/* Sort & Filter Dropdown */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="flex items-center gap-2">
-                        <Filter className="h-4 w-4" />
-                        Sort & Filter
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-80 p-4" align="start">
-                      <div className="space-y-6">
-                        {/* Account Types */}
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-3 block">Account Types:</Label>
-                          <div className="flex gap-4">
-                            {['Asset', 'Debt'].map((type) => (
-                              <div key={type} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`type-${type}`}
-                                  checked={selectedAccountTypes.includes(type)}
-                                  onCheckedChange={() => toggleAccountType(type)}
-                                  className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                                />
-                                <Label htmlFor={`type-${type}`} className="text-sm cursor-pointer">
-                                  {type}
-                                </Label>
+                  <div className="flex items-center gap-4">
+                    {/* Filter Dropdown */}
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm font-medium text-gray-700">Filter:</Label>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" className="min-w-[120px] justify-between">
+                            {selectedAccountTypes.length === 2 ? 'All Types' : 
+                             selectedAccountTypes.length === 1 ? selectedAccountTypes[0] + ' Only' : 
+                             'No Types'}
+                            <ChevronDown className="h-4 w-4 ml-2" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56 p-3" align="start">
+                          <div className="space-y-3">
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700 mb-2 block">Account Types:</Label>
+                              <div className="space-y-2">
+                                {['Asset', 'Debt'].map((type) => (
+                                  <div key={type} className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`filter-type-${type}`}
+                                      checked={selectedAccountTypes.includes(type)}
+                                      onCheckedChange={() => toggleAccountType(type)}
+                                      className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                                    />
+                                    <Label htmlFor={`filter-type-${type}`} className="text-sm cursor-pointer">
+                                      {type}
+                                    </Label>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700 mb-2 block">Sub-types:</Label>
+                              <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto">
+                                {['Checking', 'Business Checking', 'Savings', 'Money Market', 'Investment', 'Credit Card', 'Mortgage', 'Auto Loan', 'Student Loan', 'Line of Credit', 'Taxes'].map((subType) => (
+                                  <div key={subType} className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`filter-subtype-${subType}`}
+                                      checked={selectedSubTypes.includes(subType)}
+                                      onCheckedChange={() => toggleSubType(subType)}
+                                      className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                                    />
+                                    <Label htmlFor={`filter-subtype-${subType}`} className="text-sm cursor-pointer">
+                                      {subType}
+                                    </Label>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
 
-                        {/* Sort By */}
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-3 block">Sort by:</Label>
+                    {/* Sort Dropdown */}
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm font-medium text-gray-700">Sort:</Label>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" className="min-w-[140px] justify-between">
+                            {sortBy === 'type' ? 'Type (Debt → Asset)' : 'Name (A → Z)'}
+                            <ChevronDown className="h-4 w-4 ml-2" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-48 p-2" align="start">
                           <RadioGroup value={sortBy} onValueChange={setSortBy} className="space-y-2">
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="type" id="sort-type" className="border-teal-600 text-teal-600" />
@@ -175,30 +209,10 @@ export default function StatementsPage() {
                               </Label>
                             </div>
                           </RadioGroup>
-                        </div>
-
-                        {/* Filter by Sub-type */}
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-3 block">Filter by Sub-type:</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {['Checking', 'Business Checking', 'Savings', 'Money Market', 'Investment', 'Credit Card', 'Mortgage', 'Auto Loan', 'Student Loan', 'Line of Credit', 'Taxes'].map((subType) => (
-                              <div key={subType} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`subtype-${subType}`}
-                                  checked={selectedSubTypes.includes(subType)}
-                                  onCheckedChange={() => toggleSubType(subType)}
-                                  className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                                />
-                                <Label htmlFor={`subtype-${subType}`} className="text-sm cursor-pointer">
-                                  {subType}
-                                </Label>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
 
                   {/* Save Button */}
                   <Button 
