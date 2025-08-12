@@ -1154,6 +1154,16 @@ export default function AccountsPage() {
                                     axisLine={false}
                                     tickLine={false}
                                     width={30}
+                                    domain={(() => {
+                                      const values = projectionData.map(d => d.balance);
+                                      const minValue = Math.min(...values);
+                                      const maxValue = Math.max(...values);
+                                      const padding = (maxValue - minValue) * 0.1 || maxValue * 0.1;
+                                      return [
+                                        Math.max(0, Math.floor((minValue - padding) / 1000) * 1000),
+                                        Math.ceil((maxValue + padding) / 1000) * 1000
+                                      ];
+                                    })()}
                                   />
                                   <RechartsTooltip 
                                     formatter={(value) => [`$${value.toLocaleString()}`, 'Balance']}
