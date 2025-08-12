@@ -1193,34 +1193,37 @@ export default function AccountsPage() {
                 </Card>
               )}
 
-              {/* Collapsible Debt Accounts Section */}
+              {/* Enhanced Collapsible Debt Accounts Section */}
               {getDebtAccounts().length > 0 && (
-                <Collapsible defaultOpen={true}>
-                  <CollapsibleTrigger className="w-full">
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-semibold text-gray-900">Debt Accounts</h3>
-                        <span className="text-sm text-gray-600 bg-white px-2 py-1 rounded-full">
-                          {getFilteredAndSortedDebtAccounts().length} accounts
-                        </span>
+                <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
+                  <Collapsible defaultOpen={true}>
+                    <CollapsibleTrigger className="w-full">
+                      <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                          <h3 className="text-lg font-semibold text-gray-900">Debt Accounts & Management</h3>
+                          <span className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+                            {getFilteredAndSortedDebtAccounts().length} accounts
+                          </span>
+                        </div>
+                        <ChevronDown className="h-5 w-5 text-gray-600" />
                       </div>
-                      <ChevronDown className="h-5 w-5 text-gray-600" />
-                    </div>
-                  </CollapsibleTrigger>
-                  
-                  <CollapsibleContent className="space-y-4 mt-4">
-                    {/* Sort and Filter Controls */}
-                    <div className="flex items-center justify-end gap-4 p-3 bg-gray-50 rounded-lg border">
-                      {/* Schedule Payment Button */}
-                      <Button onClick={() => openPaymentDialog('new')} size="sm" className="flex items-center space-x-1 mr-auto">
-                        <Plus className="h-4 w-4" />
-                        <span>Schedule Payment</span>
-                      </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                      <CardContent className="pt-0 pb-4 space-y-4">
+                        {/* Enhanced Sort and Filter Controls */}
+                        <div className="flex items-center justify-end gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                          {/* Schedule Payment Button */}
+                          <Button onClick={() => openPaymentDialog('new')} size="sm" className="flex items-center space-x-1 mr-auto bg-blue-600 hover:bg-blue-700 text-white">
+                            <Plus className="h-4 w-4" />
+                            <span>Schedule Payment</span>
+                          </Button>
 
-                      {/* Filter Dropdown */}
-                      <div className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-gray-700">Filter:</label>
-                        <Select 
+                          {/* Filter Dropdown */}
+                          <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-gray-700">Filter:</label>
+                            <Select 
                           value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
                           onValueChange={(value) => {
                             if (value === "all") {
@@ -1241,30 +1244,30 @@ export default function AccountsPage() {
                               </SelectItem>
                             ))}
                           </SelectContent>
-                        </Select>
-                      </div>
+                            </Select>
+                          </div>
 
-                      {/* Sort Dropdown */}
-                      <div className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-gray-700">Sort:</label>
-                        <Select value={debtSortBy} onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}>
-                          <SelectTrigger className="w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="balance">Balance (High)</SelectItem>
-                            <SelectItem value="balanceAsc">Balance (Low)</SelectItem>
-                            <SelectItem value="name">Name (A-Z)</SelectItem>
-                            <SelectItem value="nameDesc">Name (Z-A)</SelectItem>
-                            <SelectItem value="interest">Interest (High)</SelectItem>
-                            <SelectItem value="payoff">Payoff (Short)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+                          {/* Sort Dropdown */}
+                          <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-gray-700">Sort:</label>
+                            <Select value={debtSortBy} onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}>
+                              <SelectTrigger className="w-40">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="balance">Balance (High)</SelectItem>
+                                <SelectItem value="balanceAsc">Balance (Low)</SelectItem>
+                                <SelectItem value="name">Name (A-Z)</SelectItem>
+                                <SelectItem value="nameDesc">Name (Z-A)</SelectItem>
+                                <SelectItem value="interest">Interest (High)</SelectItem>
+                                <SelectItem value="payoff">Payoff (Short)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
 
-                    {/* Debt Account Cards */}
-                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        {/* Debt Account Cards */}
+                        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {getFilteredAndSortedDebtAccounts().map(account => {
                   const balance = getBalance(account.name);
                   const monthlyPayment = paymentSchedules[account.name]?.amount || (balance * 0.02); // Default 2% of balance
@@ -1469,10 +1472,12 @@ export default function AccountsPage() {
                       </CardContent>
                     </Card>
                   );
-                })}
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
+                        })}
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </Card>
               )}
               
               {getFilteredAndSortedDebtAccounts().length === 0 && getDebtAccounts().length === 0 && (
