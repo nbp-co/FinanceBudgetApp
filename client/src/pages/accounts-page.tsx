@@ -63,7 +63,7 @@ export default function AccountsPage() {
   const [selectedDebtAccount, setSelectedDebtAccount] = useState<string | null>(null);
   
   // Debt sort/filter state
-  const [debtSortBy, setDebtSortBy] = useState<'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff'>('balance');
+  const [debtSortBy, setDebtSortBy] = useState<'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff' | 'apr' | 'aprAsc'>('balance');
   const [debtFilterBy, setDebtFilterBy] = useState<string[]>([]);
   
   // Debt payoff info popup state
@@ -492,6 +492,10 @@ export default function AccountsPage() {
           const aMonths = aPayoffInfo?.months || 999;
           const bMonths = bPayoffInfo?.months || 999;
           return aMonths - bMonths; // Shortest payoff first
+        case 'apr':
+          return (b.apr || 0) - (a.apr || 0); // Highest APR first
+        case 'aprAsc':
+          return (a.apr || 0) - (b.apr || 0); // Lowest APR first
         default:
           return 0;
       }
@@ -1298,7 +1302,7 @@ export default function AccountsPage() {
                             <Select 
                               name="debt-sort"
                               value={debtSortBy} 
-                              onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}
+                              onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff' | 'apr' | 'aprAsc') => setDebtSortBy(value)}
                             >
                               <SelectTrigger id="debt-sort-select" className="w-40">
                                 <SelectValue placeholder="Balance (High)" />
@@ -1310,6 +1314,8 @@ export default function AccountsPage() {
                                 <SelectItem value="nameDesc">Name (Z-A)</SelectItem>
                                 <SelectItem value="interest">Interest (High)</SelectItem>
                                 <SelectItem value="payoff">Payoff (Short)</SelectItem>
+                                <SelectItem value="apr">APR% (High)</SelectItem>
+                                <SelectItem value="aprAsc">APR% (Low)</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
