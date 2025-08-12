@@ -132,11 +132,11 @@ export default function AccountsPage() {
   };
 
   // Get unique sub-types for filtering based on selected account types
-  const availableSubTypes = [...new Set(
+  const availableSubTypes = Array.from(new Set(
     allAccounts
       .filter(account => selectedAccountTypes.includes(account.type))
       .map(account => account.accountType)
-  )];
+  ));
 
   // Sort accounts based on sortBy preference
   const sortedAccounts = allAccounts.sort((a, b) => {
@@ -236,11 +236,11 @@ export default function AccountsPage() {
         : [...prev, accountType];
       
       // Clear sub-type selections that are no longer available
-      const newAvailableSubTypes = [...new Set(
+      const newAvailableSubTypes = Array.from(new Set(
         allAccounts
           .filter(account => newTypes.includes(account.type))
           .map(account => account.accountType)
-      )];
+      ));
       setSelectedSubTypes(current => 
         current.filter(subType => newAvailableSubTypes.includes(subType))
       );
@@ -1193,63 +1193,78 @@ export default function AccountsPage() {
                 </Card>
               )}
 
-              {/* Sort and Filter Controls - Right Aligned */}
+              {/* Collapsible Debt Accounts Section */}
               {getDebtAccounts().length > 0 && (
-                <div className="flex items-center justify-end gap-4 p-3 bg-gray-50 rounded-lg border">
-                  {/* Schedule Payment Button */}
-                  <Button onClick={() => openPaymentDialog('new')} size="sm" className="flex items-center space-x-1 mr-auto">
-                    <Plus className="h-4 w-4" />
-                    <span>Schedule Payment</span>
-                  </Button>
+                <Collapsible defaultOpen={true}>
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-lg font-semibold text-gray-900">Debt Accounts</h3>
+                        <span className="text-sm text-gray-600 bg-white px-2 py-1 rounded-full">
+                          {getFilteredAndSortedDebtAccounts().length} accounts
+                        </span>
+                      </div>
+                      <ChevronDown className="h-5 w-5 text-gray-600" />
+                    </div>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-4 mt-4">
+                    {/* Sort and Filter Controls */}
+                    <div className="flex items-center justify-end gap-4 p-3 bg-gray-50 rounded-lg border">
+                      {/* Schedule Payment Button */}
+                      <Button onClick={() => openPaymentDialog('new')} size="sm" className="flex items-center space-x-1 mr-auto">
+                        <Plus className="h-4 w-4" />
+                        <span>Schedule Payment</span>
+                      </Button>
 
-                  {/* Filter Dropdown */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">Filter:</label>
-                    <Select 
-                      value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
-                      onValueChange={(value) => {
-                        if (value === "all") {
-                          setDebtFilterBy([]);
-                        } else {
-                          setDebtFilterBy([value]);
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="w-36">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Types</SelectItem>
-                        {getUniqueDebtSubTypes().map(subType => (
-                          <SelectItem key={subType} value={subType}>
-                            {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      {/* Filter Dropdown */}
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700">Filter:</label>
+                        <Select 
+                          value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
+                          onValueChange={(value) => {
+                            if (value === "all") {
+                              setDebtFilterBy([]);
+                            } else {
+                              setDebtFilterBy([value]);
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-36">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            {getUniqueDebtSubTypes().map(subType => (
+                              <SelectItem key={subType} value={subType}>
+                                {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                  {/* Sort Dropdown */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">Sort:</label>
-                    <Select value={debtSortBy} onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}>
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="balance">Balance (High)</SelectItem>
-                        <SelectItem value="balanceAsc">Balance (Low)</SelectItem>
-                        <SelectItem value="name">Name (A-Z)</SelectItem>
-                        <SelectItem value="nameDesc">Name (Z-A)</SelectItem>
-                        <SelectItem value="interest">Interest (High)</SelectItem>
-                        <SelectItem value="payoff">Payoff (Short)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              )}
+                      {/* Sort Dropdown */}
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700">Sort:</label>
+                        <Select value={debtSortBy} onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}>
+                          <SelectTrigger className="w-40">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="balance">Balance (High)</SelectItem>
+                            <SelectItem value="balanceAsc">Balance (Low)</SelectItem>
+                            <SelectItem value="name">Name (A-Z)</SelectItem>
+                            <SelectItem value="nameDesc">Name (Z-A)</SelectItem>
+                            <SelectItem value="interest">Interest (High)</SelectItem>
+                            <SelectItem value="payoff">Payoff (Short)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
 
-              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {/* Debt Account Cards */}
+                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {getFilteredAndSortedDebtAccounts().map(account => {
                   const balance = getBalance(account.name);
                   const monthlyPayment = paymentSchedules[account.name]?.amount || (balance * 0.02); // Default 2% of balance
@@ -1455,7 +1470,10 @@ export default function AccountsPage() {
                     </Card>
                   );
                 })}
-              </div>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
               
               {getFilteredAndSortedDebtAccounts().length === 0 && getDebtAccounts().length === 0 && (
                 <Card>
@@ -1613,8 +1631,8 @@ export default function AccountsPage() {
                       <TableBody>
                         {(() => {
                           const debtAccounts = getDebtAccounts();
-                          const debtTypes = [...new Set(debtAccounts.map(account => account.accountType))];
-                          const monthlyData = [];
+                          const debtTypes = Array.from(new Set(debtAccounts.map(account => account.accountType)));
+                          const monthlyData: Array<{ type: string; months: Array<{ balance: number; interest: number }> }> = [];
                           let totalsByMonth = Array(6).fill(0).map(() => ({ balance: 0, interest: 0 }));
 
                           // Calculate data for each debt type
@@ -1648,7 +1666,7 @@ export default function AccountsPage() {
                               {monthlyData.map(({ type, months }) => (
                                 <TableRow key={type} className="border-b h-12">
                                   <TableCell className="font-medium text-gray-700 bg-gray-50 py-1">
-                                    {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                    {type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                                   </TableCell>
                                   {months.map((month, index) => (
                                     <TableCell key={`month-${index}`} className="text-center text-sm py-1">
