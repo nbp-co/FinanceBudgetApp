@@ -60,6 +60,41 @@ export default function SettingsPage() {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label htmlFor="zipcode">ZIP Code</Label>
+                <Input 
+                  id="zipcode" 
+                  type="text" 
+                  maxLength={5}
+                  pattern="[0-9]{5}"
+                  placeholder="12345" 
+                  title="Please enter a valid 5-digit ZIP code"
+                  onInput={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.value = target.value.replace(/\D/g, '');
+                  }}
+                />
+              </div>
+              <div>
+                <Label htmlFor="birthyear">Year Born</Label>
+                <Input 
+                  id="birthyear" 
+                  type="number" 
+                  min="1900"
+                  max="2024"
+                  placeholder="1990" 
+                  title="Please enter a year between 1900 and 2024"
+                  onInput={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    const value = parseInt(target.value);
+                    if (value && (value < 1900 || value > 2024)) {
+                      target.setCustomValidity('Year must be between 1900 and 2024');
+                    } else {
+                      target.setCustomValidity('');
+                    }
+                  }}
+                />
+              </div>
               <Button>Update Profile</Button>
             </CardContent>
           </Card>

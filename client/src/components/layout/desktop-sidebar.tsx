@@ -14,7 +14,6 @@ const navigation = [
   { name: "Summary", href: "/summary", icon: Calendar },
   { name: "Calendar", href: "/", icon: Home },
   { name: "Accounts", href: "/accounts", icon: Building },
-  { name: "Statements", href: "/statements", icon: FileText },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
