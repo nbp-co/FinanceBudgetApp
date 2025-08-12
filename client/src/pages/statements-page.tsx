@@ -143,8 +143,7 @@ export default function StatementsPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead rowSpan={2} className="w-[150px] sticky left-0 bg-white z-20">Account</TableHead>
-                            <TableHead rowSpan={2} className="w-[80px] sticky left-[150px] bg-white z-20 border-r-2 border-gray-400">Type</TableHead>
+                            <TableHead rowSpan={2} className="w-[230px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
                             {selectedMonths.map(monthValue => {
                               const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                               return (
@@ -169,6 +168,18 @@ export default function StatementsPage() {
                         <TableCell className="font-medium sticky left-0 bg-white z-20">
                           <div>
                             <div className="font-medium">{account.name}</div>
+                            <div className="flex flex-wrap gap-1 mt-1 mb-2">
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                account.type === 'Asset' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {account.type}
+                              </span>
+                              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                {account.accountType}
+                              </span>
+                            </div>
                             <div className="text-xs text-gray-500 space-y-0.5">
                               {account.apr && (
                                 <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
@@ -179,20 +190,7 @@ export default function StatementsPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="sticky left-[150px] bg-white z-20 border-r-2 border-gray-400">
-                          <div className="space-y-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium block text-center ${
-                              account.type === 'Asset' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {account.type}
-                            </span>
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 block text-center">
-                              {account.accountType}
-                            </span>
-                          </div>
-                        </TableCell>
+
                         {selectedMonths.map(monthValue => [
                           <TableCell key={`${account.name}-${monthValue}-balance`} className="text-center p-2">
                             <div className="relative">
