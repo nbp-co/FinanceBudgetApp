@@ -276,17 +276,16 @@ export default function StatementsPage() {
                     <Table className="border-separate border-spacing-0">
                       <TableHeader>
                         <TableRow className="border-none">
-                          <TableHead className="font-bold text-gray-800 py-4 px-4 bg-gray-200 border-r border-gray-300 rounded-tl-lg">
+                          <TableHead className="font-bold text-gray-800 py-2 px-4 bg-gray-200 border-r border-gray-300 rounded-tl-lg h-12">
                             ACCOUNT
                           </TableHead>
                           {selectedMonths.map((monthValue, index) => {
                             const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                             const [month, year] = monthLabel.split(' ');
                             return (
-                              <TableHead key={monthValue} className={`text-center py-4 px-3 bg-gray-400 text-white font-bold ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
-                                <div className="flex flex-col items-center">
-                                  <div className="text-sm font-bold">{month.slice(0, 3).toUpperCase()}</div>
-                                  <div className="text-sm font-bold">{year}</div>
+                              <TableHead key={monthValue} className={`text-center py-2 px-3 bg-gray-400 text-white font-bold h-12 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                                <div className="text-sm font-bold whitespace-nowrap">
+                                  {month.slice(0, 3).toUpperCase()} {year}
                                 </div>
                               </TableHead>
                             );
