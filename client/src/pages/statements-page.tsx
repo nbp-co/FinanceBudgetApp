@@ -298,7 +298,7 @@ export default function StatementsPage() {
                             <TableCell className="py-6 px-4 border-r border-gray-300">
                               <div className="space-y-3">
                                 <div className="font-semibold text-gray-900 text-base">{account.name}</div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 justify-center">
                                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                                     account.type === 'Asset' 
                                       ? 'bg-green-100 text-green-800' 

@@ -955,7 +955,7 @@ export default function AccountsPage() {
                                     <TableCell className="w-[200px] sticky left-0 bg-white z-10 border-r-2 border-gray-400">
                                       <div className="space-y-2">
                                         <div className="font-medium text-gray-900">{account.name}</div>
-                                        <div className="flex flex-wrap gap-1">
+                                        <div className="flex flex-wrap gap-1 justify-center">
                                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                                             account.type === 'Asset' 
                                               ? 'bg-green-100 text-green-800' 
