@@ -1324,7 +1324,7 @@ export default function AccountsPage() {
                                       if (value < 10000) {
                                         return `$${value.toLocaleString()}`;
                                       } else {
-                                        return `$${(value/1000).toFixed(0)}k`;
+                                        return `$${(value/1000).toFixed(1)}k`;
                                       }
                                     }}
                                     axisLine={false}
