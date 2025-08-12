@@ -1225,37 +1225,42 @@ export default function AccountsPage() {
 
                           {/* Filter Dropdown */}
                           <div className="flex items-center gap-2">
-                            <label className="text-sm font-medium text-gray-700">Filter:</label>
+                            <label htmlFor="debt-filter-select" className="text-sm font-medium text-gray-700">Filter:</label>
                             <Select 
-                          value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
-                          onValueChange={(value) => {
-                            if (value === "all") {
-                              setDebtFilterBy([]);
-                            } else {
-                              setDebtFilterBy([value]);
-                            }
-                          }}
-                        >
-                          <SelectTrigger className="w-36">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All Types</SelectItem>
-                            {getUniqueDebtSubTypes().map(subType => (
-                              <SelectItem key={subType} value={subType}>
-                                {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
+                              name="debt-filter"
+                              value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
+                              onValueChange={(value) => {
+                                if (value === "all") {
+                                  setDebtFilterBy([]);
+                                } else {
+                                  setDebtFilterBy([value]);
+                                }
+                              }}
+                            >
+                              <SelectTrigger id="debt-filter-select" className="w-36">
+                                <SelectValue placeholder="All Types" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">All Types</SelectItem>
+                                {getUniqueDebtSubTypes().map(subType => (
+                                  <SelectItem key={`filter-${subType}`} value={subType}>
+                                    {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
                             </Select>
                           </div>
 
                           {/* Sort Dropdown */}
                           <div className="flex items-center gap-2">
-                            <label className="text-sm font-medium text-gray-700">Sort:</label>
-                            <Select value={debtSortBy} onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}>
-                              <SelectTrigger className="w-40">
-                                <SelectValue />
+                            <label htmlFor="debt-sort-select" className="text-sm font-medium text-gray-700">Sort:</label>
+                            <Select 
+                              name="debt-sort"
+                              value={debtSortBy} 
+                              onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}
+                            >
+                              <SelectTrigger id="debt-sort-select" className="w-40">
+                                <SelectValue placeholder="Balance (High)" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="balance">Balance (High)</SelectItem>
