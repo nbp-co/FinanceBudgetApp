@@ -115,58 +115,65 @@ export default function StatementsPage() {
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        <div className="flex justify-between items-start mb-6">
-          <div className="space-y-6">
-            <h1 className="text-2xl font-bold">Monthly Statements</h1>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold mb-6">Monthly Statements</h1>
+          
+          {/* Enhanced Filter Controls */}
+          <div className="flex items-center justify-between gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm mb-6">
             
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-600 mb-2">Account Types:</p>
-                <div className="flex gap-4">
-                  {['Asset', 'Debt'].map((type) => (
-                    <div key={type} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`type-${type}`}
-                        checked={selectedAccountTypes.includes(type)}
-                        onCheckedChange={() => toggleAccountType(type)}
-                      />
-                      <label 
-                        htmlFor={`type-${type}`}
-                        className="text-sm font-medium cursor-pointer"
-                      >
-                        {type} Accounts
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-                  {availableMonths.map((month) => (
-                    <div key={month.value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={month.value}
-                        checked={selectedMonths.includes(month.value)}
-                        onCheckedChange={() => toggleMonth(month.value)}
-                      />
-                      <label 
-                        htmlFor={month.value}
-                        className="text-sm font-medium cursor-pointer"
-                      >
-                        {month.label}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+            {/* Account Type Filter */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">Account Types:</label>
+              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                {['Asset', 'Debt'].map((type) => (
+                  <Button
+                    key={type}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleAccountType(type)}
+                    className={`h-8 px-3 text-xs ${
+                      selectedAccountTypes.includes(type)
+                        ? 'bg-white text-blue-700 hover:bg-white shadow-sm' 
+                        : 'text-gray-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {type}
+                  </Button>
+                ))}
               </div>
             </div>
+
+            {/* Month Selection */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">Months:</label>
+              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1 max-w-md overflow-x-auto">
+                {availableMonths.map((month) => (
+                  <Button
+                    key={month.value}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleMonth(month.value)}
+                    className={`h-8 px-2 text-xs whitespace-nowrap ${
+                      selectedMonths.includes(month.value)
+                        ? 'bg-white text-blue-700 hover:bg-white shadow-sm' 
+                        : 'text-gray-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {month.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <Button 
+              disabled={selectedMonths.length === 0}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Save All ({selectedMonths.length})
+            </Button>
           </div>
-          <Button disabled={selectedMonths.length === 0}>
-            <Save className="mr-2 h-4 w-4" />
-            Save All ({selectedMonths.length})
-          </Button>
         </div>
 
         {selectedMonths.length === 0 ? (
