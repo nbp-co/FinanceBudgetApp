@@ -299,10 +299,16 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
                     className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
                     <div className="flex items-center space-x-3">
-                      <div className={`h-2 w-2 rounded-full ${
-                        transaction.type === "income" ? "bg-green-500" : 
-                        transaction.type === "expense" ? "bg-red-500" : "bg-blue-500"
-                      }`} />
+                      {transaction.type === "transfer" ? (
+                        <div className="h-2 w-2 rounded-full overflow-hidden flex">
+                          <div className="w-1/2 h-full bg-red-500"></div>
+                          <div className="w-1/2 h-full bg-green-500"></div>
+                        </div>
+                      ) : (
+                        <div className={`h-2 w-2 rounded-full ${
+                          transaction.type === "income" ? "bg-green-500" : "bg-red-500"
+                        }`} />
+                      )}
                       <div>
                         <p className="font-medium">{transaction.description}</p>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -314,9 +320,10 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
                     </div>
                     <div className="text-right">
                       <p className={`font-bold ${
-                        transaction.type === "income" ? "text-green-600" : "text-red-600"
+                        transaction.type === "income" ? "text-green-600" : 
+                        transaction.type === "expense" ? "text-red-600" : "text-gray-800"
                       }`}>
-                        {transaction.type === "income" ? "+" : ""}{formatCurrency(Math.abs(transaction.amount))}
+                        {transaction.type === "income" ? "+" : transaction.type === "expense" ? "-" : ""}{formatCurrency(Math.abs(transaction.amount))}
                       </p>
                     </div>
                   </div>

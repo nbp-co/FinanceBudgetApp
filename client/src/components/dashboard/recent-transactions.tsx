@@ -3,6 +3,16 @@ import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { Link } from "wouter";
 import { formatCurrency } from "@/lib/utils";
 
+// Component for split-colored transfer icon
+function SplitTransferIcon() {
+  return (
+    <div className="relative h-5 w-5">
+      <ArrowUpDown className="h-5 w-5 text-red-600 absolute inset-0" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />
+      <ArrowUpDown className="h-5 w-5 text-green-600 absolute inset-0" style={{ clipPath: 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)' }} />
+    </div>
+  );
+}
+
 export function RecentTransactions() {
   // Mock data - in real app this would come from API
   const recentTransactions = [
@@ -51,7 +61,7 @@ export function RecentTransactions() {
       case "EXPENSE":
         return <ArrowUp className="h-5 w-5 text-red-600" />;
       case "TRANSFER":
-        return <ArrowUpDown className="h-5 w-5 text-blue-600" />;
+        return <SplitTransferIcon />;
       default:
         return <ArrowUpDown className="h-5 w-5 text-gray-600" />;
     }
@@ -64,7 +74,7 @@ export function RecentTransactions() {
       case "EXPENSE":
         return "bg-red-100";
       case "TRANSFER":
-        return "bg-blue-100";
+        return "bg-gradient-to-r from-red-100 to-green-100";
       default:
         return "bg-gray-100";
     }
@@ -77,7 +87,7 @@ export function RecentTransactions() {
       case "EXPENSE":
         return "text-red-600";
       case "TRANSFER":
-        return "text-blue-600";
+        return "text-gray-800";
       default:
         return "text-gray-600";
     }

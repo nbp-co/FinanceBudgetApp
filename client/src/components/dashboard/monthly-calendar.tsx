@@ -68,7 +68,10 @@ export function MonthlyCalendar() {
       { id: '3', type: 'income', amount: 50, description: 'Freelance Payment', category: 'Freelance' }
     ];
     if (dayOfMonth === 5) return [
-      { id: '4', type: 'transfer', amount: 1000, description: 'Transfer to Savings', category: 'Transfer' }
+      { id: '4', type: 'transfer', amount: 5000, description: 'Transfer to Savings', category: 'Transfer', fromAccount: 'Checking', toAccount: 'Savings' },
+      { id: '5', type: 'transfer', amount: 3000, description: 'Investment Transfer', category: 'Transfer', fromAccount: 'Savings', toAccount: 'Investment' },
+      { id: '6', type: 'transfer', amount: 2500, description: 'Credit Payment', category: 'Transfer', fromAccount: 'Checking', toAccount: 'Credit Card' },
+      { id: '7', type: 'transfer', amount: 6269, description: 'Business Transfer', category: 'Transfer', fromAccount: 'Business', toAccount: 'Checking' }
     ];
     if (dayOfMonth === 10) return [
       { id: '5', type: 'income', amount: 500, description: 'Investment Dividend', category: 'Investment' },
@@ -179,17 +182,24 @@ export function MonthlyCalendar() {
                   </div>
                   <div className="flex gap-1 justify-center mt-1">
                     {transactions.slice(0, 2).map((transaction, txIndex) => {
-                      let colorClass = '';
-                      if (transaction.type === 'income') colorClass = 'bg-green-400';
-                      else if (transaction.type === 'expense') colorClass = 'bg-red-400';
-                      else if (transaction.type === 'transfer') colorClass = 'bg-blue-400';
-                      
-                      return (
-                        <div
-                          key={txIndex}
-                          className={`w-1.5 h-1.5 ${colorClass} rounded-full`}
-                        />
-                      );
+                      if (transaction.type === 'income') {
+                        return (
+                          <div key={txIndex} className="w-1.5 h-1.5 bg-green-400 rounded-full" />
+                        );
+                      } else if (transaction.type === 'expense') {
+                        return (
+                          <div key={txIndex} className="w-1.5 h-1.5 bg-red-400 rounded-full" />
+                        );
+                      } else if (transaction.type === 'transfer') {
+                        // Split transfer dot: left half red (sending), right half green (receiving)
+                        return (
+                          <div key={txIndex} className="w-1.5 h-1.5 rounded-full overflow-hidden flex">
+                            <div className="w-1/2 h-full bg-red-400"></div>
+                            <div className="w-1/2 h-full bg-green-400"></div>
+                          </div>
+                        );
+                      }
+                      return null;
                     })}
                     {transactions.length > 2 && (
                       <div className="text-xs text-gray-400">+</div>
