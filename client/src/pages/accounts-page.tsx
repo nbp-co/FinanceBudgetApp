@@ -1008,63 +1008,59 @@ export default function AccountsPage() {
 
                                     {selectedMonths.map(monthValue => (
                                       <TableCell key={`${account.name}-${monthValue}`} className="text-center border-r border-gray-200 py-3">
-                                        <div className="space-y-1 flex flex-col items-center">
-                                          <div className="relative flex flex-col items-center">
-                                            <span className="text-xs text-gray-400 font-medium mb-1">B</span>
-                                            <div className="flex items-center">
-                                              <span className="text-sm text-gray-500 mr-1">$</span>
-                                              <Input
-                                                type="text"
-                                                defaultValue={
-                                                  account.name === "Checking Account" ? "12,345.67" :
-                                                  account.name === "Business Checking" ? "8,750.00" :
-                                                  account.name === "Savings Account" ? "25,890.12" :
-                                                  account.name === "Money Market" ? "8,500.00" :
-                                                  account.name === "Investment Account" ? "45,230.00" :
-                                                  account.name === "Emergency Fund" ? "12,000.00" :
-                                                  account.name === "Retirement 401k" ? "125,500.00" :
-                                                  account.name === "Credit Card" ? "2,456.78" :
-                                                  account.name === "Mortgage" ? "285,000.00" :
-                                                  account.name === "Auto Loan" ? "18,450.00" :
-                                                  account.name === "Student Loan" ? "23,800.00" :
-                                                  account.name === "Personal Loan" ? "5,200.00" :
-                                                  account.name === "Business Credit Card" ? "1,850.00" :
-                                                  account.name === "Taxes Owed" ? "3,500.00" :
-                                                  "15,250.00"
-                                                }
-                                                className="w-24 h-7 text-center border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none"
-                                              />
-                                            </div>
+                                        <div className="space-y-1">
+                                          <div className="relative">
+                                            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                            <Input
+                                              type="text"
+                                              defaultValue={
+                                                account.name === "Checking Account" ? "12,345.67" :
+                                                account.name === "Business Checking" ? "8,750.00" :
+                                                account.name === "Savings Account" ? "25,890.12" :
+                                                account.name === "Money Market" ? "8,500.00" :
+                                                account.name === "Investment Account" ? "45,230.00" :
+                                                account.name === "Emergency Fund" ? "12,000.00" :
+                                                account.name === "Retirement 401k" ? "125,500.00" :
+                                                account.name === "Credit Card" ? "2,456.78" :
+                                                account.name === "Mortgage" ? "285,000.00" :
+                                                account.name === "Auto Loan" ? "18,450.00" :
+                                                account.name === "Student Loan" ? "23,800.00" :
+                                                account.name === "Personal Loan" ? "5,200.00" :
+                                                account.name === "Business Credit Card" ? "1,850.00" :
+                                                account.name === "Taxes Owed" ? "3,500.00" :
+                                                "15,250.00"
+                                              }
+                                              className="w-28 h-8 text-center pl-6"
+                                            />
+                                            <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
                                           </div>
                                           <TooltipProvider>
                                             <Tooltip>
                                               <TooltipTrigger asChild>
-                                                <div className="relative flex flex-col items-center">
-                                                  <span className="text-xs text-gray-400 font-medium mb-1">I</span>
-                                                  <div className="flex items-center">
-                                                    <span className="text-sm text-gray-500 mr-1">$</span>
-                                                    <Input
-                                                      type="text"
-                                                      defaultValue={
-                                                        account.name === "Checking Account" ? "0.00" :
-                                                        account.name === "Business Checking" ? "0.00" :
-                                                        account.name === "Savings Account" ? "95.43" :
-                                                        account.name === "Money Market" ? "25.18" :
-                                                        account.name === "Investment Account" ? "295.83" :
-                                                        account.name === "Emergency Fund" ? "40.00" :
-                                                        account.name === "Retirement 401k" ? "857.50" :
-                                                        account.name === "Credit Card" ? "47.23" :
-                                                        account.name === "Mortgage" ? "1,542.88" :
-                                                        account.name === "Auto Loan" ? "78.95" :
-                                                        account.name === "Student Loan" ? "95.20" :
-                                                        account.name === "Personal Loan" ? "54.17" :
-                                                        account.name === "Business Credit Card" ? "29.12" :
-                                                        account.name === "Taxes Owed" ? "0.00" :
-                                                        "25.50"
-                                                      }
-                                                      className="w-24 h-7 text-center border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic"
-                                                    />
-                                                  </div>
+                                                <div className="relative">
+                                                  <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
+                                                  <Input
+                                                    type="text"
+                                                    defaultValue={
+                                                      account.name === "Checking Account" ? "0.00" :
+                                                      account.name === "Business Checking" ? "0.00" :
+                                                      account.name === "Savings Account" ? "95.43" :
+                                                      account.name === "Money Market" ? "25.18" :
+                                                      account.name === "Investment Account" ? "295.83" :
+                                                      account.name === "Emergency Fund" ? "40.00" :
+                                                      account.name === "Retirement 401k" ? "857.50" :
+                                                      account.name === "Credit Card" ? "47.23" :
+                                                      account.name === "Mortgage" ? "1,542.88" :
+                                                      account.name === "Auto Loan" ? "78.95" :
+                                                      account.name === "Student Loan" ? "95.20" :
+                                                      account.name === "Personal Loan" ? "54.17" :
+                                                      account.name === "Business Credit Card" ? "29.12" :
+                                                      account.name === "Taxes Owed" ? "0.00" :
+                                                      "25.50"
+                                                    }
+                                                    className="w-28 h-8 text-center text-xs pl-6"
+                                                  />
+                                                  <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
                                                 </div>
                                               </TooltipTrigger>
                                               <TooltipContent 
