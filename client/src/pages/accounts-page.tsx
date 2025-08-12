@@ -1100,108 +1100,50 @@ export default function AccountsPage() {
                 </Button>
               </div>
 
-              {/* Debt Overview - Enhanced Visual Design */}
+              {/* Debt Summary Card */}
               {getDebtAccounts().length > 0 && (
-                <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-xl border border-slate-200 shadow-lg">
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                          <TrendingDown className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-slate-800">Debt Overview</h3>
-                          <p className="text-sm text-slate-600">Your complete financial picture</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-5 gap-6">
+                <Card className="bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
+                  <CardHeader>
+                    <CardTitle className="text-red-800">Debt Overview</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-5 gap-4">
                       {(() => {
                         const summary = calculateDebtSummary();
                         return (
                           <>
-                            {/* Total Debt */}
-                            <div className="bg-white rounded-xl p-4 border border-red-100 shadow-sm hover:shadow-md transition-shadow">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                                  <CreditCard className="w-4 h-4 text-red-600" />
-                                </div>
-                              </div>
-                              <p className="text-sm font-medium text-red-600 mb-1">Total Debt</p>
-                              <p className="text-2xl font-bold text-red-700">${summary.totalDebt.toLocaleString()}</p>
-                              <div className="w-full bg-red-100 rounded-full h-1.5 mt-3">
-                                <div className="bg-red-500 h-1.5 rounded-full" style={{ width: '100%' }}></div>
-                              </div>
+                            <div>
+                              <p className="text-sm text-red-600 font-medium">Total Debt</p>
+                              <p className="text-xl font-bold text-red-800">${summary.totalDebt.toLocaleString()}</p>
                             </div>
-
-                            {/* Monthly Interest */}
-                            <div className="bg-white rounded-xl p-4 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                                  <TrendingUp className="w-4 h-4 text-orange-600" />
-                                </div>
-                              </div>
-                              <p className="text-sm font-medium text-orange-600 mb-1">Monthly Interest</p>
-                              <p className="text-2xl font-bold text-orange-700">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
-                              <p className="text-xs text-orange-500 mt-1">${Math.round(summary.totalYearlyInterest).toLocaleString()}/year</p>
-                              <div className="w-full bg-orange-100 rounded-full h-1.5 mt-2">
-                                <div className="bg-orange-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
-                              </div>
+                            <div>
+                              <p className="text-sm text-orange-600 font-medium">Monthly Interest</p>
+                              <p className="text-xl font-bold text-orange-800">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
+                              <p className="text-xs text-orange-600">${Math.round(summary.totalYearlyInterest).toLocaleString()}/year</p>
                             </div>
-
-                            {/* End-of-Year Balance */}
-                            <div className="bg-white rounded-xl p-4 border border-blue-100 shadow-sm hover:shadow-md transition-shadow">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                  <Calendar className="w-4 h-4 text-blue-600" />
-                                </div>
-                              </div>
-                              <p className="text-sm font-medium text-blue-600 mb-1">End-of-Year Balance</p>
-                              <p className="text-2xl font-bold text-blue-700">${Math.round(summary.projectedYearEndDebt).toLocaleString()}</p>
-                              <p className="text-xs text-green-600 mt-1">-${Math.round(summary.debtReduction).toLocaleString()} reduction</p>
-                              <div className="w-full bg-blue-100 rounded-full h-1.5 mt-2">
-                                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${Math.max(20, (summary.projectedYearEndDebt / summary.totalDebt) * 100)}%` }}></div>
-                              </div>
+                            <div>
+                              <p className="text-sm text-blue-600 font-medium">End-of-Year Balance</p>
+                              <p className="text-xl font-bold text-blue-800">${Math.round(summary.projectedYearEndDebt).toLocaleString()}</p>
+                              <p className="text-xs text-green-600">-${Math.round(summary.debtReduction).toLocaleString()} reduction</p>
                             </div>
-
-                            {/* YTD Interest Paid */}
-                            <div className="bg-white rounded-xl p-4 border border-emerald-100 shadow-sm hover:shadow-md transition-shadow">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                                  <DollarSign className="w-4 h-4 text-emerald-600" />
-                                </div>
-                              </div>
-                              <p className="text-sm font-medium text-emerald-600 mb-1">YTD Interest Paid</p>
-                              <p className="text-2xl font-bold text-emerald-700">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
-                              <p className="text-xs text-emerald-500 mt-1">year-to-date</p>
-                              <div className="w-full bg-emerald-100 rounded-full h-1.5 mt-2">
-                                <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${Math.min(100, (summary.yearToDateInterest / summary.totalYearlyInterest) * 100)}%` }}></div>
-                              </div>
+                            <div>
+                              <p className="text-sm text-green-600 font-medium">YTD Interest Paid</p>
+                              <p className="text-xl font-bold text-green-800">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
+                              <p className="text-xs text-green-600">year-to-date</p>
                             </div>
-
-                            {/* Progress Rate */}
-                            <div className="bg-white rounded-xl p-4 border border-violet-100 shadow-sm hover:shadow-md transition-shadow">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
-                                  <Target className="w-4 h-4 text-violet-600" />
-                                </div>
-                              </div>
-                              <p className="text-sm font-medium text-violet-600 mb-1">Progress Rate</p>
-                              <p className="text-2xl font-bold text-violet-700">
+                            <div>
+                              <p className="text-sm text-purple-600 font-medium">Progress Rate</p>
+                              <p className="text-xl font-bold text-purple-800">
                                 {((summary.debtReduction / summary.totalDebt) * 100).toFixed(1)}%
                               </p>
-                              <p className="text-xs text-violet-500 mt-1">debt reduction/year</p>
-                              <div className="w-full bg-violet-100 rounded-full h-1.5 mt-2">
-                                <div className="bg-violet-500 h-1.5 rounded-full" style={{ width: `${Math.min(100, ((summary.debtReduction / summary.totalDebt) * 100) * 2)}%` }}></div>
-                              </div>
+                              <p className="text-xs text-purple-600">debt reduction/year</p>
                             </div>
                           </>
                         );
                       })()}
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               )}
 
               {/* Sort and Filter Controls */}
