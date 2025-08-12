@@ -1119,12 +1119,19 @@ export default function AccountsPage() {
                             <div className="text-center">
                               <p className="text-sm text-orange-600 font-medium">Monthly Interest</p>
                               <p className="text-xl font-bold text-orange-800">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
-                              <p className="text-xs text-orange-600">${Math.round(summary.totalYearlyInterest).toLocaleString()}/year</p>
+                              <p className="text-xs text-orange-600">
+                                {summary.totalDebt > 0 ? 
+                                  `${((summary.totalMonthlyInterest * 12 / summary.totalDebt) * 100).toFixed(1)}% est. APR` : 
+                                  '0.0% est. APR'
+                                }
+                              </p>
                             </div>
                             <div className="text-center">
                               <p className="text-sm text-green-600 font-medium">YTD Interest Paid</p>
                               <p className="text-xl font-bold text-green-800">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
-                              <p className="text-xs text-green-600">year-to-date</p>
+                              <p className="text-xs text-green-600">
+                                ${Math.round(summary.yearToDateInterest + (summary.totalYearlyInterest * (12 - new Date().getMonth()) / 12)).toLocaleString()} est. annual
+                              </p>
                             </div>
                             <div className="text-center">
                               <p className="text-sm text-blue-600 font-medium">End-of-Year Balance</p>
