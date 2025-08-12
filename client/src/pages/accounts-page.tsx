@@ -1320,10 +1320,16 @@ export default function AccountsPage() {
                                   />
                                   <YAxis 
                                     tick={{ fontSize: 10 }}
-                                    tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
+                                    tickFormatter={(value) => {
+                                      if (value < 10000) {
+                                        return `$${value.toLocaleString()}`;
+                                      } else {
+                                        return `$${(value/1000).toFixed(0)}k`;
+                                      }
+                                    }}
                                     axisLine={false}
                                     tickLine={false}
-                                    width={35}
+                                    width={45}
                                     domain={(() => {
                                       const values = projectionData.map(d => d.balance);
                                       const minValue = Math.min(...values);
