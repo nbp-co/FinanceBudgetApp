@@ -1964,7 +1964,10 @@ export default function AccountsPage() {
                                     padding: '12px'
                                   }}
                                 />
-                                <Legend />
+                                <Legend 
+                                  wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }}
+                                  iconSize={10}
+                                />
                                 {sortedDebtTypes.map((debtType) => (
                                   <Bar 
                                     key={debtType}
