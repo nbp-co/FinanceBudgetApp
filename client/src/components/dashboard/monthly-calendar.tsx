@@ -76,7 +76,7 @@ export function MonthlyCalendar() {
     if (dayOfMonth === 10) return [
       { id: '5', type: 'income', amount: 500, description: 'Investment Dividend', category: 'Investment' },
       { id: '6', type: 'expense', amount: 200, description: 'Utility Bill', category: 'Utilities' },
-      { id: '7', type: 'transfer', amount: 300, description: 'Credit Card Payment', category: 'Transfer' }
+      { id: '7', type: 'transfer', amount: 300, description: 'Credit Card Payment', category: 'Transfer', fromAccount: 'Checking', toAccount: 'Credit Card' }
     ];
     if (isToday(date)) return [
       { id: '8', type: 'expense', amount: 85, description: 'Coffee & Lunch', category: 'Food' },
@@ -193,7 +193,8 @@ export function MonthlyCalendar() {
                       } else if (transaction.type === 'transfer') {
                         // Split transfer dot: left half blue (base), right half green/red (direction)
                         // Blue/Green for incoming transfers, Blue/Red for outgoing transfers
-                        const isIncoming = (transaction as any).toAccount === 'Checking' || (transaction as any).toAccount === 'Savings';
+                        const toAccount = (transaction as any).toAccount;
+                        const isIncoming = toAccount === 'Checking' || toAccount === 'Savings';
                         return (
                           <div key={txIndex} className="w-1.5 h-1.5 rounded-full overflow-hidden flex">
                             <div className="w-1/2 h-full bg-blue-400"></div>
@@ -265,7 +266,7 @@ export function MonthlyCalendar() {
                     <div className="w-3 h-3 rounded-full overflow-hidden flex">
                       <div className="w-1/2 h-full bg-blue-400"></div>
                       <div className={`w-1/2 h-full ${
-                        (transaction as any).toAccount === 'Checking' || (transaction as any).toAccount === 'Savings' 
+                        ((transaction as any).toAccount === 'Checking' || (transaction as any).toAccount === 'Savings') 
                           ? 'bg-green-400' : 'bg-red-400'
                       }`}></div>
                     </div>
