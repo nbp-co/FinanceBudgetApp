@@ -124,20 +124,37 @@ export default function StatementsPage() {
                 {/* Month Selection */}
                 <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm mb-4">
                   <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
-                  <div className="flex flex-wrap gap-3">
-                    {availableMonths.map((month) => (
-                      <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
-                        <Checkbox
-                          id={`month-${month.value}`}
-                          checked={selectedMonths.includes(month.value)}
-                          onCheckedChange={() => toggleMonth(month.value)}
-                          className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                        />
-                        <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
-                          {month.label}
-                        </Label>
-                      </div>
-                    ))}
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-3">
+                      {availableMonths.slice(0, 6).map((month) => (
+                        <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
+                          <Checkbox
+                            id={`month-${month.value}`}
+                            checked={selectedMonths.includes(month.value)}
+                            onCheckedChange={() => toggleMonth(month.value)}
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                            {month.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {availableMonths.slice(6).map((month) => (
+                        <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
+                          <Checkbox
+                            id={`month-${month.value}`}
+                            checked={selectedMonths.includes(month.value)}
+                            onCheckedChange={() => toggleMonth(month.value)}
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                            {month.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -245,13 +262,15 @@ export default function StatementsPage() {
                   </div>
 
                   {/* Save Button */}
-                  <Button 
-                    disabled={selectedMonths.length === 0}
-                    className="bg-teal-600 hover:bg-teal-700 text-white"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Save All ({selectedMonths.length})
-                  </Button>
+                  <div className="border-t border-gray-200 pt-4">
+                    <Button 
+                      disabled={selectedMonths.length === 0}
+                      className="bg-teal-600 hover:bg-teal-700 text-white"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Save All ({selectedMonths.length})
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </CollapsibleContent>

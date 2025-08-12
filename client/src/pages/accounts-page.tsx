@@ -809,16 +809,29 @@ export default function AccountsPage() {
                       {/* Month Selection */}
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
-                        <div className="flex flex-wrap gap-4">
-                          {availableMonths.map(month => (
-                            <label key={month.value} className="flex items-center space-x-2">
-                              <Checkbox
-                                checked={selectedMonths.includes(month.value)}
-                                onCheckedChange={() => toggleMonth(month.value)}
-                              />
-                              <span className="text-sm text-gray-700">{month.label}</span>
-                            </label>
-                          ))}
+                        <div className="space-y-3">
+                          <div className="flex flex-wrap gap-4">
+                            {availableMonths.slice(0, 6).map(month => (
+                              <label key={month.value} className="flex items-center space-x-2">
+                                <Checkbox
+                                  checked={selectedMonths.includes(month.value)}
+                                  onCheckedChange={() => toggleMonth(month.value)}
+                                />
+                                <span className="text-sm text-gray-700">{month.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                          <div className="flex flex-wrap gap-4">
+                            {availableMonths.slice(6).map(month => (
+                              <label key={month.value} className="flex items-center space-x-2">
+                                <Checkbox
+                                  checked={selectedMonths.includes(month.value)}
+                                  onCheckedChange={() => toggleMonth(month.value)}
+                                />
+                                <span className="text-sm text-gray-700">{month.label}</span>
+                              </label>
+                            ))}
+                          </div>
                         </div>
                       </div>
 
@@ -927,7 +940,7 @@ export default function AccountsPage() {
 
                     {selectedMonths.length > 0 && (
                       <CardContent className="pt-0">
-                        <div className="flex justify-end mb-4">
+                        <div className="flex justify-end mb-4 pt-4 border-t border-gray-200">
                           <Button variant="outline" size="sm">
                             <Save className="mr-1 h-3 w-3" />
                             Save All Changes
