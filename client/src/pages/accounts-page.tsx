@@ -1050,70 +1050,7 @@ export default function AccountsPage() {
               </Collapsible>
             </div>
 
-            {/* Interest Chart - Debt Accounts Only */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Monthly Interest Expense by Debt Account</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={interestData}
-                      margin={{
-                        top: 20,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                      <XAxis 
-                        dataKey="month" 
-                        tick={{ fontSize: 12 }}
-                        angle={-45}
-                        textAnchor="end"
-                        height={60}
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(value) => `$${value}`}
-                      />
-                      <RechartsTooltip 
-                        formatter={(value, name) => [`$${value}`, `${name}`]}
-                        labelFormatter={(label) => `${label}`}
-                        labelStyle={{ 
-                          color: '#374151',
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          marginBottom: '4px'
-                        }}
-                        contentStyle={{ 
-                          backgroundColor: '#ffffff',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                          padding: '12px',
-                          minWidth: '180px',
-                          fontSize: '13px'
-                        }}
-                        itemStyle={{
-                          color: '#374151',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          padding: '2px 0'
-                        }}
-                        cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
-                      />
-                      <Legend />
-                      <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
-                      <Bar dataKey="Mortgage" stackId="a" fill={chartColors['Mortgage']} />
-                      <Bar dataKey="Auto Loan" stackId="a" fill={chartColors['Auto Loan']} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+
           </TabsContent>
 
           <TabsContent value="debt-payoff" className="space-y-6">
