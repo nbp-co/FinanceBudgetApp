@@ -1101,15 +1101,9 @@ export default function AccountsPage() {
 
           <TabsContent value="debt-payoff" className="space-y-6">
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Debt Payoff</h2>
-                  <p className="text-gray-600">Manage payment schedules and track debt reduction progress</p>
-                </div>
-                <Button onClick={() => openPaymentDialog('new')} className="flex items-center space-x-2">
-                  <Plus className="h-4 w-4" />
-                  <span>Schedule Payment</span>
-                </Button>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Debt Payoff</h2>
+                <p className="text-gray-600">Manage payment schedules and track debt reduction progress</p>
               </div>
 
               {/* Debt Summary Card */}
@@ -1118,8 +1112,8 @@ export default function AccountsPage() {
                   <CardHeader>
                     <CardTitle className="text-red-800">Debt Overview</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-4 gap-4">
+                  <CardContent className="py-3">
+                    <div className="grid md:grid-cols-4 gap-3">
                       {(() => {
                         const summary = calculateDebtSummary();
                         return (
