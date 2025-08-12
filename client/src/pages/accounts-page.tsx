@@ -1648,101 +1648,120 @@ export default function AccountsPage() {
 
             {/* Debt by Type Monthly Summary - Enhanced with Chart Toggle */}
             {getDebtAccounts().length > 0 && (
-              <Card className="bg-white border-slate-200 shadow-sm">
-                <CardHeader className="pb-3 bg-slate-600 text-white rounded-t-lg">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                      Debt by Type - Monthly Summary
-                    </CardTitle>
-                    <div className="flex items-center gap-3">
-                      {/* Navigation Controls */}
-                      <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSummaryMonthOffset(Math.max(summaryMonthOffset - 1, -1))}
-                          disabled={summaryMonthOffset <= -1}
-                          className="h-8 w-8 p-0 text-white hover:bg-white/20 disabled:opacity-50"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <span className="text-xs px-2 text-white font-medium">
+              <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
+                <Collapsible defaultOpen={true}>
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                        <h3 className="text-lg font-semibold text-gray-900">Debt by Type - Monthly Summary</h3>
+                        <span className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
                           {summaryMonthOffset === 0 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
                         </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSummaryMonthOffset(Math.min(summaryMonthOffset + 1, 1))}
-                          disabled={summaryMonthOffset >= 1}
-                          className="h-8 w-8 p-0 text-white hover:bg-white/20 disabled:opacity-50"
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
                       </div>
-
-                      {/* Chart Mode Toggle (only show for chart view) */}
-                      {summaryViewMode === 'chart' && (
-                        <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSummaryChartMode('balance')}
-                            className={`h-8 px-2 text-xs ${
-                              summaryChartMode === 'balance' 
-                                ? 'bg-white text-blue-700 hover:bg-white' 
-                                : 'text-white hover:bg-white/20'
-                            }`}
-                          >
-                            Bal
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSummaryChartMode('interest')}
-                            className={`h-8 px-2 text-xs ${
-                              summaryChartMode === 'interest' 
-                                ? 'bg-white text-blue-700 hover:bg-white' 
-                                : 'text-white hover:bg-white/20'
-                            }`}
-                          >
-                            Int
-                          </Button>
-                        </div>
-                      )}
-
-                      {/* View Mode Toggle */}
-                      <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
-                        <Button
-                          variant={summaryViewMode === 'table' ? 'secondary' : 'ghost'}
-                          size="sm"
-                          onClick={() => setSummaryViewMode('table')}
-                          className={`h-8 px-3 text-xs ${
-                            summaryViewMode === 'table' 
-                              ? 'bg-white text-blue-700 hover:bg-white' 
-                              : 'text-white hover:bg-white/20'
-                          }`}
-                        >
-                          Table
-                        </Button>
-                        <Button
-                          variant={summaryViewMode === 'chart' ? 'secondary' : 'ghost'}
-                          size="sm"
-                          onClick={() => setSummaryViewMode('chart')}
-                          className={`h-8 px-3 text-xs ${
-                            summaryViewMode === 'chart' 
-                              ? 'bg-white text-blue-700 hover:bg-white' 
-                              : 'text-white hover:bg-white/20'
-                          }`}
-                        >
-                          Chart
-                        </Button>
-                      </div>
+                      <ChevronDown className="h-5 w-5 text-gray-600" />
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  {summaryViewMode === 'table' ? (
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent>
+                    <CardContent className="pt-0 pb-4 space-y-4">
+                      {/* Enhanced Controls */}
+                      <div className="flex items-center justify-end gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                        
+                        {/* Navigation Controls */}
+                        <div className="flex items-center gap-2 mr-auto">
+                          <label className="text-sm font-medium text-gray-700">Period:</label>
+                          <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSummaryMonthOffset(Math.max(summaryMonthOffset - 1, -1))}
+                              disabled={summaryMonthOffset <= -1}
+                              className="h-8 w-8 p-0 text-gray-600 hover:bg-slate-200 disabled:opacity-50"
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            <span className="text-xs px-2 text-gray-700 font-medium">
+                              {summaryMonthOffset === 0 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSummaryMonthOffset(Math.min(summaryMonthOffset + 1, 1))}
+                              disabled={summaryMonthOffset >= 1}
+                              className="h-8 w-8 p-0 text-gray-600 hover:bg-slate-200 disabled:opacity-50"
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        {/* Chart Mode Toggle (only show for chart view) */}
+                        {summaryViewMode === 'chart' && (
+                          <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-gray-700">Data:</label>
+                            <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSummaryChartMode('balance')}
+                                className={`h-8 px-2 text-xs ${
+                                  summaryChartMode === 'balance' 
+                                    ? 'bg-white text-blue-700 hover:bg-white shadow-sm' 
+                                    : 'text-gray-600 hover:bg-slate-200'
+                                }`}
+                              >
+                                Balance
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSummaryChartMode('interest')}
+                                className={`h-8 px-2 text-xs ${
+                                  summaryChartMode === 'interest' 
+                                    ? 'bg-white text-blue-700 hover:bg-white shadow-sm' 
+                                    : 'text-gray-600 hover:bg-slate-200'
+                                }`}
+                              >
+                                Interest
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* View Mode Toggle */}
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-700">View:</label>
+                          <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSummaryViewMode('table')}
+                              className={`h-8 px-3 text-xs ${
+                                summaryViewMode === 'table' 
+                                  ? 'bg-white text-blue-700 hover:bg-white shadow-sm' 
+                                  : 'text-gray-600 hover:bg-slate-200'
+                              }`}
+                            >
+                              Table
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSummaryViewMode('chart')}
+                              className={`h-8 px-3 text-xs ${
+                                summaryViewMode === 'chart' 
+                                  ? 'bg-white text-blue-700 hover:bg-white shadow-sm' 
+                                  : 'text-gray-600 hover:bg-slate-200'
+                              }`}
+                            >
+                              Chart
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Table and Chart Content */}
+                      {summaryViewMode === 'table' ? (
                     <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                       <Table>
                       <TableHeader>
@@ -1950,7 +1969,9 @@ export default function AccountsPage() {
                       })()}
                     </div>
                   )}
-                </CardContent>
+                    </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
             )}
           </TabsContent>
