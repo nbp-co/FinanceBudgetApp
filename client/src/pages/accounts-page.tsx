@@ -1419,10 +1419,10 @@ export default function AccountsPage() {
                             </div>
                           </div>
                           
-                          {/* Blue Payment Box - simplified */}
-                          <div className="p-1 border border-blue-200 bg-blue-50 rounded text-xs mx-2 min-w-[100px] text-center">
-                            <p className="font-medium text-blue-900 flex items-center justify-center gap-1">
-                              ${Math.round(monthlyPayment).toLocaleString()} on {account.dueDate ? `${account.dueDate}th` : 'TBD'}
+                          {/* Blue Payment Box - date only */}
+                          <div className="p-1 border border-blue-200 bg-blue-50 rounded text-xs mx-2 min-w-[50px] text-center">
+                            <p className="font-medium text-blue-900">
+                              {account.dueDate ? `${new Date().getMonth() + 1}/${account.dueDate}` : 'TBD'}
                             </p>
                           </div>
                           
