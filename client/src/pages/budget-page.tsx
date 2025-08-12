@@ -52,6 +52,213 @@ export default function BudgetPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Expenses Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl font-semibold">Budget Expenses</CardTitle>
+                <Button size="sm">
+                  <Plus className="mr-1 h-4 w-4" />
+                  Add Expense
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Primary Expenses */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900">Primary Expenses</h3>
+                    <span className="font-semibold text-red-600">$2,353</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Mortgage Payment</p>
+                        <p className="text-sm text-gray-600">Mortgage/Rent</p>
+                        <p className="text-sm text-gray-500">Due: 2025-02-01</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="1543" 
+                        className="w-20 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Electric Bill</p>
+                        <p className="text-sm text-gray-600">Home Utilities</p>
+                        <p className="text-sm text-gray-500">Due: 2025-02-15</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="125" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Gas Bill</p>
+                        <p className="text-sm text-gray-600">Home Utilities</p>
+                        <p className="text-sm text-gray-500">Due: 2025-02-10</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="85" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Grocery Budget</p>
+                        <p className="text-sm text-gray-600">Groceries</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="600" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                  </div>
+                  <Separator className="mt-4" />
+                </div>
+
+                {/* Savings/Investments */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900">Savings/Investments</h3>
+                    <span className="font-semibold text-red-600">$820</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">401k Contribution</p>
+                        <p className="text-sm text-gray-600">401(k)/Investments</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="520" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Emergency Savings</p>
+                        <p className="text-sm text-gray-600">Savings</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="300" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                  </div>
+                  <Separator className="mt-4" />
+                </div>
+
+                {/* Debt Expenses */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900">Debt Expenses</h3>
+                    <span className="font-semibold text-red-600">$435</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Car Payment</p>
+                        <p className="text-sm text-gray-600">Auto Loans</p>
+                        <p className="text-sm text-gray-500">Due: 2025-02-05</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="285" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Credit Card Payment</p>
+                        <p className="text-sm text-gray-600">Credit Cards</p>
+                        <p className="text-sm text-gray-500">Due: 2025-02-20</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="150" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                  </div>
+                  <Separator className="mt-4" />
+                </div>
+
+                {/* Secondary Expenses */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900">Secondary Expenses</h3>
+                    <span className="font-semibold text-red-600">$999</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Restaurants and Bars</p>
+                        <p className="text-sm text-gray-600">Restaurants and Bars</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="400" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Monthly Subscriptions</p>
+                        <p className="text-sm text-gray-600">Monthly Subscriptions</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="89" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Entertainment</p>
+                        <p className="text-sm text-gray-600">Entertainment</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="200" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">General Spending</p>
+                        <p className="text-sm text-gray-600">General Spending</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="250" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Haircut/Grooming</p>
+                        <p className="text-sm text-gray-600">Haircut/Grooming</p>
+                      </div>
+                      <input 
+                        type="text" 
+                        defaultValue="60" 
+                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Income Section */}
           <Card>
             <CardHeader>
@@ -85,161 +292,6 @@ export default function BudgetPage() {
                   <div className="text-right">
                     <p className="font-semibold text-green-600">$800</p>
                     <p className="text-sm text-gray-500">Monthly</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Expenses Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl font-semibold">Budget Expenses</CardTitle>
-                <Button size="sm">
-                  <Plus className="mr-1 h-4 w-4" />
-                  Add Expense
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Primary Expenses */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Primary Expenses</h3>
-                    <span className="font-semibold text-red-600">$2,353</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Mortgage Payment</p>
-                        <p className="text-sm text-gray-600">Mortgage/Rent</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-01</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$1,543</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Electric Bill</p>
-                        <p className="text-sm text-gray-600">Home Utilities</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-15</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$125</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Gas Bill</p>
-                        <p className="text-sm text-gray-600">Home Utilities</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-10</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$85</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Grocery Budget</p>
-                        <p className="text-sm text-gray-600">Groceries</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$600</p>
-                    </div>
-                  </div>
-                  <Separator className="mt-4" />
-                </div>
-
-                {/* Savings/Investments */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Savings/Investments</h3>
-                    <span className="font-semibold text-red-600">$820</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">401k Contribution</p>
-                        <p className="text-sm text-gray-600">401(k)/Investments</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$520</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Emergency Savings</p>
-                        <p className="text-sm text-gray-600">Savings</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$300</p>
-                    </div>
-                  </div>
-                  <Separator className="mt-4" />
-                </div>
-
-                {/* Debt Expenses */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Debt Expenses</h3>
-                    <span className="font-semibold text-red-600">$435</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Car Payment</p>
-                        <p className="text-sm text-gray-600">Auto Loans</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-05</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$285</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Credit Card Payment</p>
-                        <p className="text-sm text-gray-600">Credit Cards</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-20</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$150</p>
-                    </div>
-                  </div>
-                  <Separator className="mt-4" />
-                </div>
-
-                {/* Secondary Expenses */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Secondary Expenses</h3>
-                    <span className="font-semibold text-red-600">$999</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Restaurants and Bars</p>
-                        <p className="text-sm text-gray-600">Restaurants and Bars</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$400</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Monthly Subscriptions</p>
-                        <p className="text-sm text-gray-600">Monthly Subscriptions</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$89</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Entertainment</p>
-                        <p className="text-sm text-gray-600">Entertainment</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$200</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">General Spending</p>
-                        <p className="text-sm text-gray-600">General Spending</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$250</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Haircut/Grooming</p>
-                        <p className="text-sm text-gray-600">Haircut/Grooming</p>
-                      </div>
-                      <p className="font-semibold text-red-600">$60</p>
-                    </div>
                   </div>
                 </div>
               </div>
