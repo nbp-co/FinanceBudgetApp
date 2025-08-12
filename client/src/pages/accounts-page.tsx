@@ -762,52 +762,52 @@ export default function AccountsPage() {
 
           <TabsContent value="statements" className="space-y-6">
             <div className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">Account Types:</p>
-                  <div className="flex gap-4">
-                    {['Asset', 'Debt'].map(type => (
-                      <label key={type} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={selectedAccountTypes.includes(type)}
-                          onCheckedChange={() => toggleAccountType(type)}
-                        />
-                        <span className="text-sm text-gray-700">{type}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
-                  <div className="flex flex-wrap gap-4">
-                    {availableMonths.map(month => (
-                      <label key={month.value} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={selectedMonths.includes(month.value)}
-                          onCheckedChange={() => toggleMonth(month.value)}
-                        />
-                        <span className="text-sm text-gray-700">{month.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {selectedMonths.length > 0 && (
-                <Collapsible open={isStatementsOpen} onOpenChange={setIsStatementsOpen}>
-                  <Card>
-                    <CollapsibleTrigger asChild>
-                      <CardHeader className="cursor-pointer hover:bg-gray-50">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-xl">Monthly Statements</CardTitle>
-                          <Button variant="ghost" size="sm">
-                            {isStatementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                          </Button>
+              <Collapsible open={isStatementsOpen} onOpenChange={setIsStatementsOpen}>
+                <Card>
+                  <CollapsibleTrigger asChild>
+                    <CardHeader className="cursor-pointer hover:bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-xl">Monthly Statements</CardTitle>
+                        <Button variant="ghost" size="sm">
+                          {isStatementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </CardHeader>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="space-y-4 px-6 pb-2">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Account Types:</p>
+                        <div className="flex gap-4">
+                          {['Asset', 'Debt'].map(type => (
+                            <label key={type} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={selectedAccountTypes.includes(type)}
+                                onCheckedChange={() => toggleAccountType(type)}
+                              />
+                              <span className="text-sm text-gray-700">{type}</span>
+                            </label>
+                          ))}
                         </div>
-                      </CardHeader>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
+                        <div className="flex flex-wrap gap-4">
+                          {availableMonths.map(month => (
+                            <label key={month.value} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={selectedMonths.includes(month.value)}
+                                onCheckedChange={() => toggleMonth(month.value)}
+                              />
+                              <span className="text-sm text-gray-700">{month.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {selectedMonths.length > 0 && (
                       <CardContent className="pt-0">
                         <div className="flex justify-end mb-4">
                           <Button variant="outline" size="sm">
@@ -906,10 +906,11 @@ export default function AccountsPage() {
                           </div>
                         </div>
                       </CardContent>
-                    </CollapsibleContent>
-                  </Card>
-                </Collapsible>
-              )}
+                    )}
+                  </CollapsibleContent>
+                </Card>
+              </Collapsible>
+            </div>
 
               {/* Interest Chart - Debt Accounts Only */}
               <Card>
