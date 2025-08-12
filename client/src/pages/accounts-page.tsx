@@ -538,7 +538,7 @@ export default function AccountsPage() {
                                                 account.name === "Business Credit Card" ? "1,850.00" :
                                                 "15,250.00"
                                               }
-                                              className="w-28 text-center pl-6"
+                                              className="w-28 h-8 text-center pl-6"
                                             />
                                             <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
                                           </div>
@@ -564,7 +564,7 @@ export default function AccountsPage() {
                                                       account.name === "Business Credit Card" ? "29.12" :
                                                       "25.50"
                                                     }
-                                                    className="w-28 text-center text-xs pl-6"
+                                                    className="w-28 h-8 text-center text-xs pl-6"
                                                   />
                                                   <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
                                                 </div>
