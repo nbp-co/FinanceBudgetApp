@@ -181,9 +181,18 @@ export default function StatementsPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  {/* Select months to edit */}
+                  {/* Select months to edit with Save Button */}
                   <div className="flex-1">
-                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
+                    <div className="flex justify-between items-start mb-3">
+                      <Label className="text-sm font-medium text-gray-700">Select months to edit:</Label>
+                      <Button 
+                        disabled={selectedMonths.length === 0}
+                        className="bg-teal-600 hover:bg-teal-700 text-white"
+                      >
+                        <Save className="mr-2 h-4 w-4" />
+                        Save All ({selectedMonths.length})
+                      </Button>
+                    </div>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                       {availableMonths.map((month) => (
                         <div key={month.value} className="flex items-center space-x-2">
@@ -199,17 +208,6 @@ export default function StatementsPage() {
                         </div>
                       ))}
                     </div>
-                  </div>
-
-                  {/* Save Button */}
-                  <div className="flex justify-end pt-2">
-                    <Button 
-                      disabled={selectedMonths.length === 0}
-                      className="bg-teal-600 hover:bg-teal-700 text-white"
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Save All ({selectedMonths.length})
-                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -237,6 +235,17 @@ export default function StatementsPage() {
               
               <CollapsibleContent>
                 <CardContent className="pt-0 pb-4 space-y-4">
+                  {/* Save Button above table */}
+                  <div className="flex justify-end">
+                    <Button 
+                      disabled={selectedMonths.length === 0}
+                      className="bg-teal-600 hover:bg-teal-700 text-white"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Save All ({selectedMonths.length})
+                    </Button>
+                  </div>
+                  
                   <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                     <Table>
                       <TableHeader>
