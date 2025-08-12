@@ -334,11 +334,11 @@ export default function StatementsPage() {
                     }}
                   />
                   <Legend />
-                  <Bar dataKey="Credit Card" fill={chartColors['Credit Card']} />
-                  <Bar dataKey="Mortgage" fill={chartColors['Mortgage']} />
-                  <Bar dataKey="Auto Loan" fill={chartColors['Auto Loan']} />
-                  <Bar dataKey="Savings" fill={chartColors['Savings']} />
-                  <Bar dataKey="Money Market" fill={chartColors['Money Market']} />
+                  <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
+                  <Bar dataKey="Mortgage" stackId="a" fill={chartColors['Mortgage']} />
+                  <Bar dataKey="Auto Loan" stackId="a" fill={chartColors['Auto Loan']} />
+                  <Bar dataKey="Savings" stackId="a" fill={chartColors['Savings']} />
+                  <Bar dataKey="Money Market" stackId="a" fill={chartColors['Money Market']} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
