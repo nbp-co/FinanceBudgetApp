@@ -953,9 +953,29 @@ export default function AccountsPage() {
                               <TableBody>
                                 {paginatedAccounts.map((account) => (
                                   <TableRow key={account.name} className="hover:bg-gray-50">
-                                    <TableCell className="w-[200px] sticky left-0 bg-gray-50 z-10 border-r-2 border-gray-400 py-4 px-4">
-                                      <div className="font-medium text-gray-900 text-sm">
-                                        {account.name}
+                                    <TableCell className="w-[200px] sticky left-0 bg-white z-10 border-r-2 border-gray-400">
+                                      <div className="space-y-2">
+                                        <div className="font-medium text-gray-900">{account.name}</div>
+                                        <div className="flex flex-wrap gap-1">
+                                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                            account.type === 'Asset' 
+                                              ? 'bg-green-100 text-green-800' 
+                                              : 'bg-red-100 text-red-800'
+                                          }`}>
+                                            {account.type}
+                                          </span>
+                                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 text-center">
+                                            {account.accountType}
+                                          </span>
+                                        </div>
+                                        <div className="text-xs text-gray-500 space-y-0.5">
+                                          {account.apr && (
+                                            <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
+                                          )}
+                                          {account.dueDate && (
+                                            <div>Due: {account.dueDate}th</div>
+                                          )}
+                                        </div>
                                       </div>
                                     </TableCell>
 

@@ -296,9 +296,29 @@ export default function StatementsPage() {
                       <TableBody className="bg-white">
                         {accounts.map((account, accountIndex) => (
                           <TableRow key={account.name} className="border-b border-gray-200 hover:bg-gray-50">
-                            <TableCell className="py-4 px-4 border-r border-gray-300 bg-gray-50">
-                              <div className="font-medium text-gray-900 text-sm">
-                                {account.name}
+                            <TableCell className="py-6 px-4 border-r border-gray-300">
+                              <div className="space-y-3">
+                                <div className="font-semibold text-gray-900 text-base">{account.name}</div>
+                                <div className="flex gap-2">
+                                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                    account.type === 'Asset' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {account.type}
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                                    {account.accountType}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-gray-500 space-y-1">
+                                  {account.apr && (
+                                    <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
+                                  )}
+                                  {account.dueDate && (
+                                    <div>Due: {account.dueDate}th</div>
+                                  )}
+                                </div>
                               </div>
                             </TableCell>
 
