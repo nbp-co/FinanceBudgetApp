@@ -1226,61 +1226,64 @@ export default function AccountsPage() {
                     <CollapsibleContent>
                       <CardContent className="pt-0 pb-4 space-y-4">
                         {/* Enhanced Sort and Filter Controls */}
-                        <div className="flex items-center justify-end gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
                           {/* Schedule Payment Button */}
-                          <Button onClick={() => openPaymentDialog('new')} size="sm" className="flex items-center space-x-1 mr-auto bg-blue-600 hover:bg-blue-700 text-white">
+                          <Button onClick={() => openPaymentDialog('new')} size="sm" className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white shrink-0">
                             <Plus className="h-4 w-4" />
                             <span>Schedule Payment</span>
                           </Button>
 
-                          {/* Filter Dropdown */}
-                          <div className="flex items-center gap-2">
-                            <label htmlFor="debt-filter-select" className="text-sm font-medium text-gray-700">Filter:</label>
-                            <Select 
-                              name="debt-filter"
-                              value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
-                              onValueChange={(value) => {
-                                if (value === "all") {
-                                  setDebtFilterBy([]);
-                                } else {
-                                  setDebtFilterBy([value]);
-                                }
-                              }}
-                            >
-                              <SelectTrigger id="debt-filter-select" className="w-36">
-                                <SelectValue placeholder="All Types" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="all">All Types</SelectItem>
-                                {getUniqueDebtSubTypes().map(subType => (
-                                  <SelectItem key={`filter-${subType}`} value={subType}>
-                                    {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          {/* Filter and Sort Controls */}
+                          <div className="flex flex-col xs:flex-row items-start xs:items-center gap-4 w-full sm:w-auto">
+                            {/* Filter Dropdown */}
+                            <div className="flex items-center gap-2 min-w-0">
+                              <label htmlFor="debt-filter-select" className="text-sm font-medium text-gray-700 whitespace-nowrap">Filter:</label>
+                              <Select 
+                                name="debt-filter"
+                                value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
+                                onValueChange={(value) => {
+                                  if (value === "all") {
+                                    setDebtFilterBy([]);
+                                  } else {
+                                    setDebtFilterBy([value]);
+                                  }
+                                }}
+                              >
+                                <SelectTrigger id="debt-filter-select" className="w-32 sm:w-36">
+                                  <SelectValue placeholder="All Types" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all">All Types</SelectItem>
+                                  {getUniqueDebtSubTypes().map(subType => (
+                                    <SelectItem key={`filter-${subType}`} value={subType}>
+                                      {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
 
-                          {/* Sort Dropdown */}
-                          <div className="flex items-center gap-2">
-                            <label htmlFor="debt-sort-select" className="text-sm font-medium text-gray-700">Sort:</label>
-                            <Select 
-                              name="debt-sort"
-                              value={debtSortBy} 
-                              onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}
-                            >
-                              <SelectTrigger id="debt-sort-select" className="w-40">
-                                <SelectValue placeholder="Balance (High)" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="balance">Balance (High)</SelectItem>
-                                <SelectItem value="balanceAsc">Balance (Low)</SelectItem>
-                                <SelectItem value="name">Name (A-Z)</SelectItem>
-                                <SelectItem value="nameDesc">Name (Z-A)</SelectItem>
-                                <SelectItem value="interest">Interest (High)</SelectItem>
-                                <SelectItem value="payoff">Payoff (Short)</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            {/* Sort Dropdown */}
+                            <div className="flex items-center gap-2 min-w-0">
+                              <label htmlFor="debt-sort-select" className="text-sm font-medium text-gray-700 whitespace-nowrap">Sort:</label>
+                              <Select 
+                                name="debt-sort"
+                                value={debtSortBy} 
+                                onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}
+                              >
+                                <SelectTrigger id="debt-sort-select" className="w-32 sm:w-40">
+                                  <SelectValue placeholder="Balance (High)" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="balance">Balance (High)</SelectItem>
+                                  <SelectItem value="balanceAsc">Balance (Low)</SelectItem>
+                                  <SelectItem value="name">Name (A-Z)</SelectItem>
+                                  <SelectItem value="nameDesc">Name (Z-A)</SelectItem>
+                                  <SelectItem value="interest">Interest (High)</SelectItem>
+                                  <SelectItem value="payoff">Payoff (Short)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
                           </div>
                         </div>
 
