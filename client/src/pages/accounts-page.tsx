@@ -476,7 +476,7 @@ export default function AccountsPage() {
                             <Table>
                               <TableHeader>
                                 <TableRow>
-                                  <TableHead className="w-[160px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
+                                  <TableHead className="w-[200px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
                                   {selectedMonths.map(monthValue => {
                                     const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                                     return (
@@ -490,7 +490,7 @@ export default function AccountsPage() {
                               <TableBody>
                                 {paginatedAccounts.map((account) => (
                                   <TableRow key={account.name} className="hover:bg-gray-50">
-                                    <TableCell className="w-[160px] sticky left-0 bg-white z-10 border-r-2 border-gray-400">
+                                    <TableCell className="w-[200px] sticky left-0 bg-white z-10 border-r-2 border-gray-400">
                                       <div className="space-y-2">
                                         <div className="font-medium text-gray-900">{account.name}</div>
                                         <div className="flex flex-wrap gap-1">
