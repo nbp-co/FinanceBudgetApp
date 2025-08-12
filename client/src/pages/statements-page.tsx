@@ -284,20 +284,13 @@ export default function StatementsPage() {
             </CardContent>
           </Card>
         ) : (
-          <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
-            <Collapsible defaultOpen={true}>
-              <CollapsibleTrigger className="w-full">
-                <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-semibold text-gray-900">Statement Details</h3>
-                  </div>
-                  <ChevronDown className="h-5 w-5 text-gray-600" />
-                </div>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <CardContent className="pt-0 pb-4 space-y-4">
-                  <div className="overflow-x-auto rounded-lg border-2 border-gray-300 shadow-sm">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <h3 className="text-lg font-semibold text-gray-900">Monthly Statements</h3>
+            </div>
+            <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
+              <CardContent className="pt-6 pb-4 space-y-4">
+                <div className="overflow-x-auto rounded-lg border-2 border-gray-300 shadow-sm">
                     <Table className="border-separate border-spacing-0">
                       <TableHeader>
                         <TableRow className="border-none">
@@ -395,9 +388,8 @@ export default function StatementsPage() {
                     </Table>
                   </div>
                 </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
+            </Card>
+          </div>
         )}
       </div>
     </AppShell>

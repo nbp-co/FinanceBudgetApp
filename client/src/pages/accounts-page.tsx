@@ -797,7 +797,7 @@ export default function AccountsPage() {
                   <CollapsibleTrigger asChild>
                     <CardHeader className="cursor-pointer hover:bg-gray-50">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-xl">Statement Details</CardTitle>
+                        <CardTitle className="text-xl">Monthly Statements</CardTitle>
                         <Button variant="ghost" size="sm">
                           {isStatementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>
@@ -947,7 +947,11 @@ export default function AccountsPage() {
                           </Button>
                         </div>
                         
-                        <div className="relative rounded-lg border-2 border-gray-300 shadow-sm">
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3">
+                            <h4 className="text-lg font-semibold text-gray-900">Statement Details</h4>
+                          </div>
+                          <div className="relative rounded-lg border-2 border-gray-300 shadow-sm">
                           <div className="overflow-x-auto">
                             <Table className="border-separate border-spacing-0">
                               <TableHeader>
@@ -1090,6 +1094,7 @@ export default function AccountsPage() {
                               </TableBody>
                             </Table>
                           </div>
+                        </div>
                         </div>
 
                         {/* Pagination Controls */}
