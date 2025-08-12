@@ -48,7 +48,7 @@ export default function AccountsPage() {
   const [editingAccount, setEditingAccount] = useState<AccountFormData | null>(null);
   
   // Statements tab state
-  const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(["2025-01", "2025-02", "2025-03"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
   const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'name' | 'type' | 'name-reverse' | 'type-reverse'>('type');
@@ -94,12 +94,18 @@ export default function AccountsPage() {
 
   // Statements data
   const availableMonths = [
-    { value: "2024-12", label: "Dec 2024" },
-    { value: "2024-11", label: "Nov 2024" },
-    { value: "2024-10", label: "Oct 2024" },
-    { value: "2024-09", label: "Sep 2024" },
-    { value: "2024-08", label: "Aug 2024" },
-    { value: "2024-07", label: "Jul 2024" },
+    { value: "2025-01", label: "Jan 2025" },
+    { value: "2025-02", label: "Feb 2025" },
+    { value: "2025-03", label: "Mar 2025" },
+    { value: "2025-04", label: "Apr 2025" },
+    { value: "2025-05", label: "May 2025" },
+    { value: "2025-06", label: "Jun 2025" },
+    { value: "2025-07", label: "Jul 2025" },
+    { value: "2025-08", label: "Aug 2025" },
+    { value: "2025-09", label: "Sep 2025" },
+    { value: "2025-10", label: "Oct 2025" },
+    { value: "2025-11", label: "Nov 2025" },
+    { value: "2025-12", label: "Dec 2025" },
   ];
 
   const allAccounts = [
