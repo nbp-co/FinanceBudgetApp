@@ -1436,7 +1436,8 @@ export default function AccountsPage() {
                                     label={{ 
                                       value: 'Balance', 
                                       angle: -90, 
-                                      position: 'insideLeft',
+                                      position: 'outside',
+                                      offset: -5,
                                       style: { textAnchor: 'middle', fontSize: '10px', fill: '#6b7280' }
                                     }}
                                     domain={(() => {
@@ -1933,7 +1934,7 @@ export default function AccountsPage() {
                                 margin={{
                                   top: 20,
                                   right: 30,
-                                  left: 20,
+                                  left: 50,
                                   bottom: 5,
                                 }}
                               >
@@ -1951,7 +1952,8 @@ export default function AccountsPage() {
                                   label={{ 
                                     value: summaryChartMode === 'balance' ? 'Debt Balance' : 'Monthly Interest', 
                                     angle: -90, 
-                                    position: 'insideLeft',
+                                    position: 'outside',
+                                    offset: -10,
                                     style: { textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }
                                   }}
                                 />
