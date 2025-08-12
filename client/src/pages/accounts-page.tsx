@@ -575,7 +575,7 @@ export default function AccountsPage() {
                                               >
                                                 <p className="font-medium">{account.name}</p>
                                                 <p className="text-xs opacity-90">
-                                                  {monthValue.slice(0, 3)} {monthValue.slice(-4)} Interest
+                                                  {monthValue.slice(0, 3)} {monthValue.slice(-4)}
                                                   {account.apr && ` (${account.type === 'Asset' ? 'APY' : 'APR'}: ${account.apr}%)`}
                                                 </p>
                                               </TooltipContent>
