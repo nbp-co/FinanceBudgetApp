@@ -1282,19 +1282,6 @@ export default function AccountsPage() {
                   const payoffInfo = calculatePayoffDate(balance, account.apr || 0, monthlyPayment);
                   const projectionData = calculatePayoffProjection(balance, account.apr || 0, monthlyPayment);
                   
-                  // Debug logging for Student Loan specifically
-                  if (account.name === 'Student Loan') {
-                    console.log('Student Loan Chart Data:', {
-                      accountName: account.name,
-                      balance,
-                      monthlyPayment,
-                      apr: account.apr,
-                      projectionDataLength: projectionData.length,
-                      projectionData: projectionData.slice(0, 3), // First 3 items
-                      isExpanded: expandedCharts[account.name]
-                    });
-                  }
-                  
                   return (
                     <Card key={account.name} className="overflow-hidden">
                       <CardHeader className="pb-2 px-4 pt-3">
@@ -1807,129 +1794,65 @@ export default function AccountsPage() {
                         }
                         
                         const chartColors = {
-                          'Credit Card': {
-                            main: '#dc2626',
-                            gradient: 'url(#creditCardGradient)'
-                          },
-                          'Mortgage': {
-                            main: '#ea580c',
-                            gradient: 'url(#mortgageGradient)'
-                          },
-                          'Auto Loan': {
-                            main: '#d97706',
-                            gradient: 'url(#autoLoanGradient)'
-                          },
-                          'Student Loan': {
-                            main: '#16a34a',
-                            gradient: 'url(#studentLoanGradient)'
-                          },
-                          'Line of Credit': {
-                            main: '#2563eb',
-                            gradient: 'url(#lineOfCreditGradient)'
-                          },
-                          'Taxes': {
-                            main: '#7c3aed',
-                            gradient: 'url(#taxesGradient)'
-                          },
+                          'Credit Card': '#ef4444', // red
+                          'Mortgage': '#f97316', // orange
+                          'Auto Loan': '#eab308', // yellow
+                          'Student Loan': '#22c55e', // green
+                          'Line of Credit': '#3b82f6', // blue
+                          'Taxes': '#8b5cf6', // purple
                         };
+
+                        // Sort debt types by total balance (largest first for bottom stacking)
+                        const debtTypesWithTotals = debtTypes.map(debtType => {
+                          const total = chartData.reduce((sum, month) => sum + (month[debtType] || 0), 0);
+                          return { debtType, total };
+                        }).sort((a, b) => b.total - a.total); // Largest to smallest
+                        
+                        const sortedDebtTypes = debtTypesWithTotals.map(item => item.debtType);
                         
                         return (
-                          <div className="h-96 bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4 shadow-lg">
+                          <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">
                               <BarChart
                                 data={chartData}
                                 margin={{
-                                  top: 30,
-                                  right: 40,
-                                  left: 40,
-                                  bottom: 80,
+                                  top: 20,
+                                  right: 30,
+                                  left: 20,
+                                  bottom: 5,
                                 }}
-                                barCategoryGap="20%"
                               >
-                                <defs>
-                                  <linearGradient id="creditCardGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#fca5a5" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#dc2626" stopOpacity={1}/>
-                                  </linearGradient>
-                                  <linearGradient id="mortgageGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#fdba74" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#ea580c" stopOpacity={1}/>
-                                  </linearGradient>
-                                  <linearGradient id="autoLoanGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#fde047" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#d97706" stopOpacity={1}/>
-                                  </linearGradient>
-                                  <linearGradient id="studentLoanGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#86efac" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#16a34a" stopOpacity={1}/>
-                                  </linearGradient>
-                                  <linearGradient id="lineOfCreditGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#93c5fd" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#2563eb" stopOpacity={1}/>
-                                  </linearGradient>
-                                  <linearGradient id="taxesGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#c4b5fd" stopOpacity={1}/>
-                                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={1}/>
-                                  </linearGradient>
-                                </defs>
-                                <CartesianGrid 
-                                  strokeDasharray="2 4" 
-                                  stroke="#e2e8f0" 
-                                  strokeOpacity={0.6}
-                                  vertical={false}
-                                />
+                                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                                 <XAxis 
                                   dataKey="month" 
-                                  tick={{ fontSize: 13, fill: '#475569', fontWeight: 500 }}
-                                  angle={-35}
+                                  tick={{ fontSize: 12 }}
+                                  angle={-45}
                                   textAnchor="end"
-                                  height={80}
-                                  axisLine={false}
-                                  tickLine={false}
-                                  interval={0}
+                                  height={60}
                                 />
                                 <YAxis 
-                                  tick={{ fontSize: 13, fill: '#475569', fontWeight: 500 }}
+                                  tick={{ fontSize: 12 }}
                                   tickFormatter={(value) => `$${value > 10000 ? `${(value/1000).toFixed(1)}k` : value.toLocaleString()}`}
-                                  axisLine={false}
-                                  tickLine={false}
-                                  width={60}
                                 />
                                 <RechartsTooltip 
-                                  formatter={(value: number, name: string) => [
-                                    `$${value.toLocaleString()}`, 
-                                    name
-                                  ]}
+                                  formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
                                   labelFormatter={(label) => `${label}`}
                                   contentStyle={{ 
-                                    backgroundColor: 'rgba(255, 255, 255, 0.96)',
-                                    border: 'none',
-                                    borderRadius: '12px',
-                                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                                    padding: '16px',
-                                    fontSize: '14px',
-                                    fontWeight: '500'
+                                    backgroundColor: '#ffffff',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    padding: '12px'
                                   }}
-                                  cursor={{ fill: 'rgba(59, 130, 246, 0.08)', radius: 8 }}
                                 />
-                                <Legend 
-                                  wrapperStyle={{
-                                    paddingTop: '20px',
-                                    fontSize: '13px',
-                                    fontWeight: '500'
-                                  }}
-                                  iconType="rect"
-                                />
-                                {debtTypes.map((debtType) => (
+                                <Legend />
+                                {sortedDebtTypes.map((debtType) => (
                                   <Bar 
                                     key={debtType}
                                     dataKey={debtType} 
                                     stackId="debt"
-                                    fill={chartColors[debtType as keyof typeof chartColors]?.gradient || '#64748b'}
+                                    fill={chartColors[debtType as keyof typeof chartColors] || '#64748b'}
                                     name={debtType.replace('_', ' ')}
-                                    radius={[0, 0, 4, 4]}
-                                    stroke="rgba(255, 255, 255, 0.8)"
-                                    strokeWidth={1}
                                   />
                                 ))}
                               </BarChart>
