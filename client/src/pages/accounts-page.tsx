@@ -1321,7 +1321,7 @@ export default function AccountsPage() {
                           </div>
                           
                           {payoffInfo && (
-                            <div className="flex space-x-3">
+                            <div className="flex space-x-6">
                               <div className="space-y-1">
                                 <p className="text-gray-500">Interest/mo</p>
                                 <p className="font-semibold text-red-600">${Math.round(payoffInfo.monthlyInterest).toLocaleString()}</p>
