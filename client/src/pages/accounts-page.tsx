@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -48,6 +48,8 @@ export default function AccountsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
   const [isStatementsOpen, setIsStatementsOpen] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const accountsPerPage = 5;
 
   // Statements data
   const availableMonths = [
@@ -63,9 +65,15 @@ export default function AccountsPage() {
     { name: "Checking Account", type: "Asset", accountType: "Checking", apr: null, dueDate: null },
     { name: "Savings Account", type: "Asset", accountType: "Savings", apr: 4.25, dueDate: null },
     { name: "Money Market", type: "Asset", accountType: "Money Market", apr: 3.5, dueDate: null },
+    { name: "Investment Account", type: "Asset", accountType: "Investment", apr: 7.8, dueDate: null },
+    { name: "Emergency Fund", type: "Asset", accountType: "Savings", apr: 4.0, dueDate: null },
+    { name: "Retirement 401k", type: "Asset", accountType: "Investment", apr: 8.2, dueDate: null },
     { name: "Credit Card", type: "Debt", accountType: "Credit Card", apr: 24.99, dueDate: 15 },
     { name: "Mortgage", type: "Debt", accountType: "Mortgage", apr: 6.5, dueDate: 1 },
     { name: "Auto Loan", type: "Debt", accountType: "Auto Loan", apr: 5.2, dueDate: 10 },
+    { name: "Student Loan", type: "Debt", accountType: "Student Loan", apr: 4.8, dueDate: 5 },
+    { name: "Personal Loan", type: "Debt", accountType: "Line of Credit", apr: 12.5, dueDate: 20 },
+    { name: "Business Credit Card", type: "Debt", accountType: "Credit Card", apr: 18.9, dueDate: 25 },
   ];
 
   // Interest data by month - debt accounts only
@@ -96,9 +104,18 @@ export default function AccountsPage() {
   });
 
   // Filter accounts based on selected types
-  const accounts = sortedAccounts.filter(account => 
+  const filteredAccounts = sortedAccounts.filter(account => 
     selectedAccountTypes.includes(account.type)
   );
+
+  // Pagination logic for statements
+  const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
+  const startIndex = currentPage * accountsPerPage;
+  const endIndex = startIndex + accountsPerPage;
+  const paginatedAccounts = filteredAccounts.slice(startIndex, endIndex);
+
+  // For non-statements tabs, show all accounts
+  const accounts = filteredAccounts;
 
   const toggleMonth = (monthValue: string) => {
     setSelectedMonths(prev => 
@@ -114,6 +131,7 @@ export default function AccountsPage() {
         ? prev.filter(t => t !== accountType)
         : [...prev, accountType]
     );
+    setCurrentPage(0); // Reset to first page when filter changes
   };
   
   const form = useForm<AccountFormData>({
@@ -470,7 +488,7 @@ export default function AccountsPage() {
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {accounts.map((account) => (
+                                {paginatedAccounts.map((account) => (
                                   <TableRow key={account.name} className="hover:bg-gray-50">
                                     <TableCell className="sticky left-0 bg-white z-10 border-r-2 border-gray-400">
                                       <div className="space-y-2">
@@ -509,8 +527,15 @@ export default function AccountsPage() {
                                                 account.name === "Checking Account" ? "12,345.67" :
                                                 account.name === "Savings Account" ? "25,890.12" :
                                                 account.name === "Money Market" ? "8,500.00" :
+                                                account.name === "Investment Account" ? "45,230.00" :
+                                                account.name === "Emergency Fund" ? "12,000.00" :
+                                                account.name === "Retirement 401k" ? "125,500.00" :
                                                 account.name === "Credit Card" ? "2,456.78" :
                                                 account.name === "Mortgage" ? "285,000.00" :
+                                                account.name === "Auto Loan" ? "18,450.00" :
+                                                account.name === "Student Loan" ? "23,800.00" :
+                                                account.name === "Personal Loan" ? "5,200.00" :
+                                                account.name === "Business Credit Card" ? "1,850.00" :
                                                 "15,250.00"
                                               }
                                               className="w-28 text-center pl-6"
@@ -528,9 +553,16 @@ export default function AccountsPage() {
                                                       account.name === "Checking Account" ? "0.00" :
                                                       account.name === "Savings Account" ? "95.43" :
                                                       account.name === "Money Market" ? "25.18" :
+                                                      account.name === "Investment Account" ? "295.83" :
+                                                      account.name === "Emergency Fund" ? "40.00" :
+                                                      account.name === "Retirement 401k" ? "857.50" :
                                                       account.name === "Credit Card" ? "47.23" :
                                                       account.name === "Mortgage" ? "1,542.88" :
-                                                      "78.95"
+                                                      account.name === "Auto Loan" ? "78.95" :
+                                                      account.name === "Student Loan" ? "95.20" :
+                                                      account.name === "Personal Loan" ? "54.17" :
+                                                      account.name === "Business Credit Card" ? "29.12" :
+                                                      "25.50"
                                                     }
                                                     className="w-28 text-center text-xs pl-6"
                                                   />
@@ -558,6 +590,38 @@ export default function AccountsPage() {
                             </Table>
                           </div>
                         </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                          <div className="flex items-center justify-between mt-4 px-2">
+                            <div className="text-sm text-gray-700">
+                              Showing {startIndex + 1}-{Math.min(endIndex, filteredAccounts.length)} of {filteredAccounts.length} accounts
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                                disabled={currentPage === 0}
+                              >
+                                <ChevronLeft className="h-4 w-4" />
+                                Previous
+                              </Button>
+                              <span className="text-sm text-gray-700">
+                                Page {currentPage + 1} of {totalPages}
+                              </span>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                                disabled={currentPage === totalPages - 1}
+                              >
+                                Next
+                                <ChevronRight className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </CardContent>
                     )}
                   </CollapsibleContent>
