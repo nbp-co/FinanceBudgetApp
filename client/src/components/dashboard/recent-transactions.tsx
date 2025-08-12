@@ -4,11 +4,11 @@ import { Link } from "wouter";
 import { formatCurrency } from "@/lib/utils";
 
 // Component for split-colored transfer icon
-function SplitTransferIcon() {
+function SplitTransferIcon({ isIncoming = false }: { isIncoming?: boolean }) {
   return (
     <div className="relative h-5 w-5">
-      <ArrowUpDown className="h-5 w-5 text-red-600 absolute inset-0" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />
-      <ArrowUpDown className="h-5 w-5 text-green-600 absolute inset-0" style={{ clipPath: 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)' }} />
+      <ArrowUpDown className="h-5 w-5 text-blue-600 absolute inset-0" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />
+      <ArrowUpDown className={`h-5 w-5 ${isIncoming ? 'text-green-600' : 'text-red-600'} absolute inset-0`} style={{ clipPath: 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)' }} />
     </div>
   );
 }
@@ -61,7 +61,8 @@ export function RecentTransactions() {
       case "EXPENSE":
         return <ArrowUp className="h-5 w-5 text-red-600" />;
       case "TRANSFER":
-        return <SplitTransferIcon />;
+        // For demo purposes, assume transfers "to Savings" are incoming to the main account view
+        return <SplitTransferIcon isIncoming={false} />;
       default:
         return <ArrowUpDown className="h-5 w-5 text-gray-600" />;
     }
@@ -74,7 +75,7 @@ export function RecentTransactions() {
       case "EXPENSE":
         return "bg-red-100";
       case "TRANSFER":
-        return "bg-gradient-to-r from-red-100 to-green-100";
+        return "bg-gradient-to-r from-blue-100 to-red-100";
       default:
         return "bg-gray-100";
     }

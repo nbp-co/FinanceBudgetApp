@@ -191,11 +191,13 @@ export function MonthlyCalendar() {
                           <div key={txIndex} className="w-1.5 h-1.5 bg-red-400 rounded-full" />
                         );
                       } else if (transaction.type === 'transfer') {
-                        // Split transfer dot: left half red (sending), right half green (receiving)
+                        // Split transfer dot: left half blue (base), right half green/red (direction)
+                        // Blue/Green for incoming transfers, Blue/Red for outgoing transfers
+                        const isIncoming = (transaction as any).toAccount === 'Checking' || (transaction as any).toAccount === 'Savings';
                         return (
                           <div key={txIndex} className="w-1.5 h-1.5 rounded-full overflow-hidden flex">
-                            <div className="w-1/2 h-full bg-red-400"></div>
-                            <div className="w-1/2 h-full bg-green-400"></div>
+                            <div className="w-1/2 h-full bg-blue-400"></div>
+                            <div className={`w-1/2 h-full ${isIncoming ? 'bg-green-400' : 'bg-red-400'}`}></div>
                           </div>
                         );
                       }

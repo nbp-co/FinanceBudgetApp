@@ -301,8 +301,8 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
                     <div className="flex items-center space-x-3">
                       {transaction.type === "transfer" ? (
                         <div className="h-2 w-2 rounded-full overflow-hidden flex">
+                          <div className="w-1/2 h-full bg-blue-500"></div>
                           <div className="w-1/2 h-full bg-red-500"></div>
-                          <div className="w-1/2 h-full bg-green-500"></div>
                         </div>
                       ) : (
                         <div className={`h-2 w-2 rounded-full ${
