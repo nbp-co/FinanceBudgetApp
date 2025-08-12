@@ -6,6 +6,7 @@ import {
   Home, 
   Building, 
   Calendar, 
+  DollarSign,
   FileText, 
   Settings 
 } from "lucide-react";
@@ -14,6 +15,7 @@ const navigation = [
   { name: "Summary", href: "/summary", icon: Calendar },
   { name: "Calendar", href: "/", icon: Home },
   { name: "Accounts", href: "/accounts", icon: Building },
+  { name: "Budget", href: "/budget", icon: DollarSign },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

@@ -9,6 +9,7 @@ import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import HomePage from "@/pages/home-page";
 import AccountsPage from "@/pages/accounts-page";
+import BudgetPage from "@/pages/budget-page";
 import StatementsPage from "@/pages/statements-page";
 import SummaryPage from "@/pages/summary-page";
 import SettingsPage from "@/pages/settings-page";
@@ -18,6 +19,7 @@ function Router() {
     <Switch>
       <ProtectedRoute path="/" component={HomePage} />
       <ProtectedRoute path="/accounts" component={AccountsPage} />
+      <ProtectedRoute path="/budget" component={BudgetPage} />
       <ProtectedRoute path="/statements" component={StatementsPage} />
       <ProtectedRoute path="/summary" component={SummaryPage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
