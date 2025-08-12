@@ -252,41 +252,37 @@ export default function StatementsPage() {
                         {selectedMonths.map((monthValue, monthIndex) => (
                           <TableCell key={`${account.name}-${monthValue}`} className={`py-0.5 px-2 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
                             <div className="space-y-0.5">
-                              <div>
-                                <div className="text-xs text-gray-400 font-medium leading-tight">B</div>
+                              <div className="flex items-center">
+                                <span className="text-xs text-gray-400 font-medium leading-tight mr-1">B</span>
+                                <span className="text-xs text-gray-500 mr-1">$</span>
+                                <Input
+                                  type="text"
+                                  defaultValue={
+                                    account.name === "Auto Loan" ? "18,450.00" :
+                                    account.name === "Credit Card" ? "2,456.78" :
+                                    account.name === "Checking Account" ? "12,345.67" :
+                                    account.name === "Savings Account" ? "25,890.12" :
+                                    account.name === "Money Market" ? "8,500.00" :
+                                    account.name === "Mortgage" ? "285,000.00" :
+                                    "15,250.00"
+                                  }
+                                  className="flex-1 border-0 p-0 text-xs font-medium bg-transparent focus:ring-0 focus:outline-none leading-tight"
+                                />
+                              </div>
+                              {account.type === 'Debt' && (
                                 <div className="flex items-center">
+                                  <span className="text-xs text-gray-400 font-medium leading-tight mr-1">I</span>
                                   <span className="text-xs text-gray-500 mr-1">$</span>
                                   <Input
                                     type="text"
                                     defaultValue={
-                                      account.name === "Auto Loan" ? "18,450.00" :
-                                      account.name === "Credit Card" ? "2,456.78" :
-                                      account.name === "Checking Account" ? "12,345.67" :
-                                      account.name === "Savings Account" ? "25,890.12" :
-                                      account.name === "Money Market" ? "8,500.00" :
-                                      account.name === "Mortgage" ? "285,000.00" :
-                                      "15,250.00"
+                                      account.name === "Auto Loan" ? "78.95" :
+                                      account.name === "Credit Card" ? "47.23" :
+                                      account.name === "Mortgage" ? "1,542.88" :
+                                      "78.95"
                                     }
-                                    className="flex-1 border-0 p-0 text-xs font-medium bg-transparent focus:ring-0 focus:outline-none leading-tight"
+                                    className="flex-1 border-0 p-0 text-xs font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic leading-tight"
                                   />
-                                </div>
-                              </div>
-                              {account.type === 'Debt' && (
-                                <div>
-                                  <div className="text-xs text-gray-400 font-medium leading-tight">I</div>
-                                  <div className="flex items-center">
-                                    <span className="text-xs text-gray-500 mr-1">$</span>
-                                    <Input
-                                      type="text"
-                                      defaultValue={
-                                        account.name === "Auto Loan" ? "78.95" :
-                                        account.name === "Credit Card" ? "47.23" :
-                                        account.name === "Mortgage" ? "1,542.88" :
-                                        "78.95"
-                                      }
-                                      className="flex-1 border-0 p-0 text-xs font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic leading-tight"
-                                    />
-                                  </div>
                                 </div>
                               )}
                             </div>
