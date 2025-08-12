@@ -1320,10 +1320,10 @@ export default function AccountsPage() {
                                   />
                                   <YAxis 
                                     tick={{ fontSize: 10 }}
-                                    tickFormatter={(value) => `${(value/1000).toFixed(0)}k`}
+                                    tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
                                     axisLine={false}
                                     tickLine={false}
-                                    width={30}
+                                    width={35}
                                     domain={(() => {
                                       const values = projectionData.map(d => d.balance);
                                       const minValue = Math.min(...values);
