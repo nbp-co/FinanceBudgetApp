@@ -928,9 +928,9 @@ export default function AccountsPage() {
                           </Button>
                         </div>
                         
-                        <div className="relative">
+                        <div className="relative rounded-lg border-2 border-gray-300 shadow-sm">
                           <div className="overflow-x-auto">
-                            <Table>
+                            <Table className="border-separate border-spacing-0">
                               <TableHeader>
                                 <TableRow>
                                   <TableHead className="w-[200px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>

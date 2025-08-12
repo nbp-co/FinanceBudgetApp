@@ -272,8 +272,8 @@ export default function StatementsPage() {
               
               <CollapsibleContent>
                 <CardContent className="pt-0 pb-4 space-y-4">
-                  <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
-                    <Table>
+                  <div className="overflow-x-auto rounded-lg border-2 border-gray-300 shadow-sm">
+                    <Table className="border-separate border-spacing-0">
                       <TableHeader>
                         <TableRow className="bg-gray-400 h-10 border-none">
                           <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">ACCOUNT</TableHead>
