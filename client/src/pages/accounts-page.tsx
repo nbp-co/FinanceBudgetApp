@@ -940,7 +940,10 @@ export default function AccountsPage() {
 
                     {selectedMonths.length > 0 && (
                       <CardContent className="pt-0">
-                        <div className="flex justify-end mb-4 pt-4 border-t border-gray-200">
+                        <div className="flex justify-between items-center mb-4 pt-4 border-t border-gray-200">
+                          <div className="flex items-center gap-3">
+                            <h4 className="text-lg font-semibold text-gray-900">Statement Details</h4>
+                          </div>
                           <Button variant="outline" size="sm">
                             <Save className="mr-1 h-3 w-3" />
                             Save All Changes
@@ -948,9 +951,6 @@ export default function AccountsPage() {
                         </div>
                         
                         <div className="space-y-4">
-                          <div className="flex items-center gap-3">
-                            <h4 className="text-lg font-semibold text-gray-900">Statement Details</h4>
-                          </div>
                           <div className="relative rounded-lg border-2 border-gray-300 shadow-sm">
                           <div className="overflow-x-auto">
                             <Table className="border-separate border-spacing-0">

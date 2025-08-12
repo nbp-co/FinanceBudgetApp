@@ -261,16 +261,7 @@ export default function StatementsPage() {
                     </div>
                   </div>
 
-                  {/* Save Button */}
-                  <div className="border-t border-gray-200 pt-4">
-                    <Button 
-                      disabled={selectedMonths.length === 0}
-                      className="bg-teal-600 hover:bg-teal-700 text-white"
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Save All ({selectedMonths.length})
-                    </Button>
-                  </div>
+
                 </div>
               </CardContent>
             </CollapsibleContent>
@@ -285,8 +276,15 @@ export default function StatementsPage() {
           </Card>
         ) : (
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
+            <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold text-gray-900">Monthly Statements</h3>
+              <Button 
+                disabled={selectedMonths.length === 0}
+                className="bg-teal-600 hover:bg-teal-700 text-white"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save All ({selectedMonths.length})
+              </Button>
             </div>
             <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
               <CardContent className="pt-6 pb-4 space-y-4">
