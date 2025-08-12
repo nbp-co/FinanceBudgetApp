@@ -387,10 +387,15 @@ export default function AccountsPage() {
   };
 
   const toggleChartExpansion = (accountName: string) => {
-    setExpandedCharts(prev => ({
-      ...prev,
-      [accountName]: !prev[accountName]
-    }));
+    console.log(`Toggling chart for: ${accountName}`);
+    setExpandedCharts(prev => {
+      const newState = {
+        ...prev,
+        [accountName]: !prev[accountName]
+      };
+      console.log('Chart expansion state:', newState);
+      return newState;
+    });
   };
 
   const openPaymentDialog = (accountName: string) => {
@@ -1392,7 +1397,12 @@ export default function AccountsPage() {
                         </div>
 
                         {/* Compact Chart */}
-                        {expandedCharts[account.name] && projectionData && projectionData.length > 0 && (
+                        {(() => {
+                          const isExpanded = expandedCharts[account.name];
+                          const hasData = projectionData && projectionData.length > 0;
+                          console.log(`Chart render check for ${account.name}:`, { isExpanded, hasData, projectionDataLength: projectionData?.length });
+                          return isExpanded && hasData;
+                        })() && (
                           <div className="mt-2 space-y-3" key={`chart-container-${account.name}`}>
                             <div className="h-32 w-full">
                               <ResponsiveContainer width="100%" height="100%">
