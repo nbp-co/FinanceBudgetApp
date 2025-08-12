@@ -1426,45 +1426,45 @@ export default function AccountsPage() {
                             </p>
                           </div>
                           
-                          <div className="flex items-center gap-0.5 flex-shrink-0">
+                          <div className="flex items-center gap-px flex-shrink-0 ml-2">
                             <Button
                               id={`chart-toggle-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-5 w-5 p-0 hover:bg-gray-100"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 toggleChartExpansion(account.name);
                               }}
                             >
-                              <TrendingDown className="h-3 w-3" />
+                              <TrendingDown className="h-2.5 w-2.5" />
                             </Button>
                             <Button
                               id={`notes-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-5 w-5 p-0 hover:bg-gray-100"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 openNotesDialog(account.name);
                               }}
                             >
-                              <FileText className="h-3 w-3" />
+                              <FileText className="h-2.5 w-2.5" />
                             </Button>
                             <Button
                               id={`edit-payment-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-5 w-5 p-0 hover:bg-gray-100"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 openPaymentDialog(account.name);
                               }}
                             >
-                              <Edit className="h-3 w-3" />
+                              <Edit className="h-2.5 w-2.5" />
                             </Button>
                           </div>
                         </div>
