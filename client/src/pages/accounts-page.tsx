@@ -63,7 +63,6 @@ export default function AccountsPage() {
   // Debt sort/filter state
   const [debtSortBy, setDebtSortBy] = useState<'name' | 'balance' | 'interest' | 'payoff'>('balance');
   const [debtFilterBy, setDebtFilterBy] = useState<string[]>([]);
-  const [showOnlyScheduled, setShowOnlyScheduled] = useState(false);
 
   // Statements data
   const availableMonths = [
@@ -383,13 +382,6 @@ export default function AccountsPage() {
     if (debtFilterBy.length > 0) {
       debtAccounts = debtAccounts.filter(account => 
         debtFilterBy.includes(account.subType || 'Other')
-      );
-    }
-
-    // Filter by scheduled payments
-    if (showOnlyScheduled) {
-      debtAccounts = debtAccounts.filter(account => 
-        paymentSchedules[account.name] !== undefined
       );
     }
 
@@ -1170,20 +1162,6 @@ export default function AccountsPage() {
                       </div>
                     </div>
 
-                    {/* Additional Filters */}
-                    <div>
-                      <div className="flex items-center space-x-1">
-                        <Checkbox 
-                          id="scheduled-only"
-                          checked={showOnlyScheduled}
-                          onCheckedChange={(checked) => setShowOnlyScheduled(!!checked)}
-                        />
-                        <label htmlFor="scheduled-only" className="text-sm text-gray-700">
-                          Only show scheduled payments
-                        </label>
-                      </div>
-                    </div>
-
                     {/* Results Counter */}
                     <div className="text-sm text-gray-500 pt-2 border-t">
                       Showing {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
@@ -1411,7 +1389,6 @@ export default function AccountsPage() {
                       className="mt-2"
                       onClick={() => {
                         setDebtFilterBy([]);
-                        setShowOnlyScheduled(false);
                       }}
                     >
                       Clear Filters
