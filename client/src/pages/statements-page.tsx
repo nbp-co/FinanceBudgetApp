@@ -143,23 +143,15 @@ export default function StatementsPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead rowSpan={2} className="w-[230px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
+                            <TableHead className="w-[230px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
                             {selectedMonths.map(monthValue => {
                               const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                               return (
-                                <TableHead key={monthValue} colSpan={2} className="text-center min-w-[120px] border-x border-gray-200">
+                                <TableHead key={monthValue} className="text-center min-w-[120px]">
                                   {monthLabel}
                                 </TableHead>
                               );
                             })}
-                          </TableRow>
-                          <TableRow>
-                            {selectedMonths.map(monthValue => (
-                              <>
-                                <TableHead key={`${monthValue}-balance`} className="text-center text-xs w-16">B</TableHead>
-                                <TableHead key={`${monthValue}-interest`} className="text-center text-xs w-16">I</TableHead>
-                              </>
-                            ))}
                           </TableRow>
                         </TableHeader>
                   <TableBody>
@@ -191,42 +183,44 @@ export default function StatementsPage() {
                           </div>
                         </TableCell>
 
-                        {selectedMonths.map(monthValue => [
-                          <TableCell key={`${account.name}-${monthValue}-balance`} className="text-center p-2">
-                            <div className="relative">
-                              <span className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
-                              <Input
-                                type="text"
-                                defaultValue={
-                                  account.name === "Checking Account" ? "12,345.67" :
-                                  account.name === "Savings Account" ? "25,890.12" :
-                                  account.name === "Money Market" ? "8,500.00" :
-                                  account.name === "Credit Card" ? "2,456.78" :
-                                  account.name === "Mortgage" ? "285,000.00" :
-                                  "15,250.00"
-                                }
-                                className="w-24 text-center text-sm pl-5"
-                              />
-                            </div>
-                          </TableCell>,
-                          <TableCell key={`${account.name}-${monthValue}-interest`} className="text-center p-2">
-                            <div className="relative">
-                              <span className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
-                              <Input
-                                type="text"
-                                defaultValue={
-                                  account.name === "Checking Account" ? "0.00" :
-                                  account.name === "Savings Account" ? "95.43" :
-                                  account.name === "Money Market" ? "25.18" :
-                                  account.name === "Credit Card" ? "47.23" :
-                                  account.name === "Mortgage" ? "1,542.88" :
-                                  "78.95"
-                                }
-                                className="w-20 text-center text-xs pl-4"
-                              />
+                        {selectedMonths.map(monthValue => (
+                          <TableCell key={`${account.name}-${monthValue}`} className="text-center">
+                            <div className="space-y-1">
+                              <div className="relative">
+                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                <Input
+                                  type="text"
+                                  defaultValue={
+                                    account.name === "Checking Account" ? "12,345.67" :
+                                    account.name === "Savings Account" ? "25,890.12" :
+                                    account.name === "Money Market" ? "8,500.00" :
+                                    account.name === "Credit Card" ? "2,456.78" :
+                                    account.name === "Mortgage" ? "285,000.00" :
+                                    "15,250.00"
+                                  }
+                                  className="w-28 text-center pl-6"
+                                />
+                                <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
+                              </div>
+                              <div className="relative">
+                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
+                                <Input
+                                  type="text"
+                                  defaultValue={
+                                    account.name === "Checking Account" ? "0.00" :
+                                    account.name === "Savings Account" ? "95.43" :
+                                    account.name === "Money Market" ? "25.18" :
+                                    account.name === "Credit Card" ? "47.23" :
+                                    account.name === "Mortgage" ? "1,542.88" :
+                                    "78.95"
+                                  }
+                                  className="w-28 text-center text-xs pl-6"
+                                />
+                                <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
+                              </div>
                             </div>
                           </TableCell>
-                        ])}
+                        ))}
                       </TableRow>
                     ))}
                       </TableBody>
