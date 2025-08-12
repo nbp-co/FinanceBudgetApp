@@ -150,8 +150,16 @@ export default function AccountsPage() {
     form.reset();
   };
 
+  const handleEditAccount = (data: AccountFormData) => {
+    console.log("Editing account:", data);
+    // Handle account editing here
+    setIsEditDialogOpen(false);
+    setEditingAccount(null);
+    form.reset();
+  };
+
   const handleBalanceAdjustment = (data: BalanceAdjustmentData) => {
-    console.log("Adjusting balance for", selectedAccount?.name, "to", data.newBalance);
+    console.log("Adjusting balance:", data);
     // Handle balance adjustment here
     setIsBalanceDialogOpen(false);
     setSelectedAccount(null);
@@ -164,450 +172,11 @@ export default function AccountsPage() {
     setIsBalanceDialogOpen(true);
   };
 
-  const openEditAccount = (accountData: AccountFormData) => {
-    setEditingAccount(accountData);
-    // Pre-populate the form with existing account data
-    form.reset(accountData);
+  const openEditAccount = (account: AccountFormData) => {
+    setEditingAccount(account);
+    form.reset(account);
     setIsEditDialogOpen(true);
   };
-
-  const handleEditAccount = (data: AccountFormData) => {
-    console.log("Editing account:", editingAccount?.name, "with data:", data);
-    // Handle account editing here
-    setIsEditDialogOpen(false);
-    setEditingAccount(null);
-    form.reset();
-  };
-
-  const AddAssetAccountDialog = () => (
-    <Dialog open={isAssetDialogOpen} onOpenChange={setIsAssetDialogOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="mr-1 h-3 w-3" />
-          Add Account
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add New Asset Account</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleAssetSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Main Checking" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select account type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="checking">Checking</SelectItem>
-                      <SelectItem value="savings">Savings</SelectItem>
-                      <SelectItem value="money_market">Money Market</SelectItem>
-                      <SelectItem value="investment">Investment</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="balance"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Current Balance</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Primary checking account" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="interestRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Interest Rate (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" placeholder="4.5" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsAssetDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Create Account</Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-
-  const AddDebtAccountDialog = () => (
-    <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="mr-1 h-3 w-3" />
-          Add Account
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add New Debt Account</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleDebtSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Main Checking" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select account type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="credit_card">Credit Card</SelectItem>
-                      <SelectItem value="mortgage">Mortgage</SelectItem>
-                      <SelectItem value="student_loan">Student Loan</SelectItem>
-                      <SelectItem value="auto_loan">Auto Loan</SelectItem>
-                      <SelectItem value="line_of_credit">Line of Credit</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="balance"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Current Balance</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Visa •••• 1234" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="creditLimit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Credit Limit (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" placeholder="5000.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="apr"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>APR (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" placeholder="5.25" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dueDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Monthly Due Date (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" min="1" max="31" placeholder="15" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsDebtDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Create Account</Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-
-  const EditAccountDialog = () => {
-    const isAssetAccount = editingAccount?.type && ["checking", "savings", "money_market", "investment"].includes(editingAccount.type);
-    const isDebtAccount = editingAccount?.type && ["credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit"].includes(editingAccount.type);
-
-    return (
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit {isAssetAccount ? "Asset" : isDebtAccount ? "Debt" : ""} Account - {editingAccount?.name}</DialogTitle>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleEditAccount)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Main Checking" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select account type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {isAssetAccount ? (
-                          <>
-                            <SelectItem value="checking">Checking</SelectItem>
-                            <SelectItem value="savings">Savings</SelectItem>
-                            <SelectItem value="money_market">Money Market</SelectItem>
-                            <SelectItem value="investment">Investment</SelectItem>
-                          </>
-                        ) : (
-                          <>
-                            <SelectItem value="credit_card">Credit Card</SelectItem>
-                            <SelectItem value="mortgage">Mortgage</SelectItem>
-                            <SelectItem value="student_loan">Student Loan</SelectItem>
-                            <SelectItem value="auto_loan">Auto Loan</SelectItem>
-                            <SelectItem value="line_of_credit">Line of Credit</SelectItem>
-                          </>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description (Optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder={isAssetAccount ? "e.g., Primary checking account" : "e.g., Visa •••• 1234"} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {isAssetAccount && (
-                <FormField
-                  control={form.control}
-                  name="interestRate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Interest Rate (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" placeholder="4.5" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {isDebtAccount && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="creditLimit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Credit Limit (Optional)</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="0.01" placeholder="5000.00" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="apr"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>APR (Optional)</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="0.01" placeholder="5.25" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="dueDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Monthly Due Date (Optional)</FormLabel>
-                        <FormControl>
-                          <Input type="number" min="1" max="31" placeholder="15" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
-              )}
-
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">Update Account</Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    );
-  };
-
-  const BalanceAdjustmentDialog = () => (
-    <Dialog open={isBalanceDialogOpen} onOpenChange={setIsBalanceDialogOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Adjust Balance - {selectedAccount?.name}</DialogTitle>
-        </DialogHeader>
-        <Form {...balanceForm}>
-          <form onSubmit={balanceForm.handleSubmit(handleBalanceAdjustment)} className="space-y-4">
-            <div className="text-sm text-gray-600">
-              Current Balance: {selectedAccount && formatCurrency(selectedAccount.balance)}
-            </div>
-            
-            <FormField
-              control={balanceForm.control}
-              name="newBalance"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New Balance</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsBalanceDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Update Balance</Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
 
   return (
     <AppShell>
@@ -626,138 +195,179 @@ export default function AccountsPage() {
                   <Building className="mr-2 h-5 w-5 text-green-600" />
                   Asset Accounts
                 </h2>
-                <AddAssetAccountDialog />
+                <Dialog open={isAssetDialogOpen} onOpenChange={setIsAssetDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="mr-1 h-3 w-3" />
+                      Add Account
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add New Asset Account</DialogTitle>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(handleAssetSubmit)} className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Account Name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g., Main Checking" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Account Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select account type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="checking">Checking</SelectItem>
+                                  <SelectItem value="savings">Savings</SelectItem>
+                                  <SelectItem value="money_market">Money Market</SelectItem>
+                                  <SelectItem value="investment">Investment</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex justify-end space-x-2 pt-4">
+                          <Button type="button" variant="outline" onClick={() => setIsAssetDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button type="submit">Create Account</Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
               </div>
-          <div className="grid gap-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Checking Account</h3>
-                    <p className="text-sm text-gray-600">Primary checking account</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openBalanceAdjustment("Checking Account", 12345.67)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openEditAccount({
-                        name: "Checking Account",
-                        type: "checking",
-                        balance: "12345.67",
-                        description: "Primary checking account",
-                        interestRate: "",
-                        creditLimit: "",
-                        apr: "",
-                        dueDate: "",
-                      })}
-                    >
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              <div className="grid gap-4">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Checking Account</h3>
+                        <p className="text-sm text-gray-600">Primary checking account</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => openBalanceAdjustment("Checking Account", 12345.67)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Savings Account</h3>
+                        <p className="text-sm text-gray-600">High-yield savings</p>
+                        <p className="text-sm text-gray-500">4.5% APY</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => openBalanceAdjustment("Savings Account", 25890.12)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Savings Account</h3>
-                    <p className="text-sm text-gray-600">High-yield savings</p>
-                    <p className="text-sm text-gray-500">4.5% APY</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openBalanceAdjustment("Savings Account", 25890.12)}
-                    >
-                      <Edit className="h-4 w-4" />
+            {/* Debt Accounts */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <CreditCard className="mr-2 h-5 w-5 text-red-600" />
+                  Debt Accounts
+                </h2>
+                <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="mr-1 h-3 w-3" />
+                      Add Account
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openEditAccount({
-                        name: "Savings Account",
-                        type: "savings",
-                        balance: "25890.12",
-                        description: "High-yield savings • 4.5% APY",
-                        interestRate: "4.5",
-                        creditLimit: "",
-                        apr: "",
-                        dueDate: "",
-                      })}
-                    >
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Debt Accounts */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-              <CreditCard className="mr-2 h-5 w-5 text-red-600" />
-              Debt Accounts
-            </h2>
-            <AddDebtAccountDialog />
-          </div>
-          <div className="grid gap-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Credit Card</h3>
-                    <p className="text-sm text-gray-600">Visa •••• 1234</p>
-                    <p className="text-sm text-gray-500">22.99% APR</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openBalanceAdjustment("Credit Card", 2456.78)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => openEditAccount({
-                        name: "Credit Card",
-                        type: "credit_card",
-                        balance: "2456.78",
-                        description: "Visa •••• 1234 • 22.99% APR",
-                        interestRate: "",
-                        creditLimit: "5000",
-                        apr: "22.99",
-                        dueDate: "15",
-                      })}
-                    >
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        
-            <EditAccountDialog />
-            <BalanceAdjustmentDialog />
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add New Debt Account</DialogTitle>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(handleDebtSubmit)} className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Account Name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g., Main Credit Card" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex justify-end space-x-2 pt-4">
+                          <Button type="button" variant="outline" onClick={() => setIsDebtDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button type="submit">Create Account</Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <div className="grid gap-4">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Credit Card</h3>
+                        <p className="text-sm text-gray-600">Visa •••• 1234</p>
+                        <p className="text-sm text-gray-500">22.99% APR</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => openBalanceAdjustment("Credit Card", 2456.78)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="statements" className="space-y-6">
@@ -912,56 +522,92 @@ export default function AccountsPage() {
               </Collapsible>
             </div>
 
-              {/* Interest Chart - Debt Accounts Only */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Monthly Interest Expense by Debt Account</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={interestData}
-                        margin={{
-                          top: 20,
-                          right: 30,
-                          left: 20,
-                          bottom: 5,
+            {/* Interest Chart - Debt Accounts Only */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Monthly Interest Expense by Debt Account</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={interestData}
+                      margin={{
+                        top: 20,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
+                      }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                      <XAxis 
+                        dataKey="month" 
+                        tick={{ fontSize: 12 }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={60}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(value) => `$${value}`}
+                      />
+                      <Tooltip 
+                        formatter={(value) => [`$${value}`, '']}
+                        labelStyle={{ color: '#374151' }}
+                        contentStyle={{ 
+                          backgroundColor: '#f9fafb',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '6px'
                         }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                        <XAxis 
-                          dataKey="month" 
-                          tick={{ fontSize: 12 }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                        />
-                        <YAxis 
-                          tick={{ fontSize: 12 }}
-                          tickFormatter={(value) => `$${value}`}
-                        />
-                        <Tooltip 
-                          formatter={(value) => [`$${value}`, '']}
-                          labelStyle={{ color: '#374151' }}
-                          contentStyle={{ 
-                            backgroundColor: '#f9fafb',
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '6px'
-                          }}
-                        />
-                        <Legend />
-                        <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
-                        <Bar dataKey="Mortgage" stackId="a" fill={chartColors['Mortgage']} />
-                        <Bar dataKey="Auto Loan" stackId="a" fill={chartColors['Auto Loan']} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                      />
+                      <Legend />
+                      <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
+                      <Bar dataKey="Mortgage" stackId="a" fill={chartColors['Mortgage']} />
+                      <Bar dataKey="Auto Loan" stackId="a" fill={chartColors['Auto Loan']} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Balance Adjustment Dialog */}
+        <Dialog open={isBalanceDialogOpen} onOpenChange={setIsBalanceDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Adjust Balance - {selectedAccount?.name}</DialogTitle>
+            </DialogHeader>
+            <Form {...balanceForm}>
+              <form onSubmit={balanceForm.handleSubmit(handleBalanceAdjustment)} className="space-y-4">
+                <div className="text-sm text-gray-600">
+                  Current Balance: {selectedAccount && formatCurrency(selectedAccount.balance)}
+                </div>
+                
+                <FormField
+                  control={balanceForm.control}
+                  name="newBalance"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Balance</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button type="button" variant="outline" onClick={() => setIsBalanceDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">Update Balance</Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppShell>
   );
