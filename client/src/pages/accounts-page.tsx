@@ -1206,17 +1206,11 @@ export default function AccountsPage() {
                           <TableRow className="bg-blue-50">
                             <TableHead className="font-bold text-gray-900 bg-blue-100">DEBT BY TYPE</TableHead>
                             <TableHead className="text-center font-bold text-gray-900">JAN 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-600">INT</TableHead>
                             <TableHead className="text-center font-bold text-gray-900">FEB 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-600">INT</TableHead>
                             <TableHead className="text-center font-bold text-gray-900">MAR 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-600">INT</TableHead>
                             <TableHead className="text-center font-bold text-gray-900">APR 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-600">INT</TableHead>
                             <TableHead className="text-center font-bold text-gray-900">MAY 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-600">INT</TableHead>
                             <TableHead className="text-center font-bold text-gray-900">JUN 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-600">INT</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -1260,14 +1254,14 @@ export default function AccountsPage() {
                                       {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                                     </TableCell>
                                     {months.map((month, index) => (
-                                      <>
-                                        <TableCell key={`balance-${index}`} className="text-center text-sm">
-                                          ${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}
-                                        </TableCell>
-                                        <TableCell key={`interest-${index}`} className="text-center text-sm text-gray-600">
-                                          ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
-                                        </TableCell>
-                                      </>
+                                      <TableCell key={`month-${index}`} className="text-center text-sm">
+                                        <div className="space-y-1">
+                                          <div>${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}</div>
+                                          <div className="text-xs text-gray-600">
+                                            ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
+                                          </div>
+                                        </div>
+                                      </TableCell>
                                     ))}
                                   </TableRow>
                                 ))}
@@ -1276,14 +1270,14 @@ export default function AccountsPage() {
                                 <TableRow className="border-t-2 border-gray-300 bg-gray-100 font-bold">
                                   <TableCell className="font-bold text-gray-900 bg-gray-200">TOTAL</TableCell>
                                   {totalsByMonth.map((total, index) => (
-                                    <>
-                                      <TableCell key={`total-balance-${index}`} className="text-center text-sm font-bold">
-                                        ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
-                                      </TableCell>
-                                      <TableCell key={`total-interest-${index}`} className="text-center text-sm font-bold text-gray-600">
-                                        ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
-                                      </TableCell>
-                                    </>
+                                    <TableCell key={`total-month-${index}`} className="text-center text-sm font-bold">
+                                      <div className="space-y-1">
+                                        <div>${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}</div>
+                                        <div className="text-xs text-gray-600">
+                                          ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
+                                        </div>
+                                      </div>
+                                    </TableCell>
                                   ))}
                                 </TableRow>
                               </>
