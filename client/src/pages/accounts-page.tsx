@@ -1202,24 +1202,6 @@ export default function AccountsPage() {
                     {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
                   </div>
 
-                  {/* Sort Dropdown */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">Sort:</label>
-                    <Select value={debtSortBy} onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}>
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="balance">Balance (High → Low)</SelectItem>
-                        <SelectItem value="balanceAsc">Balance (Low → High)</SelectItem>
-                        <SelectItem value="name">Name (A → Z)</SelectItem>
-                        <SelectItem value="nameDesc">Name (Z → A)</SelectItem>
-                        <SelectItem value="interest">Interest (High → Low)</SelectItem>
-                        <SelectItem value="payoff">Payoff Time (Short → Long)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   {/* Filter Dropdown */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm font-medium text-gray-700">Filter:</label>
@@ -1243,6 +1225,24 @@ export default function AccountsPage() {
                             {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </SelectItem>
                         ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Sort Dropdown */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">Sort:</label>
+                    <Select value={debtSortBy} onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="balance">Balance (High → Low)</SelectItem>
+                        <SelectItem value="balanceAsc">Balance (Low → High)</SelectItem>
+                        <SelectItem value="name">Name (A → Z)</SelectItem>
+                        <SelectItem value="nameDesc">Name (Z → A)</SelectItem>
+                        <SelectItem value="interest">Interest (High → Low)</SelectItem>
+                        <SelectItem value="payoff">Payoff Time (Short → Long)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
