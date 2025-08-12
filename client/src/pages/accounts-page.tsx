@@ -1157,7 +1157,7 @@ export default function AccountsPage() {
                                   });
                                   
                                   return Math.round(totalStartBalance).toLocaleString();
-                                })()} from Jan/earliest
+                                })()} Starting Bal
                               </p>
                             </div>
                             <div className="text-center">
