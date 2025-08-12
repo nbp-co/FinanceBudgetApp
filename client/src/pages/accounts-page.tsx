@@ -1778,8 +1778,8 @@ export default function AccountsPage() {
                     <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                       <Table>
                       <TableHeader>
-                        <TableRow className="bg-gray-600 h-10 border-none">
-                          <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-500">DEBT BY TYPE</TableHead>
+                        <TableRow className="bg-gray-400 h-10 border-none">
+                          <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">DEBT BY TYPE</TableHead>
                           {(() => {
                             const months = [];
                             const monthLabels = summaryMonthOffset === 1 
@@ -1792,7 +1792,7 @@ export default function AccountsPage() {
                             
                             monthLabels.forEach((label, index) => {
                               months.push(
-                                <TableHead key={`header-${index}`} className={`text-center font-bold text-white py-3 px-3 ${index === monthLabels.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-500'}`}>
+                                <TableHead key={`header-${index}`} className={`text-center font-bold text-white py-3 px-3 ${index === monthLabels.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
                                   {label}
                                 </TableHead>
                               );
@@ -1847,7 +1847,7 @@ export default function AccountsPage() {
                                         <div className="text-sm font-bold text-gray-900">
                                           ${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}
                                         </div>
-                                        <div className="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full inline-block font-medium">
+                                        <div className="text-xs text-red-600 italic font-medium">
                                           ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
                                         </div>
                                       </div>
@@ -1857,17 +1857,17 @@ export default function AccountsPage() {
                               ))}
                               
                               {/* Total Row */}
-                              <TableRow className="border-t-2 border-gray-300 bg-gray-600 text-white font-bold h-12">
-                                <TableCell className="font-bold text-white py-3 px-4 border-r border-gray-500 rounded-bl-lg">
+                              <TableRow className="border-t-2 border-gray-300 bg-gray-400 text-white font-bold h-12">
+                                <TableCell className="font-bold text-white py-3 px-4 border-r border-gray-300 rounded-bl-lg">
                                   TOTAL
                                 </TableCell>
                                 {totalsByMonth.map((total, index) => (
-                                  <TableCell key={`total-month-${index}`} className={`text-center font-bold py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-gray-500' : 'rounded-br-lg'}`}>
+                                  <TableCell key={`total-month-${index}`} className={`text-center font-bold py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-gray-300' : 'rounded-br-lg'}`}>
                                     <div className="space-y-1">
                                       <div className="text-sm font-bold text-white">
                                         ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
                                       </div>
-                                      <div className="text-xs text-gray-200 bg-gray-700 px-2 py-0.5 rounded inline-block font-medium">
+                                      <div className="text-xs text-red-400 italic font-medium">
                                         ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
                                       </div>
                                     </div>
