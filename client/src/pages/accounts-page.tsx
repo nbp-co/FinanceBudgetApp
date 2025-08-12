@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, TrendingDown, TrendingUp, DollarSign, Calculator, Calendar, Target, Zap, CalendarDays, CheckCircle2 } from "lucide-react";
+import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, TrendingDown, TrendingUp, DollarSign, Calculator, Calendar, Target, Zap, CalendarDays, CheckCircle2, FileText, X } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
@@ -46,6 +47,16 @@ export default function AccountsPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<{ name: string; balance: number } | null>(null);
   const [editingAccount, setEditingAccount] = useState<AccountFormData | null>(null);
+  
+  // Notes state
+  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+  const [selectedAccountForNotes, setSelectedAccountForNotes] = useState<string | null>(null);
+  const [accountNotes, setAccountNotes] = useState<{ [accountName: string]: string[] }>({
+    "Checking Account": ["Primary account for monthly expenses", "Direct deposit setup"],
+    "Credit Card": ["Pay off before statement date", "Rewards card for groceries"],
+    "Savings Account": ["Emergency fund target: $10,000", "High-yield account"]
+  });
+  const [newNote, setNewNote] = useState("");
   
   // Statements tab state
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2025-01", "2025-02", "2025-03"]);
@@ -373,6 +384,30 @@ export default function AccountsPage() {
     };
   };
 
+  // Notes helper functions
+  const openNotesDialog = (accountName: string) => {
+    setSelectedAccountForNotes(accountName);
+    setIsNotesDialogOpen(true);
+    setNewNote("");
+  };
+
+  const addNote = () => {
+    if (newNote.trim() && selectedAccountForNotes) {
+      setAccountNotes(prev => ({
+        ...prev,
+        [selectedAccountForNotes]: [...(prev[selectedAccountForNotes] || []), newNote.trim()]
+      }));
+      setNewNote("");
+    }
+  };
+
+  const deleteNote = (accountName: string, noteIndex: number) => {
+    setAccountNotes(prev => ({
+      ...prev,
+      [accountName]: prev[accountName]?.filter((_, index) => index !== noteIndex) || []
+    }));
+  };
+
   const calculateDebtSummary = () => {
     const debtAccounts = getDebtAccounts();
     let totalDebt = 0;
@@ -666,6 +701,13 @@ export default function AccountsPage() {
                         <Button 
                           variant="ghost" 
                           size="sm" 
+                          onClick={() => openNotesDialog("Checking Account")}
+                        >
+                          <FileText className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
                           onClick={() => openBalanceAdjustment("Checking Account", 12345.67)}
                         >
                           <Edit className="h-4 w-4" />
@@ -684,6 +726,13 @@ export default function AccountsPage() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => openNotesDialog("Savings Account")}
+                        >
+                          <FileText className="h-4 w-4" />
+                        </Button>
                         <Button 
                           variant="ghost" 
                           size="sm" 
@@ -779,6 +828,13 @@ export default function AccountsPage() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => openNotesDialog("Credit Card")}
+                        >
+                          <FileText className="h-4 w-4" />
+                        </Button>
                         <Button 
                           variant="ghost" 
                           size="sm" 
@@ -1383,6 +1439,19 @@ export default function AccountsPage() {
                               }}
                             >
                               <TrendingDown className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              id={`notes-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                openNotesDialog(account.name);
+                              }}
+                            >
+                              <FileText className="h-3 w-3" />
                             </Button>
                             <Button
                               id={`edit-payment-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
@@ -2119,6 +2188,69 @@ export default function AccountsPage() {
                 <Button onClick={() => setShowDebtPayoffInfo(false)}>
                   Got it
                 </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Notes Dialog */}
+        <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Notes - {selectedAccountForNotes}</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4 max-h-[400px] overflow-y-auto">
+              {/* Existing Notes */}
+              <div className="space-y-2">
+                {selectedAccountForNotes && accountNotes[selectedAccountForNotes]?.length > 0 ? (
+                  accountNotes[selectedAccountForNotes].map((note, index) => (
+                    <div key={index} className="flex items-start justify-between p-3 bg-gray-50 rounded border">
+                      <p className="text-sm text-gray-700 flex-1">{note}</p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 ml-2 flex-shrink-0 text-red-500 hover:text-red-700"
+                        onClick={() => selectedAccountForNotes && deleteNote(selectedAccountForNotes, index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 italic">No notes yet. Add your first note below.</p>
+                )}
+              </div>
+
+              {/* Add New Note */}
+              <div className="space-y-2">
+                <Label htmlFor="new-note">Add Note</Label>
+                <Textarea
+                  id="new-note"
+                  placeholder="Enter your note here..."
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  className="min-h-[80px]"
+                />
+                <div className="flex justify-between">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsNotesDialogOpen(false);
+                      setNewNote("");
+                    }}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={addNote}
+                    disabled={!newNote.trim()}
+                  >
+                    Add Note
+                  </Button>
+                </div>
               </div>
             </div>
           </DialogContent>
