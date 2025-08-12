@@ -384,11 +384,13 @@ export default function AccountsPage() {
     <AppShell>
       <div className="p-4 lg:p-8">
         <Tabs defaultValue="accounts" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-lg">
-            <TabsTrigger value="accounts">My Accounts</TabsTrigger>
-            <TabsTrigger value="statements">Statements</TabsTrigger>
-            <TabsTrigger value="debt-payoff">Debt Payoff</TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center">
+            <TabsList className="grid grid-cols-3 max-w-lg">
+              <TabsTrigger value="accounts">My Accounts</TabsTrigger>
+              <TabsTrigger value="statements">Statements</TabsTrigger>
+              <TabsTrigger value="debt-payoff">Debt Payoff</TabsTrigger>
+            </TabsList>
+          </div>
           
           <TabsContent value="accounts" className="space-y-8">
             {/* Asset Accounts */}
