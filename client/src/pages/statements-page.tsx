@@ -217,12 +217,12 @@ export default function StatementsPage() {
               <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-gray-400 h-10 border-none">
-                      <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">ACCOUNT</TableHead>
+                    <TableRow className="bg-gray-400 h-6 border-none">
+                      <TableHead className="font-bold text-white py-1 px-2 rounded-tl-lg border-r border-gray-300 text-xs leading-tight">ACCOUNT</TableHead>
                       {selectedMonths.map((monthValue, index) => {
                         const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                         return (
-                          <TableHead key={monthValue} className={`text-center font-bold text-white py-3 px-3 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                          <TableHead key={monthValue} className={`text-center font-bold text-white py-1 px-2 text-xs leading-tight ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
                             {monthLabel.toUpperCase()}
                           </TableHead>
                         );
@@ -232,39 +232,39 @@ export default function StatementsPage() {
                   <TableBody className="bg-white">
                     {accounts.map((account, accountIndex) => (
                       <TableRow key={account.name} className="border-b border-gray-200 hover:bg-gray-50">
-                        <TableCell className="py-3 px-4 border-r border-gray-300">
-                          <div className="space-y-2">
-                            <div className="font-semibold text-gray-900 text-sm">{account.name}</div>
-                            <div className="flex gap-2">
-                              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                        <TableCell className="py-0.5 px-2 border-r border-gray-300">
+                          <div className="space-y-0.5">
+                            <div className="font-semibold text-gray-900 text-xs leading-tight">{account.name}</div>
+                            <div className="flex gap-1">
+                              <span className={`px-1 py-0 rounded text-xs font-medium leading-tight ${
                                 account.type === 'Asset' 
                                   ? 'bg-green-100 text-green-800' 
                                   : 'bg-red-100 text-red-800'
                               }`}>
                                 {account.type}
                               </span>
-                              <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                              <span className="px-1 py-0 rounded text-xs font-medium bg-gray-100 text-gray-700 leading-tight">
                                 {account.accountType}
                               </span>
                             </div>
-                            <div className="text-xs text-gray-500 space-y-0.5">
+                            <div className="text-xs text-gray-500 leading-tight">
                               {account.apr && (
-                                <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
+                                <span>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</span>
                               )}
                               {account.dueDate && (
-                                <div>Due: {account.dueDate}th</div>
+                                <span className="ml-2">Due: {account.dueDate}th</span>
                               )}
                             </div>
                           </div>
                         </TableCell>
 
                         {selectedMonths.map((monthValue, monthIndex) => (
-                          <TableCell key={`${account.name}-${monthValue}`} className={`py-3 px-4 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
-                            <div className="space-y-2">
+                          <TableCell key={`${account.name}-${monthValue}`} className={`py-0.5 px-2 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
+                            <div className="space-y-0.5">
                               <div>
-                                <div className="text-xs text-gray-400 font-medium mb-1">B</div>
+                                <div className="text-xs text-gray-400 font-medium leading-tight">B</div>
                                 <div className="flex items-center">
-                                  <span className="text-sm text-gray-500 mr-1">$</span>
+                                  <span className="text-xs text-gray-500 mr-1">$</span>
                                   <Input
                                     type="text"
                                     defaultValue={
@@ -276,15 +276,15 @@ export default function StatementsPage() {
                                       account.name === "Mortgage" ? "285,000.00" :
                                       "15,250.00"
                                     }
-                                    className="flex-1 border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none"
+                                    className="flex-1 border-0 p-0 text-xs font-medium bg-transparent focus:ring-0 focus:outline-none leading-tight"
                                   />
                                 </div>
                               </div>
                               {account.type === 'Debt' && (
                                 <div>
-                                  <div className="text-xs text-gray-400 font-medium mb-1">I</div>
+                                  <div className="text-xs text-gray-400 font-medium leading-tight">I</div>
                                   <div className="flex items-center">
-                                    <span className="text-sm text-gray-500 mr-1">$</span>
+                                    <span className="text-xs text-gray-500 mr-1">$</span>
                                     <Input
                                       type="text"
                                       defaultValue={
@@ -293,7 +293,7 @@ export default function StatementsPage() {
                                         account.name === "Mortgage" ? "1,542.88" :
                                         "78.95"
                                       }
-                                      className="flex-1 border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic"
+                                      className="flex-1 border-0 p-0 text-xs font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic leading-tight"
                                     />
                                   </div>
                                 </div>
