@@ -1070,32 +1070,36 @@ export default function AccountsPage() {
 
                         {/* Pagination Controls */}
                         {totalPages > 1 && (
-                          <div className="flex items-center justify-between mt-4 px-2">
-                            <div className="text-sm text-gray-700">
-                              Showing {startIndex + 1}-{Math.min(endIndex, filteredAccounts.length)} of {filteredAccounts.length} accounts
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-                                disabled={currentPage === 0}
-                              >
-                                <ChevronLeft className="h-4 w-4" />
-                                Previous
-                              </Button>
-                              <span className="text-sm text-gray-700">
-                                Page {currentPage + 1} of {totalPages}
-                              </span>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
-                                disabled={currentPage === totalPages - 1}
-                              >
-                                Next
-                                <ChevronRight className="h-4 w-4" />
-                              </Button>
+                          <div className="mt-4 px-2 space-y-3 sm:space-y-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                              <div className="text-sm text-gray-700 order-2 sm:order-1">
+                                Showing {startIndex + 1}-{Math.min(endIndex, filteredAccounts.length)} of {filteredAccounts.length} accounts
+                              </div>
+                              <div className="flex items-center justify-center sm:justify-end space-x-2 order-1 sm:order-2">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                                  disabled={currentPage === 0}
+                                  className="flex items-center gap-1"
+                                >
+                                  <ChevronLeft className="h-4 w-4" />
+                                  <span className="hidden xs:inline">Previous</span>
+                                </Button>
+                                <span className="text-sm text-gray-700 whitespace-nowrap">
+                                  Page {currentPage + 1} of {totalPages}
+                                </span>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                                  disabled={currentPage === totalPages - 1}
+                                  className="flex items-center gap-1"
+                                >
+                                  <span className="hidden xs:inline">Next</span>
+                                  <ChevronRight className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         )}
