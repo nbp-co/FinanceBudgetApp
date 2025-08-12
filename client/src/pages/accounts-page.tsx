@@ -1973,7 +1973,7 @@ export default function AccountsPage() {
                                       <div className="text-sm font-bold text-white">
                                         ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
                                       </div>
-                                      <div className="text-xs text-red-400 italic font-medium">
+                                      <div className="text-xs text-red-400 italic font-medium inline-block bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
                                         ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
                                       </div>
                                     </div>
