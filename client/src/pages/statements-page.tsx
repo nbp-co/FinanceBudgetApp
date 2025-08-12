@@ -106,29 +106,28 @@ export default function StatementsPage() {
             
             <CollapsibleContent>
               <CardContent className="pt-0 pb-4 space-y-6">
-                {/* Filter Controls */}
-                <div className="flex justify-between items-start gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-                  
-                  {/* Select months to edit */}
-                  <div className="flex-1">
-                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
-                    <div className="flex flex-wrap gap-3">
-                      {availableMonths.map((month) => (
-                        <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
-                          <Checkbox
-                            id={`month-${month.value}`}
-                            checked={selectedMonths.includes(month.value)}
-                            onCheckedChange={() => toggleMonth(month.value)}
-                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                          />
-                          <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
-                            {month.label}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
+                {/* Month Selection */}
+                <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm mb-4">
+                  <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
+                  <div className="flex flex-wrap gap-3">
+                    {availableMonths.map((month) => (
+                      <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
+                        <Checkbox
+                          id={`month-${month.value}`}
+                          checked={selectedMonths.includes(month.value)}
+                          onCheckedChange={() => toggleMonth(month.value)}
+                          className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                        />
+                        <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                          {month.label}
+                        </Label>
+                      </div>
+                    ))}
                   </div>
+                </div>
 
+                {/* Controls */}
+                <div className="flex justify-between items-center gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
                   {/* Sort & Filter Dropdown */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
