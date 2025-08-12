@@ -1282,6 +1282,19 @@ export default function AccountsPage() {
                   const payoffInfo = calculatePayoffDate(balance, account.apr || 0, monthlyPayment);
                   const projectionData = calculatePayoffProjection(balance, account.apr || 0, monthlyPayment);
                   
+                  // Debug logging for Student Loan specifically
+                  if (account.name === 'Student Loan') {
+                    console.log('Student Loan Chart Data:', {
+                      accountName: account.name,
+                      balance,
+                      monthlyPayment,
+                      apr: account.apr,
+                      projectionDataLength: projectionData.length,
+                      projectionData: projectionData.slice(0, 3), // First 3 items
+                      isExpanded: expandedCharts[account.name]
+                    });
+                  }
+                  
                   return (
                     <Card key={account.name} className="overflow-hidden">
                       <CardHeader className="pb-2 px-4 pt-3">
@@ -1392,11 +1405,14 @@ export default function AccountsPage() {
                         </div>
 
                         {/* Compact Chart */}
-                        {expandedCharts[account.name] && (
-                          <div className="mt-2 space-y-3">
+                        {expandedCharts[account.name] && projectionData && projectionData.length > 0 && (
+                          <div className="mt-2 space-y-3" key={`chart-container-${account.name}`}>
                             <div className="h-32 w-full">
                               <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={projectionData}>
+                                <LineChart 
+                                  data={projectionData} 
+                                  key={`line-chart-${account.name}-${balance}`}
+                                >
                                   <XAxis 
                                     dataKey="month" 
                                     tick={{ fontSize: 10 }}
