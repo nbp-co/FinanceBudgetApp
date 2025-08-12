@@ -677,6 +677,45 @@ export default function AccountsPage() {
                             </FormItem>
                           )}
                         />
+                        <FormField
+                          control={form.control}
+                          name="balance"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Initial Balance</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description (Optional)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Account description" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="apr"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Interest Rate (APY %)</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                         <div className="flex justify-end space-x-2 pt-4">
                           <Button type="button" variant="outline" onClick={() => setIsAssetDialogOpen(false)}>
                             Cancel
@@ -802,6 +841,58 @@ export default function AccountsPage() {
                                   <SelectItem value="other_debt">Other Debt</SelectItem>
                                 </SelectContent>
                               </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="balance"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Current Balance</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description (Optional)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Account description" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="apr"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Interest Rate (APR %)</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="creditLimit"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Credit Limit (Optional)</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                              </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
