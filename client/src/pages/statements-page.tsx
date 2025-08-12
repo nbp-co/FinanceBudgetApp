@@ -238,12 +238,12 @@ export default function StatementsPage() {
                           })}
                         </TableRow>
                       </TableHeader>
-                      <TableBody>
+                      <TableBody className="bg-white">
                         {accounts.map((account, accountIndex) => (
-                          <TableRow key={account.name} className="hover:bg-gray-50">
-                            <TableCell className="font-medium py-4 px-4 text-gray-900 border-r border-gray-200">
-                              <div className="space-y-1">
-                                <div className="text-sm font-semibold">{account.name}</div>
+                          <TableRow key={account.name} className="border-b border-gray-200 hover:bg-gray-50">
+                            <TableCell className="py-4 px-4 border-r border-gray-300">
+                              <div className="space-y-2">
+                                <div className="font-semibold text-gray-900">{account.name}</div>
                                 <div className="flex gap-2">
                                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                                     account.type === 'Asset' 
@@ -256,7 +256,7 @@ export default function StatementsPage() {
                                     {account.accountType}
                                   </span>
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-gray-500 space-y-0.5">
                                   {account.apr && (
                                     <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
                                   )}
@@ -268,31 +268,39 @@ export default function StatementsPage() {
                             </TableCell>
 
                             {selectedMonths.map((monthValue, monthIndex) => (
-                              <TableCell key={`${account.name}-${monthValue}`} className={`text-center py-4 px-3 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-200' : ''}`}>
-                                <div className="space-y-2">
+                              <TableCell key={`${account.name}-${monthValue}`} className={`text-center py-4 px-3 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
+                                <div className="space-y-3">
                                   <div className="relative">
-                                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
-                                    <Input
-                                      type="text"
-                                      defaultValue={
-                                        account.name === "Checking Account" ? "12,345.67" :
-                                        account.name === "Savings Account" ? "25,890.12" :
-                                        account.name === "Money Market" ? "8,500.00" :
-                                        account.name === "Credit Card" ? "2,456.78" :
-                                        account.name === "Mortgage" ? "285,000.00" :
-                                        "15,250.00"
-                                      }
-                                      className="w-32 text-center pl-6 text-sm font-medium"
-                                    />
-                                    <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">BAL</span>
+                                    <div className="text-xs text-gray-400 font-medium mb-1">B</div>
+                                    <div className="flex items-center justify-center">
+                                      <span className="text-sm text-gray-500 mr-1">$</span>
+                                      <Input
+                                        type="text"
+                                        defaultValue={
+                                          account.name === "Auto Loan" ? "18,450.00" :
+                                          account.name === "Credit Card" ? "2,456.78" :
+                                          account.name === "Checking Account" ? "12,345.67" :
+                                          account.name === "Savings Account" ? "25,890.12" :
+                                          account.name === "Money Market" ? "8,500.00" :
+                                          account.name === "Mortgage" ? "285,000.00" :
+                                          "15,250.00"
+                                        }
+                                        className="w-24 text-center border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none"
+                                      />
+                                    </div>
                                   </div>
                                   {account.type === 'Debt' && (
-                                    <div className="text-xs text-red-600 italic font-medium">
-                                      Interest: ${
-                                        account.name === "Credit Card" ? "47.23" :
-                                        account.name === "Mortgage" ? "1,542.88" :
-                                        "78.95"
-                                      }
+                                    <div className="relative">
+                                      <div className="text-xs text-gray-400 font-medium mb-1">I</div>
+                                      <div className="flex items-center justify-center">
+                                        <span className="text-sm text-gray-500 mr-1">$</span>
+                                        <span className="text-sm text-red-600 italic font-medium">
+                                          {account.name === "Auto Loan" ? "78.95" :
+                                           account.name === "Credit Card" ? "47.23" :
+                                           account.name === "Mortgage" ? "1,542.88" :
+                                           "78.95"}
+                                        </span>
+                                      </div>
                                     </div>
                                   )}
                                 </div>
