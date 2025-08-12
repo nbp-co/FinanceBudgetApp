@@ -1188,8 +1188,8 @@ export default function AccountsPage() {
                   return (
                     <Card key={account.name} className="overflow-hidden">
                       <CardHeader className="pb-2 px-4 pt-3">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between">
+                          <div className="min-w-0">
                             <CardTitle className="text-base truncate">{account.name}</CardTitle>
                             <div className="flex items-center space-x-3 mt-1">
                               <p className="text-xs text-gray-600">
@@ -1198,6 +1198,18 @@ export default function AccountsPage() {
                               {account.apr && <p className="text-xs text-gray-600">{account.apr}% APR</p>}
                             </div>
                           </div>
+                          
+                          {/* Blue Payment Box - horizontal layout */}
+                          <div className="flex items-center justify-between p-1.5 border border-blue-200 bg-blue-50 rounded text-xs mx-3 min-w-[140px]">
+                            <div>
+                              <p className="font-medium text-blue-900">Next: ${Math.round(monthlyPayment).toLocaleString()}</p>
+                              <p className="text-blue-700">{account.dueDate ? `${account.dueDate}th` : 'Not scheduled'}</p>
+                            </div>
+                            <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 h-5 px-1.5 text-xs ml-2">
+                              Pay
+                            </Button>
+                          </div>
+                          
                           <div className="flex items-center space-x-1 flex-shrink-0">
                             <Button
                               variant="ghost"
@@ -1216,17 +1228,6 @@ export default function AccountsPage() {
                               <Edit className="h-3 w-3" />
                             </Button>
                           </div>
-                        </div>
-                        
-                        {/* Next Payment - moved to header */}
-                        <div className="flex items-center justify-between p-1.5 border border-blue-200 bg-blue-50 rounded text-xs">
-                          <div>
-                            <p className="font-medium text-blue-900">Next: ${Math.round(monthlyPayment).toLocaleString()}</p>
-                            <p className="text-blue-700">{account.dueDate ? `${account.dueDate}th` : 'Not scheduled'}</p>
-                          </div>
-                          <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 h-5 px-1.5 text-xs">
-                            Pay
-                          </Button>
                         </div>
                       </CardHeader>
 
