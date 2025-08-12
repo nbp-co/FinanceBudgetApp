@@ -1430,6 +1430,12 @@ export default function AccountsPage() {
                                     axisLine={false}
                                     tickLine={false}
                                     width={45}
+                                    label={{ 
+                                      value: 'Balance', 
+                                      angle: -90, 
+                                      position: 'insideLeft',
+                                      style: { textAnchor: 'middle', fontSize: '10px', fill: '#6b7280' }
+                                    }}
                                     domain={(() => {
                                       const values = projectionData.map(d => d.balance);
                                       const minValue = Math.min(...values);
@@ -1940,6 +1946,12 @@ export default function AccountsPage() {
                                 <YAxis 
                                   tick={{ fontSize: 12 }}
                                   tickFormatter={(value) => `$${value > 10000 ? `${(value/1000).toFixed(1)}k` : value.toLocaleString()}`}
+                                  label={{ 
+                                    value: summaryChartMode === 'balance' ? 'Debt Balance' : 'Monthly Interest', 
+                                    angle: -90, 
+                                    position: 'insideLeft',
+                                    style: { textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }
+                                  }}
                                 />
                                 <RechartsTooltip 
                                   formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
