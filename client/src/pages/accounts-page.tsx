@@ -14,7 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, TrendingDown, TrendingUp, DollarSign, Calculator, Calendar, Target, Zap } from "lucide-react";
+import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, TrendingDown, TrendingUp, DollarSign, Calculator, Calendar, Target, Zap, CalendarDays, CheckCircle2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
@@ -63,6 +63,15 @@ export default function AccountsPage() {
   // Debt sort/filter state
   const [debtSortBy, setDebtSortBy] = useState<'name' | 'balance' | 'interest' | 'payoff'>('balance');
   const [debtFilterBy, setDebtFilterBy] = useState<string[]>([]);
+  
+  // Payment form state
+  const [currentPaymentForm, setCurrentPaymentForm] = useState({
+    account: '',
+    amount: '',
+    frequency: '',
+    paymentSource: '',
+    startDate: new Date().toISOString().split('T')[0]
+  });
 
   // Statements data
   const availableMonths = [
@@ -371,7 +380,37 @@ export default function AccountsPage() {
 
   const openPaymentDialog = (accountName: string) => {
     setSelectedDebtAccount(accountName);
+    setCurrentPaymentForm({
+      account: accountName,
+      amount: '',
+      frequency: 'monthly',
+      paymentSource: 'checking',
+      startDate: new Date().toISOString().split('T')[0]
+    });
     setIsPaymentDialogOpen(true);
+  };
+
+  const handleSchedulePayment = () => {
+    if (currentPaymentForm.account && currentPaymentForm.amount) {
+      setPaymentSchedules(prev => ({
+        ...prev,
+        [currentPaymentForm.account]: {
+          frequency: currentPaymentForm.frequency,
+          amount: parseFloat(currentPaymentForm.amount),
+          paymentAccount: currentPaymentForm.paymentSource,
+          nextDueDate: currentPaymentForm.startDate,
+          startDate: currentPaymentForm.startDate
+        }
+      }));
+      setIsPaymentDialogOpen(false);
+      setCurrentPaymentForm({
+        account: '',
+        amount: '',
+        frequency: '',
+        paymentSource: '',
+        startDate: new Date().toISOString().split('T')[0]
+      });
+    }
   };
 
   // Debt filtering and sorting functions
@@ -1270,7 +1309,27 @@ export default function AccountsPage() {
                       <CardHeader className="pb-2 px-4 pt-3">
                         <div className="flex items-center justify-between">
                           <div className="min-w-0">
-                            <CardTitle className="text-base truncate">{account.name}</CardTitle>
+                            <div className="flex items-center space-x-2">
+                              <CardTitle className="text-base truncate">{account.name}</CardTitle>
+                              {/* Payment Scheduled Indicator */}
+                              {paymentSchedules[account.name] && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger>
+                                      <div className="flex items-center space-x-1">
+                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                        <span className="text-xs font-medium text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full">
+                                          Auto
+                                        </span>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Payment scheduled: ${paymentSchedules[account.name]?.amount?.toLocaleString() || Math.round(monthlyPayment).toLocaleString()}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
                             <div className="flex items-center space-x-3 mt-1">
                               <p className="text-xs text-gray-600">
                                 <span className="font-semibold text-red-600">${balance.toLocaleString()}</span>
@@ -1456,7 +1515,10 @@ export default function AccountsPage() {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="payment-account">Debt Account</Label>
-                    <Select>
+                    <Select 
+                      value={currentPaymentForm.account} 
+                      onValueChange={(value) => setCurrentPaymentForm(prev => ({ ...prev, account: value }))}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select debt account" />
                       </SelectTrigger>
@@ -1479,13 +1541,18 @@ export default function AccountsPage() {
                         type="number" 
                         placeholder="0.00"
                         className="pl-8"
+                        value={currentPaymentForm.amount}
+                        onChange={(e) => setCurrentPaymentForm(prev => ({ ...prev, amount: e.target.value }))}
                       />
                     </div>
                   </div>
 
                   <div>
                     <Label htmlFor="frequency">Payment Frequency</Label>
-                    <Select>
+                    <Select 
+                      value={currentPaymentForm.frequency} 
+                      onValueChange={(value) => setCurrentPaymentForm(prev => ({ ...prev, frequency: value }))}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select frequency" />
                       </SelectTrigger>
@@ -1499,7 +1566,10 @@ export default function AccountsPage() {
 
                   <div>
                     <Label htmlFor="payment-source">Payment Account</Label>
-                    <Select>
+                    <Select 
+                      value={currentPaymentForm.paymentSource} 
+                      onValueChange={(value) => setCurrentPaymentForm(prev => ({ ...prev, paymentSource: value }))}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select payment source" />
                       </SelectTrigger>
@@ -1511,11 +1581,26 @@ export default function AccountsPage() {
                     </Select>
                   </div>
 
+                  <div>
+                    <Label htmlFor="start-date">Start Date</Label>
+                    <div className="relative">
+                      <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <Input 
+                        id="start-date" 
+                        type="date" 
+                        placeholder="Select start date"
+                        className="pl-10"
+                        value={currentPaymentForm.startDate}
+                        onChange={(e) => setCurrentPaymentForm(prev => ({ ...prev, startDate: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
                   <div className="flex justify-end space-x-2 pt-4">
                     <Button type="button" variant="outline" onClick={() => setIsPaymentDialogOpen(false)}>
                       Cancel
                     </Button>
-                    <Button type="button" onClick={() => setIsPaymentDialogOpen(false)}>
+                    <Button type="button" onClick={handleSchedulePayment}>
                       Schedule Payment
                     </Button>
                   </div>
