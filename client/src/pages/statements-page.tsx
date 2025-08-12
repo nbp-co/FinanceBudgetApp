@@ -344,10 +344,10 @@ export default function StatementsPage() {
 
                             {selectedMonths.map((monthValue, monthIndex) => (
                               <TableCell key={`${account.name}-${monthValue}`} className="py-3 px-4 border-r border-gray-200">
-                                <div className="flex flex-col items-center space-y-2">
+                                <div className="space-y-2 flex flex-col items-center">
                                   <div className="w-full flex flex-col items-center">
                                     <div className="text-xs text-gray-400 font-medium mb-1">B</div>
-                                    <div className="flex items-center">
+                                    <div className="flex items-center justify-center">
                                       <span className="text-sm text-gray-500 mr-1">$</span>
                                       <Input
                                         type="text"
@@ -360,14 +360,14 @@ export default function StatementsPage() {
                                           account.name === "Mortgage" ? "285,000.00" :
                                           "15,250.00"
                                         }
-                                        className="flex-1 border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none text-center"
+                                        className="w-20 border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none text-center"
                                       />
                                     </div>
                                   </div>
                                   {account.type === 'Debt' && (
                                     <div className="w-full flex flex-col items-center">
                                       <div className="text-xs text-gray-400 font-medium mb-1">I</div>
-                                      <div className="flex items-center">
+                                      <div className="flex items-center justify-center">
                                         <span className="text-sm text-gray-500 mr-1">$</span>
                                         <Input
                                           type="text"
@@ -377,7 +377,7 @@ export default function StatementsPage() {
                                             account.name === "Mortgage" ? "1,542.88" :
                                             "78.95"
                                           }
-                                          className="flex-1 border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic text-center"
+                                          className="w-20 border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic text-center"
                                         />
                                       </div>
                                     </div>

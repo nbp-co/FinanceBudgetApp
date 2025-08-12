@@ -1008,11 +1008,11 @@ export default function AccountsPage() {
 
                                     {selectedMonths.map(monthValue => (
                                       <TableCell key={`${account.name}-${monthValue}`} className="text-center border-r border-gray-200 py-3">
-                                        <div className="flex flex-col items-center space-y-1">
+                                        <div className="space-y-1 flex flex-col items-center">
                                           <div className="relative flex flex-col items-center">
                                             <span className="text-xs text-gray-400 font-medium mb-1">B</span>
-                                            <div className="relative">
-                                              <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                            <div className="flex items-center">
+                                              <span className="text-sm text-gray-500 mr-1">$</span>
                                               <Input
                                                 type="text"
                                                 defaultValue={
@@ -1032,7 +1032,7 @@ export default function AccountsPage() {
                                                   account.name === "Taxes Owed" ? "3,500.00" :
                                                   "15,250.00"
                                                 }
-                                                className="w-28 h-8 text-center pl-6"
+                                                className="w-24 h-7 text-center border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none"
                                               />
                                             </div>
                                           </div>
@@ -1041,8 +1041,8 @@ export default function AccountsPage() {
                                               <TooltipTrigger asChild>
                                                 <div className="relative flex flex-col items-center">
                                                   <span className="text-xs text-gray-400 font-medium mb-1">I</span>
-                                                  <div className="relative">
-                                                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
+                                                  <div className="flex items-center">
+                                                    <span className="text-sm text-gray-500 mr-1">$</span>
                                                     <Input
                                                       type="text"
                                                       defaultValue={
@@ -1062,7 +1062,7 @@ export default function AccountsPage() {
                                                         account.name === "Taxes Owed" ? "0.00" :
                                                         "25.50"
                                                       }
-                                                      className="w-28 h-8 text-center text-xs pl-6"
+                                                      className="w-24 h-7 text-center border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic"
                                                     />
                                                   </div>
                                                 </div>
