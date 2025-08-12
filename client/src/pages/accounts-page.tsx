@@ -991,11 +991,16 @@ export default function AccountsPage() {
                                           </span>
                                         </div>
                                         <div className="text-xs text-gray-500 space-y-0.5">
-                                          {account.apr && (
-                                            <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
-                                          )}
                                           {account.dueDate && (
-                                            <div>Due: {account.dueDate}th</div>
+                                            <div className="flex justify-between items-center">
+                                              <span>Due: {account.dueDate}th</span>
+                                              {account.apr && (
+                                                <span>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</span>
+                                              )}
+                                            </div>
+                                          )}
+                                          {!account.dueDate && account.apr && (
+                                            <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
                                           )}
                                         </div>
                                       </div>
