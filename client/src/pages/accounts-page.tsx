@@ -63,6 +63,7 @@ export default function AccountsPage() {
 
   const allAccounts = [
     { name: "Checking Account", type: "Asset", accountType: "Checking", apr: null, dueDate: null },
+    { name: "Business Checking", type: "Asset", accountType: "Business Checking", apr: null, dueDate: null },
     { name: "Savings Account", type: "Asset", accountType: "Savings", apr: 4.25, dueDate: null },
     { name: "Money Market", type: "Asset", accountType: "Money Market", apr: 3.5, dueDate: null },
     { name: "Investment Account", type: "Asset", accountType: "Investment", apr: 7.8, dueDate: null },
@@ -74,6 +75,7 @@ export default function AccountsPage() {
     { name: "Student Loan", type: "Debt", accountType: "Student Loan", apr: 4.8, dueDate: 5 },
     { name: "Personal Loan", type: "Debt", accountType: "Line of Credit", apr: 12.5, dueDate: 20 },
     { name: "Business Credit Card", type: "Debt", accountType: "Credit Card", apr: 18.9, dueDate: 25 },
+    { name: "Taxes Owed", type: "Debt", accountType: "Taxes", apr: null, dueDate: null },
   ];
 
   // Interest data by month - debt accounts only
@@ -116,6 +118,59 @@ export default function AccountsPage() {
 
   // For non-statements tabs, show all accounts
   const accounts = filteredAccounts;
+
+  // Helper function to get balance value from input default value
+  const getBalance = (accountName: string): number => {
+    const balanceMap: { [key: string]: number } = {
+      "Checking Account": 12345.67,
+      "Business Checking": 8750.00,
+      "Savings Account": 25890.12,
+      "Money Market": 8500.00,
+      "Investment Account": 45230.00,
+      "Emergency Fund": 12000.00,
+      "Retirement 401k": 125500.00,
+      "Credit Card": 2456.78,
+      "Mortgage": 285000.00,
+      "Auto Loan": 18450.00,
+      "Student Loan": 23800.00,
+      "Personal Loan": 5200.00,
+      "Business Credit Card": 1850.00,
+      "Taxes Owed": 3500.00,
+    };
+    return balanceMap[accountName] || 15250.00;
+  };
+
+  // Helper function to get interest value from input default value
+  const getInterest = (accountName: string): number => {
+    const interestMap: { [key: string]: number } = {
+      "Checking Account": 0.00,
+      "Business Checking": 0.00,
+      "Savings Account": 95.43,
+      "Money Market": 25.18,
+      "Investment Account": 295.83,
+      "Emergency Fund": 40.00,
+      "Retirement 401k": 857.50,
+      "Credit Card": 47.23,
+      "Mortgage": 1542.88,
+      "Auto Loan": 78.95,
+      "Student Loan": 95.20,
+      "Personal Loan": 54.17,
+      "Business Credit Card": 29.12,
+      "Taxes Owed": 0.00,
+    };
+    return interestMap[accountName] || 25.50;
+  };
+
+  // Calculate total balance and interest across all accounts for the month
+  const calculateTotals = (monthValue: string) => {
+    const totalBalance = paginatedAccounts.reduce((sum, account) => sum + getBalance(account.name), 0);
+    const totalInterest = paginatedAccounts.reduce((sum, account) => sum + getInterest(account.name), 0);
+    
+    // Calculate estimated overall APR (annualized)
+    const estimatedAPR = totalBalance > 0 ? (totalInterest * 12 / totalBalance) * 100 : 0;
+    
+    return { totalBalance, totalInterest, estimatedAPR };
+  };
 
   const toggleMonth = (monthValue: string) => {
     setSelectedMonths(prev => 
@@ -254,6 +309,7 @@ export default function AccountsPage() {
                                 </FormControl>
                                 <SelectContent>
                                   <SelectItem value="checking">Checking</SelectItem>
+                                  <SelectItem value="business_checking">Business Checking</SelectItem>
                                   <SelectItem value="savings">Savings</SelectItem>
                                   <SelectItem value="money_market">Money Market</SelectItem>
                                   <SelectItem value="investment">Investment</SelectItem>
@@ -371,6 +427,7 @@ export default function AccountsPage() {
                                   <SelectItem value="student_loan">Student Loan</SelectItem>
                                   <SelectItem value="auto_loan">Auto Loan</SelectItem>
                                   <SelectItem value="line_of_credit">Line of Credit</SelectItem>
+                                  <SelectItem value="taxes">Taxes</SelectItem>
                                   <SelectItem value="other_debt">Other Debt</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -525,6 +582,7 @@ export default function AccountsPage() {
                                               type="text"
                                               defaultValue={
                                                 account.name === "Checking Account" ? "12,345.67" :
+                                                account.name === "Business Checking" ? "8,750.00" :
                                                 account.name === "Savings Account" ? "25,890.12" :
                                                 account.name === "Money Market" ? "8,500.00" :
                                                 account.name === "Investment Account" ? "45,230.00" :
@@ -536,6 +594,7 @@ export default function AccountsPage() {
                                                 account.name === "Student Loan" ? "23,800.00" :
                                                 account.name === "Personal Loan" ? "5,200.00" :
                                                 account.name === "Business Credit Card" ? "1,850.00" :
+                                                account.name === "Taxes Owed" ? "3,500.00" :
                                                 "15,250.00"
                                               }
                                               className="w-28 h-8 text-center pl-6"
@@ -551,6 +610,7 @@ export default function AccountsPage() {
                                                     type="text"
                                                     defaultValue={
                                                       account.name === "Checking Account" ? "0.00" :
+                                                      account.name === "Business Checking" ? "0.00" :
                                                       account.name === "Savings Account" ? "95.43" :
                                                       account.name === "Money Market" ? "25.18" :
                                                       account.name === "Investment Account" ? "295.83" :
@@ -562,6 +622,7 @@ export default function AccountsPage() {
                                                       account.name === "Student Loan" ? "95.20" :
                                                       account.name === "Personal Loan" ? "54.17" :
                                                       account.name === "Business Credit Card" ? "29.12" :
+                                                      account.name === "Taxes Owed" ? "0.00" :
                                                       "25.50"
                                                     }
                                                     className="w-28 h-8 text-center text-xs pl-6"
@@ -571,13 +632,29 @@ export default function AccountsPage() {
                                               </TooltipTrigger>
                                               <TooltipContent 
                                                 side="top" 
-                                                className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg"
+                                                className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg min-w-[200px]"
                                               >
                                                 <p className="font-medium">{account.name}</p>
                                                 <p className="text-xs opacity-90">
                                                   {monthValue.slice(0, 3)} {monthValue.slice(-4)}
                                                   {account.apr && ` (${account.type === 'Asset' ? 'APY' : 'APR'}: ${account.apr}%)`}
                                                 </p>
+                                                {(() => {
+                                                  const totals = calculateTotals(monthValue);
+                                                  return (
+                                                    <div className="mt-2 pt-2 border-t border-gray-700">
+                                                      <p className="text-xs opacity-90">
+                                                        Total Balance: ${totals.totalBalance.toLocaleString()}
+                                                      </p>
+                                                      <p className="text-xs opacity-90">
+                                                        Total Interest: ${totals.totalInterest.toFixed(2)}
+                                                      </p>
+                                                      <p className="text-xs opacity-90">
+                                                        Est. Overall APR: {totals.estimatedAPR.toFixed(2)}%
+                                                      </p>
+                                                    </div>
+                                                  );
+                                                })()}
                                               </TooltipContent>
                                             </Tooltip>
                                           </TooltipProvider>
