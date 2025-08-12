@@ -79,6 +79,8 @@ export default function AccountsPage() {
 
   // Debt summary view mode state
   const [summaryViewMode, setSummaryViewMode] = useState<'table' | 'chart'>('table');
+  const [summaryTableMode, setSummaryTableMode] = useState<'balance' | 'interest'>('balance');
+  const [summaryMonthOffset, setSummaryMonthOffset] = useState(0); // 0 = current 6 months, -1 = previous 6, +1 = next 6
 
   // Mock monthly statements data for debt overview calculation
   const monthlyStatements = [
@@ -1653,31 +1655,93 @@ export default function AccountsPage() {
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                       Debt by Type - Monthly Summary
                     </CardTitle>
-                    <div className="flex items-center gap-2 bg-white/20 rounded-lg p-1">
-                      <Button
-                        variant={summaryViewMode === 'table' ? 'secondary' : 'ghost'}
-                        size="sm"
-                        onClick={() => setSummaryViewMode('table')}
-                        className={`h-8 px-3 text-xs ${
-                          summaryViewMode === 'table' 
-                            ? 'bg-white text-blue-700 hover:bg-white' 
-                            : 'text-white hover:bg-white/20'
-                        }`}
-                      >
-                        Table
-                      </Button>
-                      <Button
-                        variant={summaryViewMode === 'chart' ? 'secondary' : 'ghost'}
-                        size="sm"
-                        onClick={() => setSummaryViewMode('chart')}
-                        className={`h-8 px-3 text-xs ${
-                          summaryViewMode === 'chart' 
-                            ? 'bg-white text-blue-700 hover:bg-white' 
-                            : 'text-white hover:bg-white/20'
-                        }`}
-                      >
-                        Chart
-                      </Button>
+                    <div className="flex items-center gap-3">
+                      {/* Navigation Controls */}
+                      <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSummaryMonthOffset(summaryMonthOffset - 1)}
+                          className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <span className="text-xs px-2 text-white font-medium">
+                          {(() => {
+                            const currentDate = new Date();
+                            const baseMonth = currentDate.getMonth() + summaryMonthOffset * 6;
+                            const startMonth = new Date(currentDate.getFullYear(), baseMonth - 5);
+                            const endMonth = new Date(currentDate.getFullYear(), baseMonth);
+                            return `${startMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${endMonth.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+                          })()}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSummaryMonthOffset(summaryMonthOffset + 1)}
+                          className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      {/* Table Mode Toggle (only show for table view) */}
+                      {summaryViewMode === 'table' && (
+                        <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSummaryTableMode('balance')}
+                            className={`h-8 px-2 text-xs ${
+                              summaryTableMode === 'balance' 
+                                ? 'bg-white text-blue-700 hover:bg-white' 
+                                : 'text-white hover:bg-white/20'
+                            }`}
+                          >
+                            Bal
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSummaryTableMode('interest')}
+                            className={`h-8 px-2 text-xs ${
+                              summaryTableMode === 'interest' 
+                                ? 'bg-white text-blue-700 hover:bg-white' 
+                                : 'text-white hover:bg-white/20'
+                            }`}
+                          >
+                            Int
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* View Mode Toggle */}
+                      <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
+                        <Button
+                          variant={summaryViewMode === 'table' ? 'secondary' : 'ghost'}
+                          size="sm"
+                          onClick={() => setSummaryViewMode('table')}
+                          className={`h-8 px-3 text-xs ${
+                            summaryViewMode === 'table' 
+                              ? 'bg-white text-blue-700 hover:bg-white' 
+                              : 'text-white hover:bg-white/20'
+                          }`}
+                        >
+                          Table
+                        </Button>
+                        <Button
+                          variant={summaryViewMode === 'chart' ? 'secondary' : 'ghost'}
+                          size="sm"
+                          onClick={() => setSummaryViewMode('chart')}
+                          className={`h-8 px-3 text-xs ${
+                            summaryViewMode === 'chart' 
+                              ? 'bg-white text-blue-700 hover:bg-white' 
+                              : 'text-white hover:bg-white/20'
+                          }`}
+                        >
+                          Chart
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
@@ -1688,12 +1752,22 @@ export default function AccountsPage() {
                       <TableHeader>
                         <TableRow className="bg-gradient-to-r from-blue-600 to-blue-700 h-10 border-none">
                           <TableHead className="font-bold text-white bg-blue-800 py-3 px-4 rounded-tl-lg border-r border-blue-500">DEBT BY TYPE</TableHead>
-                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">JAN 2024</TableHead>
-                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">FEB 2024</TableHead>
-                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">MAR 2024</TableHead>
-                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">APR 2024</TableHead>
-                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">MAY 2024</TableHead>
-                          <TableHead className="text-center font-bold text-white py-3 px-3 rounded-tr-lg">JUN 2024</TableHead>
+                          {(() => {
+                            const currentDate = new Date();
+                            const baseMonth = currentDate.getMonth() + summaryMonthOffset * 6;
+                            const months = [];
+                            
+                            for (let i = 5; i >= 0; i--) {
+                              const monthDate = new Date(currentDate.getFullYear(), baseMonth - i);
+                              const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase();
+                              months.push(
+                                <TableHead key={`header-${i}`} className={`text-center font-bold text-white py-3 px-3 ${i === 0 ? 'rounded-tr-lg' : 'border-r border-blue-500'}`}>
+                                  {monthLabel}
+                                </TableHead>
+                              );
+                            }
+                            return months;
+                          })()}
                         </TableRow>
                       </TableHeader>
                       <TableBody className="bg-white">
@@ -1738,14 +1812,20 @@ export default function AccountsPage() {
                                   </TableCell>
                                   {months.map((month, index) => (
                                     <TableCell key={`month-${index}`} className="text-center py-2 px-3 border-r border-slate-100">
-                                      <div className="space-y-1">
-                                        <div className="text-sm font-semibold text-slate-900">
-                                          ${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}
+                                      {summaryTableMode === 'balance' ? (
+                                        <div className="space-y-1">
+                                          <div className="text-sm font-semibold text-slate-900">
+                                            ${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}
+                                          </div>
+                                          <div className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full inline-block">
+                                            ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
+                                          </div>
                                         </div>
-                                        <div className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full inline-block">
+                                      ) : (
+                                        <div className="text-sm font-semibold text-slate-900">
                                           ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
                                         </div>
-                                      </div>
+                                      )}
                                     </TableCell>
                                   ))}
                                 </TableRow>
@@ -1758,14 +1838,20 @@ export default function AccountsPage() {
                                 </TableCell>
                                 {totalsByMonth.map((total, index) => (
                                   <TableCell key={`total-month-${index}`} className={`text-center font-bold py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-blue-500' : 'rounded-br-lg'}`}>
-                                    <div className="space-y-1">
-                                      <div className="text-sm font-bold text-white">
-                                        ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
+                                    {summaryTableMode === 'balance' ? (
+                                      <div className="space-y-1">
+                                        <div className="text-sm font-bold text-white">
+                                          ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
+                                        </div>
+                                        <div className="text-xs text-blue-100 bg-blue-800 px-2 py-0.5 rounded-full inline-block">
+                                          ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
+                                        </div>
                                       </div>
-                                      <div className="text-xs text-blue-100 bg-blue-800 px-2 py-0.5 rounded-full inline-block">
+                                    ) : (
+                                      <div className="text-sm font-bold text-white">
                                         ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
                                       </div>
-                                    </div>
+                                    )}
                                   </TableCell>
                                 ))}
                               </TableRow>
@@ -1783,10 +1869,14 @@ export default function AccountsPage() {
                         const debtTypes = Array.from(new Set(debtAccounts.map(account => account.accountType)));
                         const chartData = [];
                         
-                        // Prepare data for chart
-                        for (let month = 1; month <= 6; month++) {
-                          const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'][month - 1];
-                          const monthData: any = { month: `${monthName} 2024` };
+                        // Prepare data for chart using month offset
+                        const currentDate = new Date();
+                        const baseMonth = currentDate.getMonth() + summaryMonthOffset * 6;
+                        
+                        for (let i = 5; i >= 0; i--) {
+                          const monthDate = new Date(currentDate.getFullYear(), baseMonth - i);
+                          const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                          const monthData: any = { month: monthLabel };
                           
                           debtTypes.forEach(debtType => {
                             const typeAccounts = debtAccounts.filter(account => account.accountType === debtType);
