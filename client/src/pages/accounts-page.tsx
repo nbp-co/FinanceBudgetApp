@@ -1787,7 +1787,7 @@ export default function AccountsPage() {
                         
                         {/* Navigation Controls */}
                         <div className="flex items-center gap-2 mr-auto">
-                          <label className="text-sm font-medium text-gray-700">Period:</label>
+                          <label className="text-sm font-bold text-gray-700">Period:</label>
                           <div className="flex items-center gap-1">
                             <Button
                               variant="ghost"
