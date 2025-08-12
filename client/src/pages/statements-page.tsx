@@ -8,6 +8,7 @@ import { Save, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function StatementsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
@@ -60,6 +61,67 @@ export default function StatementsPage() {
         ? prev.filter(t => t !== accountType)
         : [...prev, accountType]
     );
+  };
+
+  // Interest data by month and account sub-type
+  const interestData = [
+    {
+      month: 'Jul 2024',
+      'Credit Card': 47.23,
+      'Mortgage': 1542.88,
+      'Auto Loan': 78.95,
+      'Savings': 95.43,
+      'Money Market': 25.18,
+    },
+    {
+      month: 'Aug 2024',
+      'Credit Card': 47.23,
+      'Mortgage': 1542.88,
+      'Auto Loan': 78.95,
+      'Savings': 95.43,
+      'Money Market': 25.18,
+    },
+    {
+      month: 'Sep 2024',
+      'Credit Card': 47.23,
+      'Mortgage': 1542.88,
+      'Auto Loan': 78.95,
+      'Savings': 95.43,
+      'Money Market': 25.18,
+    },
+    {
+      month: 'Oct 2024',
+      'Credit Card': 47.23,
+      'Mortgage': 1542.88,
+      'Auto Loan': 78.95,
+      'Savings': 95.43,
+      'Money Market': 25.18,
+    },
+    {
+      month: 'Nov 2024',
+      'Credit Card': 47.23,
+      'Mortgage': 1542.88,
+      'Auto Loan': 78.95,
+      'Savings': 95.43,
+      'Money Market': 25.18,
+    },
+    {
+      month: 'Dec 2024',
+      'Credit Card': 47.23,
+      'Mortgage': 1542.88,
+      'Auto Loan': 78.95,
+      'Savings': 95.43,
+      'Money Market': 25.18,
+    },
+  ];
+
+  // Colors for different account sub-types
+  const chartColors = {
+    'Credit Card': '#ef4444', // red
+    'Mortgage': '#f97316', // orange
+    'Auto Loan': '#eab308', // yellow
+    'Savings': '#22c55e', // green
+    'Money Market': '#3b82f6', // blue
   };
 
   return (
@@ -232,6 +294,56 @@ export default function StatementsPage() {
             </Card>
           </Collapsible>
         )}
+
+        {/* Interest Chart */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Monthly Interest by Account Type</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={interestData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <XAxis 
+                    dataKey="month" 
+                    tick={{ fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => `$${value}`}
+                  />
+                  <Tooltip 
+                    formatter={(value) => [`$${value}`, '']}
+                    labelStyle={{ color: '#374151' }}
+                    contentStyle={{ 
+                      backgroundColor: '#f9fafb',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '6px'
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="Credit Card" fill={chartColors['Credit Card']} />
+                  <Bar dataKey="Mortgage" fill={chartColors['Mortgage']} />
+                  <Bar dataKey="Auto Loan" fill={chartColors['Auto Loan']} />
+                  <Bar dataKey="Savings" fill={chartColors['Savings']} />
+                  <Bar dataKey="Money Market" fill={chartColors['Money Market']} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </AppShell>
   );
