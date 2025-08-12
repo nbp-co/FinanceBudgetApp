@@ -387,10 +387,16 @@ export default function AccountsPage() {
   };
 
   const toggleChartExpansion = (accountName: string) => {
-    setExpandedCharts(prev => ({
-      ...prev,
-      [accountName]: !prev[accountName]
-    }));
+    console.log('Toggling chart for:', accountName);
+    setExpandedCharts(prev => {
+      console.log('Previous state:', prev);
+      const newState = {
+        ...prev,
+        [accountName]: !prev[accountName]
+      };
+      console.log('New state:', newState);
+      return newState;
+    });
   };
 
   const openPaymentDialog = (accountName: string) => {
@@ -1325,18 +1331,28 @@ export default function AccountsPage() {
                           
                           <div className="flex items-center space-x-1 flex-shrink-0">
                             <Button
+                              id={`chart-toggle-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
                               variant="ghost"
                               size="sm"
                               className="h-7 w-7 p-0"
-                              onClick={() => toggleChartExpansion(account.name)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleChartExpansion(account.name);
+                              }}
                             >
                               <TrendingDown className="h-3 w-3" />
                             </Button>
                             <Button
+                              id={`edit-payment-${account.name.replace(/\s+/g, '-').toLowerCase()}`}
                               variant="ghost"
                               size="sm"
                               className="h-7 w-7 p-0"
-                              onClick={() => openPaymentDialog(account.name)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                openPaymentDialog(account.name);
+                              }}
                             >
                               <Edit className="h-3 w-3" />
                             </Button>
