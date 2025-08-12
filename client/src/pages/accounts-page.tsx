@@ -1071,62 +1071,122 @@ export default function AccountsPage() {
 
               {/* Sort and Filter Controls */}
               {getDebtAccounts().length > 0 && (
-                <Card className="p-4">
-                  <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex items-center space-x-2">
-                      <label className="text-sm font-medium text-gray-700">Sort by:</label>
-                      <Select value={debtSortBy} onValueChange={(value: 'name' | 'balance' | 'interest' | 'payoff') => setDebtSortBy(value)}>
-                        <SelectTrigger className="w-32">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="name">Name</SelectItem>
-                          <SelectItem value="balance">Balance</SelectItem>
-                          <SelectItem value="interest">Interest</SelectItem>
-                          <SelectItem value="payoff">Payoff Time</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {getUniqueDebtSubTypes().length > 1 && (
-                      <div className="flex items-center space-x-2">
-                        <label className="text-sm font-medium text-gray-700">Filter:</label>
-                        <div className="flex flex-wrap gap-2">
-                          {getUniqueDebtSubTypes().map(subType => (
-                            <div key={subType} className="flex items-center space-x-1">
-                              <Checkbox
-                                id={`filter-${subType}`}
-                                checked={debtFilterBy.includes(subType)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setDebtFilterBy(prev => [...prev, subType]);
-                                  } else {
-                                    setDebtFilterBy(prev => prev.filter(type => type !== subType));
-                                  }
-                                }}
-                              />
-                              <label htmlFor={`filter-${subType}`} className="text-sm text-gray-700">
-                                {subType}
-                              </label>
-                            </div>
-                          ))}
+                <Card className="p-4 bg-gray-50">
+                  <div className="space-y-4">
+                    {/* Account Types */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Account Types:</label>
+                      <div className="flex flex-wrap gap-3">
+                        <div className="flex items-center space-x-1">
+                          <Checkbox 
+                            id="debt-filter"
+                            checked={true}
+                            disabled
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <label htmlFor="debt-filter" className="text-sm text-gray-700">Debt</label>
                         </div>
                       </div>
-                    )}
-
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="scheduled-only"
-                        checked={showOnlyScheduled}
-                        onCheckedChange={(checked) => setShowOnlyScheduled(!!checked)}
-                      />
-                      <label htmlFor="scheduled-only" className="text-sm text-gray-700">
-                        Only show scheduled payments
-                      </label>
                     </div>
 
-                    <div className="text-sm text-gray-500">
-                      {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
+                    {/* Sort by */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Sort by:</label>
+                      <div className="flex flex-wrap gap-3">
+                        <div className="flex items-center space-x-1">
+                          <input
+                            type="radio"
+                            id="sort-balance"
+                            name="sort"
+                            checked={debtSortBy === 'balance'}
+                            onChange={() => setDebtSortBy('balance')}
+                            className="text-blue-600"
+                          />
+                          <label htmlFor="sort-balance" className="text-sm text-gray-700">Balance (High → Low)</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <input
+                            type="radio"
+                            id="sort-name"
+                            name="sort"
+                            checked={debtSortBy === 'name'}
+                            onChange={() => setDebtSortBy('name')}
+                            className="text-blue-600"
+                          />
+                          <label htmlFor="sort-name" className="text-sm text-gray-700">Name (A → Z)</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <input
+                            type="radio"
+                            id="sort-interest"
+                            name="sort"
+                            checked={debtSortBy === 'interest'}
+                            onChange={() => setDebtSortBy('interest')}
+                            className="text-blue-600"
+                          />
+                          <label htmlFor="sort-interest" className="text-sm text-gray-700">Interest (High → Low)</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <input
+                            type="radio"
+                            id="sort-payoff"
+                            name="sort"
+                            checked={debtSortBy === 'payoff'}
+                            onChange={() => setDebtSortBy('payoff')}
+                            className="text-blue-600"
+                          />
+                          <label htmlFor="sort-payoff" className="text-sm text-gray-700">Payoff Time (Short → Long)</label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Filter by Sub-type */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Filter by Sub-type:</label>
+                      <div className="flex flex-wrap gap-3">
+                        {getUniqueDebtSubTypes().map(subType => (
+                          <div key={subType} className="flex items-center space-x-1">
+                            <Checkbox
+                              id={`filter-${subType}`}
+                              checked={debtFilterBy.length === 0 || debtFilterBy.includes(subType)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  if (debtFilterBy.length === 0) {
+                                    // If showing all, add just this one
+                                    setDebtFilterBy([subType]);
+                                  } else {
+                                    setDebtFilterBy(prev => [...prev, subType]);
+                                  }
+                                } else {
+                                  setDebtFilterBy(prev => prev.filter(type => type !== subType));
+                                }
+                              }}
+                            />
+                            <label htmlFor={`filter-${subType}`} className="text-sm text-gray-700">
+                              {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Additional Filters */}
+                    <div>
+                      <div className="flex items-center space-x-1">
+                        <Checkbox 
+                          id="scheduled-only"
+                          checked={showOnlyScheduled}
+                          onCheckedChange={(checked) => setShowOnlyScheduled(!!checked)}
+                        />
+                        <label htmlFor="scheduled-only" className="text-sm text-gray-700">
+                          Only show scheduled payments
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Results Counter */}
+                    <div className="text-sm text-gray-500 pt-2 border-t">
+                      Showing {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
                     </div>
                   </div>
                 </Card>
