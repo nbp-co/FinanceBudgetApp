@@ -1774,8 +1774,8 @@ export default function AccountsPage() {
                     <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                       <Table>
                       <TableHeader>
-                        <TableRow className="bg-slate-500 h-10 border-none">
-                          <TableHead className="font-medium text-white py-3 px-4 rounded-tl-lg border-r border-slate-400">DEBT BY TYPE</TableHead>
+                        <TableRow className="bg-gray-600 h-10 border-none">
+                          <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-500">DEBT BY TYPE</TableHead>
                           {(() => {
                             const months = [];
                             const monthLabels = summaryMonthOffset === 0 
@@ -1784,7 +1784,7 @@ export default function AccountsPage() {
                             
                             monthLabels.forEach((label, index) => {
                               months.push(
-                                <TableHead key={`header-${index}`} className={`text-center font-medium text-white py-3 px-3 ${index === monthLabels.length - 1 ? 'rounded-tr-lg' : 'border-r border-slate-300'}`}>
+                                <TableHead key={`header-${index}`} className={`text-center font-bold text-white py-3 px-3 ${index === monthLabels.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-500'}`}>
                                   {label}
                                 </TableHead>
                               );
@@ -1829,17 +1829,17 @@ export default function AccountsPage() {
                           return (
                             <>
                               {monthlyData.map(({ type, months }, rowIndex) => (
-                                <TableRow key={type} className={`border-b border-slate-200 h-12 hover:bg-slate-50 transition-colors ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
-                                  <TableCell className="font-medium text-slate-700 bg-slate-100 py-2 px-4 border-r border-slate-200">
+                                <TableRow key={type} className={`border-b border-slate-200 h-12 hover:bg-blue-50 transition-colors ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                  <TableCell className="font-semibold text-gray-800 bg-gray-100 py-2 px-4 border-r border-gray-300">
                                     {type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                                   </TableCell>
                                   {months.map((month, index) => (
-                                    <TableCell key={`month-${index}`} className="text-center py-2 px-3 border-r border-slate-100">
+                                    <TableCell key={`month-${index}`} className="text-center py-2 px-3 border-r border-gray-200">
                                       <div className="space-y-1">
-                                        <div className="text-sm font-semibold text-slate-900">
+                                        <div className="text-sm font-bold text-gray-900">
                                           ${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}
                                         </div>
-                                        <div className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full inline-block">
+                                        <div className="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full inline-block font-medium">
                                           ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
                                         </div>
                                       </div>
@@ -1849,17 +1849,17 @@ export default function AccountsPage() {
                               ))}
                               
                               {/* Total Row */}
-                              <TableRow className="border-t-2 border-slate-300 bg-slate-500 text-white font-medium h-12">
-                                <TableCell className="font-medium text-white py-3 px-4 border-r border-slate-400 rounded-bl-lg">
+                              <TableRow className="border-t-2 border-gray-300 bg-gray-600 text-white font-bold h-12">
+                                <TableCell className="font-bold text-white py-3 px-4 border-r border-gray-500 rounded-bl-lg">
                                   TOTAL
                                 </TableCell>
                                 {totalsByMonth.map((total, index) => (
-                                  <TableCell key={`total-month-${index}`} className={`text-center font-medium py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-slate-400' : 'rounded-br-lg'}`}>
+                                  <TableCell key={`total-month-${index}`} className={`text-center font-bold py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-gray-500' : 'rounded-br-lg'}`}>
                                     <div className="space-y-1">
-                                      <div className="text-sm font-medium text-white">
+                                      <div className="text-sm font-bold text-white">
                                         ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
                                       </div>
-                                      <div className="text-xs text-slate-200 bg-slate-600 px-2 py-0.5 rounded inline-block">
+                                      <div className="text-xs text-gray-200 bg-gray-700 px-2 py-0.5 rounded inline-block font-medium">
                                         ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
                                       </div>
                                     </div>
