@@ -1237,12 +1237,12 @@ export default function AccountsPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="balance">Balance (High → Low)</SelectItem>
-                        <SelectItem value="balanceAsc">Balance (Low → High)</SelectItem>
-                        <SelectItem value="name">Name (A → Z)</SelectItem>
-                        <SelectItem value="nameDesc">Name (Z → A)</SelectItem>
-                        <SelectItem value="interest">Interest (High → Low)</SelectItem>
-                        <SelectItem value="payoff">Payoff Time (Short → Long)</SelectItem>
+                        <SelectItem value="balance">Balance (High)</SelectItem>
+                        <SelectItem value="balanceAsc">Balance (Low)</SelectItem>
+                        <SelectItem value="name">Name (A-Z)</SelectItem>
+                        <SelectItem value="nameDesc">Name (Z-A)</SelectItem>
+                        <SelectItem value="interest">Interest (High)</SelectItem>
+                        <SelectItem value="payoff">Payoff (Short)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
