@@ -1753,17 +1753,19 @@ export default function AccountsPage() {
                     </Table>
                     </div>
                   ) : (
-                    // Chart View
+                    // Chart View - Using same data as table
                     <div className="space-y-4">
                       {(() => {
+                        // Use the same calculation logic as the table
                         const debtAccounts = getDebtAccounts();
                         const debtTypes = Array.from(new Set(debtAccounts.map(account => account.accountType)));
                         const chartData = [];
                         
-                        // Prepare data for chart
-                        for (let month = 1; month <= 6; month++) {
-                          const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'][month - 1];
-                          const monthData: any = { month: `${monthName} 2024` };
+                        // Prepare data for chart (simplified - same balance for all months as it's current data)
+                        const months = ['Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024'];
+                        
+                        months.forEach(monthLabel => {
+                          const monthData: any = { month: monthLabel };
                           
                           debtTypes.forEach(debtType => {
                             const typeAccounts = debtAccounts.filter(account => account.accountType === debtType);
@@ -1774,11 +1776,14 @@ export default function AccountsPage() {
                               totalBalance += balance;
                             });
                             
-                            monthData[debtType] = totalBalance;
+                            // Only add if there's a balance
+                            if (totalBalance > 0) {
+                              monthData[debtType] = totalBalance;
+                            }
                           });
                           
                           chartData.push(monthData);
-                        }
+                        });
                         
                         const chartColors = {
                           'Credit Card': '#ef4444', // red
@@ -1788,7 +1793,21 @@ export default function AccountsPage() {
                           'Line of Credit': '#3b82f6', // blue
                           'Taxes': '#8b5cf6', // purple
                         };
+
+                        // Ensure data is valid for chart rendering
                         
+                        // Show fallback if no data
+                        if (chartData.length === 0 || debtTypes.length === 0) {
+                          return (
+                            <div className="h-80 flex items-center justify-center text-gray-500">
+                              <div className="text-center">
+                                <p className="text-lg">No debt data available</p>
+                                <p className="text-sm">Add debt accounts to see chart visualization</p>
+                              </div>
+                            </div>
+                          );
+                        }
+
                         return (
                           <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">
@@ -1798,7 +1817,7 @@ export default function AccountsPage() {
                                   top: 20,
                                   right: 30,
                                   left: 20,
-                                  bottom: 5,
+                                  bottom: 60,
                                 }}
                               >
                                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
@@ -1807,7 +1826,7 @@ export default function AccountsPage() {
                                   tick={{ fontSize: 12 }}
                                   angle={-45}
                                   textAnchor="end"
-                                  height={60}
+                                  height={80}
                                 />
                                 <YAxis 
                                   tick={{ fontSize: 12 }}
@@ -1825,15 +1844,21 @@ export default function AccountsPage() {
                                   }}
                                 />
                                 <Legend />
-                                {debtTypes.map((debtType) => (
-                                  <Bar 
-                                    key={debtType}
-                                    dataKey={debtType} 
-                                    stackId="debt"
-                                    fill={chartColors[debtType as keyof typeof chartColors] || '#64748b'}
-                                    name={debtType.replace('_', ' ')}
-                                  />
-                                ))}
+                                {debtTypes.map((debtType) => {
+                                  // Only render bars for debt types that have data
+                                  const hasData = chartData.some(data => data[debtType] && data[debtType] > 0);
+                                  if (!hasData) return null;
+                                  
+                                  return (
+                                    <Bar 
+                                      key={debtType}
+                                      dataKey={debtType} 
+                                      stackId="debt"
+                                      fill={chartColors[debtType as keyof typeof chartColors] || '#64748b'}
+                                      name={debtType.replace('_', ' ')}
+                                    />
+                                  );
+                                })}
                               </BarChart>
                             </ResponsiveContainer>
                           </div>
