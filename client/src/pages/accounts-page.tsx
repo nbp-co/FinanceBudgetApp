@@ -797,7 +797,7 @@ export default function AccountsPage() {
                   <CollapsibleTrigger asChild>
                     <CardHeader className="cursor-pointer hover:bg-gray-50">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-xl">Monthly Statements</CardTitle>
+                        <CardTitle className="text-xl">Statement Details</CardTitle>
                         <Button variant="ghost" size="sm">
                           {isStatementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>

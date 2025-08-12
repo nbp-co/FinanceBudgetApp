@@ -289,7 +289,7 @@ export default function StatementsPage() {
               <CollapsibleTrigger className="w-full">
                 <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
                   <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-semibold text-gray-900">Monthly Statements</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Statement Details</h3>
                   </div>
                   <ChevronDown className="h-5 w-5 text-gray-600" />
                 </div>
