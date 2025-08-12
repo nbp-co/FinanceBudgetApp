@@ -225,89 +225,88 @@ export default function StatementsPage() {
                 <CardContent className="pt-0 pb-4 space-y-4">
                   <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                     <Table>
-                        <TableHeader>
-                          <TableRow className="bg-gray-400 h-10 border-none">
-                            <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">ACCOUNT</TableHead>
-                            {selectedMonths.map((monthValue, index) => {
-                              const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
-                              return (
-                                <TableHead key={monthValue} className={`text-center font-bold text-white py-3 px-3 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
-                                  {monthLabel.toUpperCase()}
-                                </TableHead>
-                              );
-                            })}
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {accounts.map((account, accountIndex) => (
-                            <TableRow key={account.name} className="hover:bg-gray-50">
-                              <TableCell className="font-medium py-4 px-4 text-gray-900 border-r border-gray-200">
-                                <div className="space-y-1">
-                                  <div className="text-sm font-semibold">{account.name}</div>
-                                  <div className="flex gap-2">
-                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                      account.type === 'Asset' 
-                                        ? 'bg-green-100 text-green-800' 
-                                        : 'bg-red-100 text-red-800'
-                                    }`}>
-                                      {account.type}
-                                    </span>
-                                    <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                                      {account.accountType}
-                                    </span>
+                      <TableHeader>
+                        <TableRow className="bg-gray-400 h-10 border-none">
+                          <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">ACCOUNT</TableHead>
+                          {selectedMonths.map((monthValue, index) => {
+                            const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                            return (
+                              <TableHead key={monthValue} className={`text-center font-bold text-white py-3 px-3 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                                {monthLabel.toUpperCase()}
+                              </TableHead>
+                            );
+                          })}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {accounts.map((account, accountIndex) => (
+                          <TableRow key={account.name} className="hover:bg-gray-50">
+                            <TableCell className="font-medium py-4 px-4 text-gray-900 border-r border-gray-200">
+                              <div className="space-y-1">
+                                <div className="text-sm font-semibold">{account.name}</div>
+                                <div className="flex gap-2">
+                                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                    account.type === 'Asset' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {account.type}
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                                    {account.accountType}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {account.apr && (
+                                    <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
+                                  )}
+                                  {account.dueDate && (
+                                    <div>Due: {account.dueDate}th</div>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+
+                            {selectedMonths.map((monthValue, monthIndex) => (
+                              <TableCell key={`${account.name}-${monthValue}`} className={`text-center py-4 px-3 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-200' : ''}`}>
+                                <div className="space-y-2">
+                                  <div className="relative">
+                                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                    <Input
+                                      type="text"
+                                      defaultValue={
+                                        account.name === "Checking Account" ? "12,345.67" :
+                                        account.name === "Savings Account" ? "25,890.12" :
+                                        account.name === "Money Market" ? "8,500.00" :
+                                        account.name === "Credit Card" ? "2,456.78" :
+                                        account.name === "Mortgage" ? "285,000.00" :
+                                        "15,250.00"
+                                      }
+                                      className="w-32 text-center pl-6 text-sm font-medium"
+                                    />
+                                    <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">BAL</span>
                                   </div>
-                                  <div className="text-xs text-gray-500">
-                                    {account.apr && (
-                                      <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
-                                    )}
-                                    {account.dueDate && (
-                                      <div>Due: {account.dueDate}th</div>
-                                    )}
-                                  </div>
+                                  {account.type === 'Debt' && (
+                                    <div className="text-xs text-red-600 italic font-medium">
+                                      Interest: ${
+                                        account.name === "Credit Card" ? "47.23" :
+                                        account.name === "Mortgage" ? "1,542.88" :
+                                        "78.95"
+                                      }
+                                    </div>
+                                  )}
                                 </div>
                               </TableCell>
-
-                              {selectedMonths.map((monthValue, monthIndex) => (
-                                <TableCell key={`${account.name}-${monthValue}`} className={`text-center py-4 px-3 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-200' : ''}`}>
-                                  <div className="space-y-2">
-                                    <div className="relative">
-                                      <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
-                                      <Input
-                                        type="text"
-                                        defaultValue={
-                                          account.name === "Checking Account" ? "12,345.67" :
-                                          account.name === "Savings Account" ? "25,890.12" :
-                                          account.name === "Money Market" ? "8,500.00" :
-                                          account.name === "Credit Card" ? "2,456.78" :
-                                          account.name === "Mortgage" ? "285,000.00" :
-                                          "15,250.00"
-                                        }
-                                        className="w-32 text-center pl-6 text-sm font-medium"
-                                      />
-                                      <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">BAL</span>
-                                    </div>
-                                    {account.type === 'Debt' && (
-                                      <div className="text-xs text-red-600 italic font-medium">
-                                        Interest: ${
-                                          account.name === "Credit Card" ? "47.23" :
-                                          account.name === "Mortgage" ? "1,542.88" :
-                                          "78.95"
-                                        }
-                                      </div>
-                                    )}
-                                  </div>
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   </div>
                 </CardContent>
               </CollapsibleContent>
-            </Card>
-          </Collapsible>
+            </Collapsible>
+          </Card>
         )}
       </div>
     </AppShell>
