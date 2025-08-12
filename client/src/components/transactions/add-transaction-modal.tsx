@@ -45,18 +45,6 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Transaction Type Toggle */}
-          <div>
-            <Label className="text-sm font-medium text-gray-700 mb-2 block">Transaction Type</Label>
-            <Tabs value={transactionType} onValueChange={(value) => setTransactionType(value as any)}>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="INCOME" className="text-sm">Income</TabsTrigger>
-                <TabsTrigger value="EXPENSE" className="text-sm">Expense</TabsTrigger>
-                <TabsTrigger value="TRANSFER" className="text-sm">Transfer</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
           {/* Description */}
           <div>
             <Label htmlFor="description">Description</Label>
@@ -69,36 +57,61 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
             />
           </div>
           
-          {/* Amount */}
-          <div>
-            <Label htmlFor="amount">Amount</Label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500 text-sm">$</span>
+          {/* Amount and Date on same line */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="amount">Amount</Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500 text-sm">$</span>
+                </div>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.amount}
+                  onChange={(e) => handleInputChange("amount", e.target.value)}
+                  className="pl-8"
+                  placeholder="0.00"
+                  required
+                />
               </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="date">Date</Label>
               <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.amount}
-                onChange={(e) => handleInputChange("amount", e.target.value)}
-                className="pl-8"
-                placeholder="0.00"
+                id="date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => handleInputChange("date", e.target.value)}
                 required
               />
             </div>
           </div>
           
-          {/* Date */}
+          {/* Transaction Type Toggle - moved below amount */}
           <div>
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={formData.date}
-              onChange={(e) => handleInputChange("date", e.target.value)}
-              required
+            <Label className="text-sm font-medium text-gray-700 mb-2 block">Transaction Type</Label>
+            <Tabs value={transactionType} onValueChange={(value) => setTransactionType(value as any)}>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="INCOME" className="text-sm">Income</TabsTrigger>
+                <TabsTrigger value="EXPENSE" className="text-sm">Expense</TabsTrigger>
+                <TabsTrigger value="TRANSFER" className="text-sm">Transfer</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+          
+          {/* Recurring Option - moved below date with new label */}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="recurring" className="text-sm font-medium text-gray-700">
+              Recurring?
+            </Label>
+            <Switch
+              id="recurring"
+              checked={isRecurring}
+              onCheckedChange={setIsRecurring}
             />
           </div>
           
@@ -164,17 +177,7 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
             </div>
           )}
           
-          {/* Recurring Option */}
-          <div className="flex items-center space-x-3">
-            <Switch
-              id="recurring"
-              checked={isRecurring}
-              onCheckedChange={setIsRecurring}
-            />
-            <Label htmlFor="recurring" className="text-sm font-medium text-gray-700">
-              Make this recurring
-            </Label>
-          </div>
+
           
           {/* Recurring Options */}
           {isRecurring && (
