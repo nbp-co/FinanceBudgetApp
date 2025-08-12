@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Plus, TrendingUp, TrendingDown, DollarSign, ChevronDown, ChevronUp, X, GripVertical } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, DollarSign, ChevronDown, ChevronUp, X, GripVertical, Edit, Save } from "lucide-react";
 import { useState } from "react";
 
 export default function BudgetPage() {
@@ -12,6 +12,13 @@ export default function BudgetPage() {
     savings: true,
     debt: true,
     secondary: true
+  });
+
+  const [editingCategories, setEditingCategories] = useState<Record<string, boolean>>({
+    primary: false,
+    savings: false,
+    debt: false,
+    secondary: false
   });
 
   const [expenses, setExpenses] = useState({
@@ -40,6 +47,13 @@ export default function BudgetPage() {
 
   const toggleCategory = (category: string) => {
     setOpenCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
+  const toggleEditing = (category: string) => {
+    setEditingCategories(prev => ({
       ...prev,
       [category]: !prev[category]
     }));
@@ -173,12 +187,29 @@ export default function BudgetPage() {
                             variant="outline"
                             onClick={(e) => {
                               e.stopPropagation();
-                              addExpense(category.key as keyof typeof expenses);
+                              toggleEditing(category.key);
                             }}
                             className="h-7 px-2"
                           >
-                            <Plus className="h-3 w-3" />
+                            {editingCategories[category.key] ? (
+                              <Save className="h-3 w-3" />
+                            ) : (
+                              <Edit className="h-3 w-3" />
+                            )}
                           </Button>
+                          {editingCategories[category.key] && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addExpense(category.key as keyof typeof expenses);
+                              }}
+                              className="h-7 px-2"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          )}
                         </div>
                       </CollapsibleTrigger>
                       
@@ -186,49 +217,72 @@ export default function BudgetPage() {
                         <div className="px-4 pb-4 space-y-2">
                           {expenses[category.key as keyof typeof expenses].map((expense, index) => (
                             <div key={expense.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg group">
-                              <GripVertical className="h-4 w-4 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity" />
+                              {editingCategories[category.key] && (
+                                <GripVertical className="h-4 w-4 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity" />
+                              )}
                               
                               <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <input
-                                  type="text"
-                                  value={expense.name}
-                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'name', e.target.value)}
-                                  className="font-medium bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                                  placeholder="Expense name"
-                                />
-                                <input
-                                  type="text"
-                                  value={expense.category}
-                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'category', e.target.value)}
-                                  className="text-sm text-gray-600 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                                  placeholder="Category"
-                                />
-                                {expense.dueDate && (
+                                {editingCategories[category.key] ? (
                                   <input
-                                    type="date"
-                                    value={expense.dueDate}
-                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'dueDate', e.target.value)}
-                                    className="text-sm text-gray-500 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                    type="text"
+                                    value={expense.name}
+                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'name', e.target.value)}
+                                    className="font-medium bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                    placeholder="Expense name"
                                   />
+                                ) : (
+                                  <p className="font-medium">{expense.name}</p>
+                                )}
+                                
+                                {editingCategories[category.key] ? (
+                                  <input
+                                    type="text"
+                                    value={expense.category}
+                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'category', e.target.value)}
+                                    className="text-sm text-gray-600 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                    placeholder="Category"
+                                  />
+                                ) : (
+                                  <p className="text-sm text-gray-600">{expense.category}</p>
+                                )}
+                                
+                                {expense.dueDate && (
+                                  editingCategories[category.key] ? (
+                                    <input
+                                      type="date"
+                                      value={expense.dueDate}
+                                      onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'dueDate', e.target.value)}
+                                      className="text-sm text-gray-500 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                    />
+                                  ) : (
+                                    <p className="text-sm text-gray-500">Due: {expense.dueDate}</p>
+                                  )
                                 )}
                               </div>
                               
                               <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-500">$</span>
-                                <input
-                                  type="text"
-                                  value={expense.amount}
-                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'amount', e.target.value)}
-                                  className="w-20 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                                />
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => deleteExpense(category.key as keyof typeof expenses, expense.id)}
-                                  className="h-7 w-7 p-0 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
+                                {editingCategories[category.key] ? (
+                                  <input
+                                    type="text"
+                                    value={expense.amount}
+                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'amount', e.target.value)}
+                                    className="w-20 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                                  />
+                                ) : (
+                                  <p className="w-20 text-right font-semibold text-red-600">{expense.amount}</p>
+                                )}
+                                
+                                {editingCategories[category.key] && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => deleteExpense(category.key as keyof typeof expenses, expense.id)}
+                                    className="h-7 w-7 p-0 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           ))}
