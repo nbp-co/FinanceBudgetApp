@@ -73,6 +73,14 @@ export default function AccountsPage() {
     startDate: new Date().toISOString().split('T')[0]
   });
 
+  // Mock monthly statements data for debt overview calculation
+  const monthlyStatements = [
+    { id: 1, accountId: "credit-card", year: 2024, month: 1, startingBalance: 2500.0 },
+    { id: 2, accountId: "mortgage", year: 2024, month: 1, startingBalance: 285000.0 },
+    { id: 3, accountId: "auto-loan", year: 2024, month: 1, startingBalance: 18500.0 },
+    { id: 4, accountId: "student-loan", year: 2024, month: 1, startingBalance: 45000.0 },
+  ];
+
   // Statements data
   const availableMonths = [
     { value: "2024-12", label: "Dec 2024" },
@@ -1182,57 +1190,55 @@ export default function AccountsPage() {
                 </Card>
               )}
 
-              {/* Sort and Filter Controls - Compact */}
+              {/* Sort and Filter Controls - Right Aligned */}
               {getDebtAccounts().length > 0 && (
-                <div className="flex items-center justify-between gap-4 p-3 bg-gray-50 rounded-lg border">
-                  <div className="flex items-center gap-4">
-                    {/* Sort Dropdown */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700">Sort:</label>
-                      <Select value={debtSortBy} onValueChange={(value: 'name' | 'balance' | 'interest' | 'payoff') => setDebtSortBy(value)}>
-                        <SelectTrigger className="w-40">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="balance">Balance (High → Low)</SelectItem>
-                          <SelectItem value="name">Name (A → Z)</SelectItem>
-                          <SelectItem value="interest">Interest (High → Low)</SelectItem>
-                          <SelectItem value="payoff">Payoff Time (Short → Long)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Filter Dropdown */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700">Filter:</label>
-                      <Select 
-                        value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
-                        onValueChange={(value) => {
-                          if (value === "all") {
-                            setDebtFilterBy([]);
-                          } else {
-                            setDebtFilterBy([value]);
-                          }
-                        }}
-                      >
-                        <SelectTrigger className="w-36">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Types</SelectItem>
-                          {getUniqueDebtSubTypes().map(subType => (
-                            <SelectItem key={subType} value={subType}>
-                              {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="flex items-center justify-end gap-4 p-3 bg-gray-50 rounded-lg border">
+                  {/* Results Counter */}
+                  <div className="text-sm text-gray-500 mr-auto">
+                    {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
                   </div>
 
-                  {/* Results Counter */}
-                  <div className="text-sm text-gray-500">
-                    {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
+                  {/* Sort Dropdown */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">Sort:</label>
+                    <Select value={debtSortBy} onValueChange={(value: 'name' | 'balance' | 'interest' | 'payoff') => setDebtSortBy(value)}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="balance">Balance (High → Low)</SelectItem>
+                        <SelectItem value="name">Name (A → Z)</SelectItem>
+                        <SelectItem value="interest">Interest (High → Low)</SelectItem>
+                        <SelectItem value="payoff">Payoff Time (Short → Long)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Filter Dropdown */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">Filter:</label>
+                    <Select 
+                      value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
+                      onValueChange={(value) => {
+                        if (value === "all") {
+                          setDebtFilterBy([]);
+                        } else {
+                          setDebtFilterBy([value]);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-36">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Types</SelectItem>
+                        {getUniqueDebtSubTypes().map(subType => (
+                          <SelectItem key={subType} value={subType}>
+                            {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               )}
