@@ -1184,7 +1184,7 @@ export default function AccountsPage() {
                             <div className="text-center">
                               <p className="text-sm text-gray-600 font-medium">End-of-Year Balance</p>
                               <p className="text-xl font-bold text-gray-900">${Math.round(summary.projectedYearEndDebt).toLocaleString()}</p>
-                              <p className="text-xs text-gray-500">-${Math.round(summary.debtReduction).toLocaleString()} Reduction</p>
+                              <p className="text-xs text-gray-500">-${Math.round(summary.debtReduction).toLocaleString()} Change</p>
                             </div>
                           </>
                         );
