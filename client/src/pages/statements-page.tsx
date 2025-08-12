@@ -253,9 +253,9 @@ export default function StatementsPage() {
                       <TableBody className="bg-white">
                         {accounts.map((account, accountIndex) => (
                           <TableRow key={account.name} className="border-b border-gray-200 hover:bg-gray-50">
-                            <TableCell className="py-6 px-4 border-r border-gray-300">
-                              <div className="space-y-3">
-                                <div className="font-semibold text-gray-900 text-base">{account.name}</div>
+                            <TableCell className="py-3 px-4 border-r border-gray-300">
+                              <div className="space-y-2">
+                                <div className="font-semibold text-gray-900 text-sm">{account.name}</div>
                                 <div className="flex gap-2">
                                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                                     account.type === 'Asset' 
@@ -268,7 +268,7 @@ export default function StatementsPage() {
                                     {account.accountType}
                                   </span>
                                 </div>
-                                <div className="text-xs text-gray-500 space-y-1">
+                                <div className="text-xs text-gray-500 space-y-0.5">
                                   {account.apr && (
                                     <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
                                   )}
@@ -280,10 +280,10 @@ export default function StatementsPage() {
                             </TableCell>
 
                             {selectedMonths.map((monthValue, monthIndex) => (
-                              <TableCell key={`${account.name}-${monthValue}`} className={`py-6 px-4 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
-                                <div className="space-y-4">
+                              <TableCell key={`${account.name}-${monthValue}`} className={`py-3 px-4 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
+                                <div className="space-y-2">
                                   <div>
-                                    <div className="text-xs text-gray-400 font-medium mb-2">B</div>
+                                    <div className="text-xs text-gray-400 font-medium mb-1">B</div>
                                     <div className="flex items-center">
                                       <span className="text-sm text-gray-500 mr-1">$</span>
                                       <Input
@@ -303,7 +303,7 @@ export default function StatementsPage() {
                                   </div>
                                   {account.type === 'Debt' && (
                                     <div>
-                                      <div className="text-xs text-gray-400 font-medium mb-2">I</div>
+                                      <div className="text-xs text-gray-400 font-medium mb-1">I</div>
                                       <div className="flex items-center">
                                         <span className="text-sm text-gray-500 mr-1">$</span>
                                         <Input
