@@ -1065,22 +1065,6 @@ export default function AccountsPage() {
               {getDebtAccounts().length > 0 && (
                 <Card className="p-4 bg-gray-50">
                   <div className="space-y-4">
-                    {/* Account Types */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">Account Types:</label>
-                      <div className="flex flex-wrap gap-3">
-                        <div className="flex items-center space-x-1">
-                          <Checkbox 
-                            id="debt-filter"
-                            checked={true}
-                            disabled
-                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                          />
-                          <label htmlFor="debt-filter" className="text-sm text-gray-700">Debt</label>
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Sort by */}
                     <div>
                       <label className="text-sm font-medium text-gray-700 mb-2 block">Sort by:</label>
