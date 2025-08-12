@@ -329,6 +329,10 @@ export default function AccountsPage() {
     let totalMonthlyInterest = 0;
     let totalYearlyInterest = 0;
     let projectedYearEndDebt = 0;
+    let yearToDateInterest = 0;
+
+    // Calculate year-to-date interest (assuming 8 months into the year for demo)
+    const monthsPassedThisYear = new Date().getMonth() + 1;
 
     debtAccounts.forEach(account => {
       const balance = getBalance(account.name);
@@ -340,6 +344,7 @@ export default function AccountsPage() {
         totalMonthlyInterest += payoffInfo.monthlyInterest;
         totalYearlyInterest += payoffInfo.yearlyInterest;
         projectedYearEndDebt += payoffInfo.yearEndBalance;
+        yearToDateInterest += payoffInfo.monthlyInterest * monthsPassedThisYear;
       }
     });
 
@@ -348,7 +353,8 @@ export default function AccountsPage() {
       totalMonthlyInterest,
       totalYearlyInterest,
       projectedYearEndDebt,
-      debtReduction: totalDebt - projectedYearEndDebt
+      debtReduction: totalDebt - projectedYearEndDebt,
+      yearToDateInterest
     };
   };
 
@@ -1013,7 +1019,7 @@ export default function AccountsPage() {
                     <CardTitle className="text-red-800">Debt Overview</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid md:grid-cols-4 gap-4">
+                    <div className="grid md:grid-cols-5 gap-4">
                       {(() => {
                         const summary = calculateDebtSummary();
                         return (
@@ -1024,13 +1030,18 @@ export default function AccountsPage() {
                             </div>
                             <div>
                               <p className="text-sm text-orange-600 font-medium">Monthly Interest</p>
-                              <p className="text-xl font-bold text-orange-800">${summary.totalMonthlyInterest.toFixed(2)}</p>
-                              <p className="text-xs text-orange-600">${(summary.totalYearlyInterest).toFixed(2)}/year</p>
+                              <p className="text-xl font-bold text-orange-800">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
+                              <p className="text-xs text-orange-600">${Math.round(summary.totalYearlyInterest).toLocaleString()}/year</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-green-600 font-medium">YTD Interest Paid</p>
+                              <p className="text-xl font-bold text-green-800">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
+                              <p className="text-xs text-green-600">year-to-date</p>
                             </div>
                             <div>
                               <p className="text-sm text-blue-600 font-medium">End-of-Year Balance</p>
-                              <p className="text-xl font-bold text-blue-800">${summary.projectedYearEndDebt.toLocaleString()}</p>
-                              <p className="text-xs text-green-600">-${summary.debtReduction.toLocaleString()} reduction</p>
+                              <p className="text-xl font-bold text-blue-800">${Math.round(summary.projectedYearEndDebt).toLocaleString()}</p>
+                              <p className="text-xs text-green-600">-${Math.round(summary.debtReduction).toLocaleString()} reduction</p>
                             </div>
                             <div>
                               <p className="text-sm text-purple-600 font-medium">Progress Rate</p>
@@ -1093,24 +1104,26 @@ export default function AccountsPage() {
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           <div className="space-y-1">
                             <p className="text-gray-500">Payment</p>
-                            <p className="font-semibold">${monthlyPayment.toFixed(0)}</p>
+                            <p className="font-semibold">${Math.round(monthlyPayment).toLocaleString()}</p>
                           </div>
                           
                           {payoffInfo && (
                             <>
                               <div className="space-y-1">
                                 <p className="text-gray-500">Interest/mo</p>
-                                <p className="font-semibold text-red-600">${payoffInfo.monthlyInterest.toFixed(0)}</p>
+                                <p className="font-semibold text-red-600">${Math.round(payoffInfo.monthlyInterest).toLocaleString()}</p>
                               </div>
                               
                               <div className="space-y-1">
                                 <p className="text-gray-500">Year-end</p>
-                                <p className="font-semibold text-blue-600">${(payoffInfo.yearEndBalance/1000).toFixed(0)}k</p>
+                                <p className="font-semibold text-blue-600">${Math.round(payoffInfo.yearEndBalance).toLocaleString()}</p>
                               </div>
                               
                               <div className="space-y-1">
-                                <p className="text-gray-500">Payoff</p>
-                                <p className="font-semibold text-green-600">{payoffInfo.months}mo</p>
+                                <p className="text-gray-500">Expected</p>
+                                <p className="font-semibold text-green-600">
+                                  {new Date(Date.now() + payoffInfo.months * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                </p>
                               </div>
                             </>
                           )}
@@ -1118,7 +1131,7 @@ export default function AccountsPage() {
                           {!payoffInfo && (
                             <div className="col-span-2">
                               <p className="text-xs text-red-600">⚠️ Payment too low</p>
-                              <p className="text-xs text-gray-500">Need: ${((balance * (account.apr || 0)) / 100 / 12).toFixed(0)}/mo interest</p>
+                              <p className="text-xs text-gray-500">Need: ${Math.round((balance * (account.apr || 0)) / 100 / 12).toLocaleString()}/mo interest</p>
                             </div>
                           )}
                         </div>
@@ -1171,12 +1184,12 @@ export default function AccountsPage() {
                         )}
 
                         {/* Compact Next Payment */}
-                        <div className="flex items-center justify-between p-2 border border-blue-200 bg-blue-50 rounded text-xs">
+                        <div className="flex items-center justify-between p-1.5 border border-blue-200 bg-blue-50 rounded text-xs">
                           <div>
-                            <p className="font-medium text-blue-900">Next: ${monthlyPayment.toFixed(0)}</p>
+                            <p className="font-medium text-blue-900">Next: ${Math.round(monthlyPayment).toLocaleString()}</p>
                             <p className="text-blue-700">{account.dueDate ? `${account.dueDate}th` : 'Not scheduled'}</p>
                           </div>
-                          <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 h-6 px-2 text-xs">
+                          <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 h-5 px-1.5 text-xs">
                             Pay
                           </Button>
                         </div>
