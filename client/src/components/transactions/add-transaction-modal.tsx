@@ -96,9 +96,9 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
             <Label className="text-sm font-medium text-gray-700 mb-2 block">Transaction Type</Label>
             <Tabs value={transactionType} onValueChange={(value) => setTransactionType(value as any)}>
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="INCOME" className="text-sm">Income</TabsTrigger>
-                <TabsTrigger value="EXPENSE" className="text-sm">Expense</TabsTrigger>
-                <TabsTrigger value="TRANSFER" className="text-sm">Transfer</TabsTrigger>
+                <TabsTrigger value="INCOME" className="text-sm data-[state=active]:bg-green-500/20 data-[state=active]:text-green-800">Income</TabsTrigger>
+                <TabsTrigger value="EXPENSE" className="text-sm data-[state=active]:bg-red-500/20 data-[state=active]:text-red-800">Expense</TabsTrigger>
+                <TabsTrigger value="TRANSFER" className="text-sm data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-800">Transfer</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>

@@ -83,7 +83,7 @@ export default function SettingsPage() {
                   maxLength={4}
                   pattern="[0-9]{4}"
                   placeholder="1990" 
-                  title="Please enter exactly 4 digits (1900-2024)"
+                  title="Please enter exactly 4 digits (1900-2004)"
                   onInput={(e) => {
                     const target = e.target as HTMLInputElement;
                     // Only allow digits
@@ -92,8 +92,8 @@ export default function SettingsPage() {
                     // Validate length and range
                     if (target.value.length === 4) {
                       const year = parseInt(target.value);
-                      if (year < 1900 || year > 2024) {
-                        target.setCustomValidity('Year must be between 1900 and 2024');
+                      if (year < 1900 || year > 2004) {
+                        target.setCustomValidity('Year must be between 1900 and 2004');
                       } else {
                         target.setCustomValidity('');
                       }
