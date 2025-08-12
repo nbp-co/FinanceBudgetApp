@@ -1662,7 +1662,6 @@ export default function AccountsPage() {
                   <CollapsibleTrigger className="w-full">
                     <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
                       <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                         <h3 className="text-lg font-semibold text-gray-900">Debt by Type - Monthly Summary</h3>
                         <span className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
                           {summaryMonthOffset === 0 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
