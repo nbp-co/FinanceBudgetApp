@@ -1,12 +1,20 @@
-# Budget App
+# Financial Management App
 
 ## Overview
 
-This is a comprehensive budget management application built with a modern full-stack architecture. The app allows users to manage their financial accounts, track transactions, analyze spending patterns, and create budgets. It features a responsive design with mobile-first approach, using a bottom navigation on mobile and a fixed sidebar on desktop.
+This is a comprehensive financial management application built with a modern full-stack architecture. The app allows users to manage their financial accounts, track transactions, analyze spending patterns, and view financial statements. It features a responsive design with mobile-first approach, using a bottom navigation on mobile and a fixed sidebar on desktop.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+## Recent Changes
+
+**Budget Page Removal (August 12, 2025)**
+- Completely removed standalone Budget page and all associated functionality
+- Cleaned up navigation menus (desktop sidebar and mobile bottom nav)
+- Removed budget routes from App.tsx
+- Application now focuses on core financial account management, statements, and summaries
 
 ## System Architecture
 
