@@ -1608,27 +1608,30 @@ export default function AccountsPage() {
               </DialogContent>
             </Dialog>
 
-            {/* Debt by Type Monthly Summary Table - Moved to Bottom */}
+            {/* Debt by Type Monthly Summary Table - Enhanced Visual Appeal */}
             {getDebtAccounts().length > 0 && (
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle>Debt by Type - Monthly Summary</CardTitle>
+              <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
+                <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
+                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    Debt by Type - Monthly Summary
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-2">
-                  <div className="overflow-x-auto">
+                <CardContent className="pt-4">
+                  <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-blue-50 h-8">
-                          <TableHead className="font-bold text-gray-900 bg-blue-100 py-2">DEBT BY TYPE</TableHead>
-                          <TableHead className="text-center font-bold text-gray-900 py-2">JAN 2024</TableHead>
-                          <TableHead className="text-center font-bold text-gray-900 py-2">FEB 2024</TableHead>
-                          <TableHead className="text-center font-bold text-gray-900 py-2">MAR 2024</TableHead>
-                          <TableHead className="text-center font-bold text-gray-900 py-2">APR 2024</TableHead>
-                          <TableHead className="text-center font-bold text-gray-900 py-2">MAY 2024</TableHead>
-                          <TableHead className="text-center font-bold text-gray-900 py-2">JUN 2024</TableHead>
+                        <TableRow className="bg-gradient-to-r from-blue-600 to-blue-700 h-10 border-none">
+                          <TableHead className="font-bold text-white bg-blue-800 py-3 px-4 rounded-tl-lg border-r border-blue-500">DEBT BY TYPE</TableHead>
+                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">JAN 2024</TableHead>
+                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">FEB 2024</TableHead>
+                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">MAR 2024</TableHead>
+                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">APR 2024</TableHead>
+                          <TableHead className="text-center font-bold text-white py-3 px-3 border-r border-blue-500">MAY 2024</TableHead>
+                          <TableHead className="text-center font-bold text-white py-3 px-3 rounded-tr-lg">JUN 2024</TableHead>
                         </TableRow>
                       </TableHeader>
-                      <TableBody>
+                      <TableBody className="bg-white">
                         {(() => {
                           const debtAccounts = getDebtAccounts();
                           const debtTypes = Array.from(new Set(debtAccounts.map(account => account.accountType)));
@@ -1663,16 +1666,27 @@ export default function AccountsPage() {
 
                           return (
                             <>
-                              {monthlyData.map(({ type, months }) => (
-                                <TableRow key={type} className="border-b h-12">
-                                  <TableCell className="font-medium text-gray-700 bg-gray-50 py-1">
-                                    {type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                              {monthlyData.map(({ type, months }, rowIndex) => (
+                                <TableRow key={type} className={`border-b border-slate-200 h-14 hover:bg-slate-50 transition-colors ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-25'}`}>
+                                  <TableCell className="font-semibold text-slate-800 bg-gradient-to-r from-slate-100 to-slate-50 py-2 px-4 border-r border-slate-200">
+                                    <div className="flex items-center gap-2">
+                                      <div className={`w-3 h-3 rounded-full ${
+                                        type === 'Credit Card' ? 'bg-red-500' :
+                                        type === 'Mortgage' ? 'bg-orange-500' :
+                                        type === 'Auto Loan' ? 'bg-yellow-500' :
+                                        type === 'Student Loan' ? 'bg-green-500' :
+                                        'bg-blue-500'
+                                      }`}></div>
+                                      {type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                                    </div>
                                   </TableCell>
                                   {months.map((month, index) => (
-                                    <TableCell key={`month-${index}`} className="text-center text-sm py-1">
-                                      <div className="space-y-0.5">
-                                        <div className="text-sm">${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}</div>
-                                        <div className="text-xs text-gray-600">
+                                    <TableCell key={`month-${index}`} className="text-center py-2 px-3 border-r border-slate-100">
+                                      <div className="space-y-1">
+                                        <div className="text-sm font-semibold text-slate-900">
+                                          ${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}
+                                        </div>
+                                        <div className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full inline-block">
                                           ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
                                         </div>
                                       </div>
@@ -1682,13 +1696,20 @@ export default function AccountsPage() {
                               ))}
                               
                               {/* Total Row */}
-                              <TableRow className="border-t-2 border-gray-300 bg-gray-100 font-bold h-12">
-                                <TableCell className="font-bold text-gray-900 bg-gray-200 py-1">TOTAL</TableCell>
+                              <TableRow className="border-t-2 border-blue-300 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold h-14">
+                                <TableCell className="font-bold text-white bg-blue-800 py-3 px-4 border-r border-blue-500 rounded-bl-lg">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    TOTAL
+                                  </div>
+                                </TableCell>
                                 {totalsByMonth.map((total, index) => (
-                                  <TableCell key={`total-month-${index}`} className="text-center text-sm font-bold py-1">
-                                    <div className="space-y-0.5">
-                                      <div className="text-sm">${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}</div>
-                                      <div className="text-xs text-gray-600">
+                                  <TableCell key={`total-month-${index}`} className={`text-center font-bold py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-blue-500' : 'rounded-br-lg'}`}>
+                                    <div className="space-y-1">
+                                      <div className="text-sm font-bold text-white">
+                                        ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
+                                      </div>
+                                      <div className="text-xs text-blue-100 bg-blue-800 px-2 py-0.5 rounded-full inline-block">
                                         ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
                                       </div>
                                     </div>
