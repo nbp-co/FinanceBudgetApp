@@ -1648,25 +1648,25 @@ export default function AccountsPage() {
 
             {/* Debt by Type Monthly Summary - Enhanced with Chart Toggle */}
             {getDebtAccounts().length > 0 && (
-              <Card className="bg-white border-slate-200 shadow-sm">
-                <CardHeader className="pb-3 bg-slate-100 border-b border-slate-200 rounded-t-lg">
+              <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
+                <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold flex items-center gap-2 text-slate-700">
-                      <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
                       Debt by Type - Monthly Summary
                     </CardTitle>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {/* Navigation Controls */}
-                      <div className="flex items-center gap-1 bg-slate-200 rounded-lg p-1">
+                      <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => setSummaryMonthOffset(summaryMonthOffset - 1)}
-                          className="h-8 w-8 p-0 text-slate-600 hover:bg-slate-300"
+                          className="h-8 w-8 p-0 text-white hover:bg-white/20"
                         >
                           <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        <span className="text-xs px-2 text-slate-600 font-medium whitespace-nowrap">
+                        <span className="text-xs px-2 text-white font-medium">
                           {(() => {
                             const currentDate = new Date();
                             const baseMonth = currentDate.getMonth() + summaryMonthOffset * 6;
@@ -1679,7 +1679,7 @@ export default function AccountsPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => setSummaryMonthOffset(summaryMonthOffset + 1)}
-                          className="h-8 w-8 p-0 text-slate-600 hover:bg-slate-300"
+                          className="h-8 w-8 p-0 text-white hover:bg-white/20"
                         >
                           <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -1687,15 +1687,15 @@ export default function AccountsPage() {
 
                       {/* Table Mode Toggle (only show for table view) */}
                       {summaryViewMode === 'table' && (
-                        <div className="flex items-center gap-1 bg-slate-200 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setSummaryTableMode('balance')}
                             className={`h-8 px-2 text-xs ${
                               summaryTableMode === 'balance' 
-                                ? 'bg-white text-slate-700 hover:bg-white shadow-sm' 
-                                : 'text-slate-600 hover:bg-slate-300'
+                                ? 'bg-white text-blue-700 hover:bg-white' 
+                                : 'text-white hover:bg-white/20'
                             }`}
                           >
                             Bal
@@ -1706,8 +1706,8 @@ export default function AccountsPage() {
                             onClick={() => setSummaryTableMode('interest')}
                             className={`h-8 px-2 text-xs ${
                               summaryTableMode === 'interest' 
-                                ? 'bg-white text-slate-700 hover:bg-white shadow-sm' 
-                                : 'text-slate-600 hover:bg-slate-300'
+                                ? 'bg-white text-blue-700 hover:bg-white' 
+                                : 'text-white hover:bg-white/20'
                             }`}
                           >
                             Int
@@ -1716,15 +1716,15 @@ export default function AccountsPage() {
                       )}
 
                       {/* View Mode Toggle */}
-                      <div className="flex items-center gap-1 bg-slate-200 rounded-lg p-1">
+                      <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
                         <Button
                           variant={summaryViewMode === 'table' ? 'secondary' : 'ghost'}
                           size="sm"
                           onClick={() => setSummaryViewMode('table')}
                           className={`h-8 px-3 text-xs ${
                             summaryViewMode === 'table' 
-                              ? 'bg-white text-slate-700 hover:bg-white shadow-sm' 
-                              : 'text-slate-600 hover:bg-slate-300'
+                              ? 'bg-white text-blue-700 hover:bg-white' 
+                              : 'text-white hover:bg-white/20'
                           }`}
                         >
                           Table
@@ -1735,8 +1735,8 @@ export default function AccountsPage() {
                           onClick={() => setSummaryViewMode('chart')}
                           className={`h-8 px-3 text-xs ${
                             summaryViewMode === 'chart' 
-                              ? 'bg-white text-slate-700 hover:bg-white shadow-sm' 
-                              : 'text-slate-600 hover:bg-slate-300'
+                              ? 'bg-white text-blue-700 hover:bg-white' 
+                              : 'text-white hover:bg-white/20'
                           }`}
                         >
                           Chart
