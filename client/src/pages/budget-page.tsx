@@ -259,13 +259,13 @@ export default function BudgetPage() {
                               <GripVertical className="h-4 w-4 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity" />
                             )}
                             
-                            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div className="flex-1 space-y-1">
                               {editingCategories[category.key] ? (
                                 <input
                                   type="text"
                                   value={expense.name}
                                   onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'name', e.target.value)}
-                                  className="font-medium bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                  className="w-full font-medium bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                                   placeholder="Expense name"
                                 />
                               ) : (
@@ -277,7 +277,7 @@ export default function BudgetPage() {
                                   type="text"
                                   value={expense.category}
                                   onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'category', e.target.value)}
-                                  className="text-sm text-gray-600 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                  className="w-full text-sm text-gray-600 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                                   placeholder="Category"
                                 />
                               ) : (
@@ -290,7 +290,7 @@ export default function BudgetPage() {
                                     type="date"
                                     value={expense.dueDate}
                                     onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'dueDate', e.target.value)}
-                                    className="text-sm text-gray-500 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                    className="w-full text-sm text-gray-500 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                                   />
                                 ) : (
                                   <p className="text-sm text-gray-500">Due: {expense.dueDate}</p>
