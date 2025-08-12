@@ -10,6 +10,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**Navigation Reordering (August 12, 2025)**
+- Updated main navigation order to: Calendar, Accounts, Summary, Settings
+- Applied consistently across desktop sidebar and mobile bottom navigation
+- User preference for logical flow from calendar view to account management to summary analysis
+
 **Budget Page Removal (August 12, 2025)**
 - Completely removed standalone Budget page and all associated functionality
 - Cleaned up navigation menus (desktop sidebar and mobile bottom nav)
