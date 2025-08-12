@@ -143,7 +143,7 @@ export default function StatementsPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="w-[230px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
+                            <TableHead className="w-[280px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
                             {selectedMonths.map(monthValue => {
                               const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                               return (
