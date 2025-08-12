@@ -1655,7 +1655,7 @@ export default function AccountsPage() {
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                       Debt by Type - Monthly Summary
                     </CardTitle>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       {/* Navigation Controls */}
                       <div className="flex items-center gap-1 bg-white/20 rounded-lg p-1">
                         <Button
@@ -1666,7 +1666,7 @@ export default function AccountsPage() {
                         >
                           <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        <span className="text-xs px-2 text-white font-medium">
+                        <span className="text-xs px-2 text-white font-medium whitespace-nowrap">
                           {(() => {
                             const currentDate = new Date();
                             const baseMonth = currentDate.getMonth() + summaryMonthOffset * 6;
