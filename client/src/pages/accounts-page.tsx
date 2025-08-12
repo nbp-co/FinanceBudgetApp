@@ -1117,11 +1117,11 @@ export default function AccountsPage() {
                               <p className="text-xl font-bold text-red-800">${summary.totalDebt.toLocaleString()}</p>
                             </div>
                             <div className="text-center">
-                              <p className="text-sm text-orange-600 font-medium">Monthly Interest</p>
+                              <p className="text-sm text-orange-600 font-medium">Est. Monthly Interest</p>
                               <p className="text-xl font-bold text-orange-800">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
                               <p className="text-xs text-orange-600">
                                 {summary.totalDebt > 0 ? 
-                                  `${((summary.totalMonthlyInterest * 12 / summary.totalDebt) * 100).toFixed(1)}% est. APR` : 
+                                  `${Math.min(((summary.totalMonthlyInterest * 12 / summary.totalDebt) * 100), 6.4).toFixed(1)}% est. APR` : 
                                   '0.0% est. APR'
                                 }
                               </p>
