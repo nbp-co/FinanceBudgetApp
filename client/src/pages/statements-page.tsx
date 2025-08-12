@@ -3,17 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Save, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { Save, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function StatementsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
-  const [isStatementsOpen, setIsStatementsOpen] = useState(true);
   const availableMonths = [
     { value: "2024-12", label: "Dec 2024" },
     { value: "2024-11", label: "Nov 2024" },
@@ -63,54 +59,7 @@ export default function StatementsPage() {
     );
   };
 
-  // Interest data by month - debt accounts only
-  const interestData = [
-    {
-      month: 'Jul 2024',
-      'Credit Card': 47.23,
-      'Mortgage': 1542.88,
-      'Auto Loan': 78.95,
-    },
-    {
-      month: 'Aug 2024',
-      'Credit Card': 47.23,
-      'Mortgage': 1542.88,
-      'Auto Loan': 78.95,
-    },
-    {
-      month: 'Sep 2024',
-      'Credit Card': 47.23,
-      'Mortgage': 1542.88,
-      'Auto Loan': 78.95,
-    },
-    {
-      month: 'Oct 2024',
-      'Credit Card': 47.23,
-      'Mortgage': 1542.88,
-      'Auto Loan': 78.95,
-    },
-    {
-      month: 'Nov 2024',
-      'Credit Card': 47.23,
-      'Mortgage': 1542.88,
-      'Auto Loan': 78.95,
-    },
-    {
-      month: 'Dec 2024',
-      'Credit Card': 47.23,
-      'Mortgage': 1542.88,
-      'Auto Loan': 78.95,
-    },
-  ];
 
-  // Colors for different account sub-types
-  const chartColors = {
-    'Credit Card': '#ef4444', // red
-    'Mortgage': '#f97316', // orange
-    'Auto Loan': '#eab308', // yellow
-    'Savings': '#22c55e', // green
-    'Money Market': '#3b82f6', // blue
-  };
 
   return (
     <AppShell>
@@ -183,104 +132,97 @@ export default function StatementsPage() {
             </CardContent>
           </Card>
         ) : (
-          <Collapsible open={isStatementsOpen} onOpenChange={setIsStatementsOpen}>
-            <Card>
-              <CardHeader>
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" className="w-full justify-between p-0 h-auto">
-                    <CardTitle>Monthly Statements</CardTitle>
-                    {isStatementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                  </Button>
-                </CollapsibleTrigger>
-              </CardHeader>
+          <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
+            <Collapsible defaultOpen={true}>
+              <CollapsibleTrigger className="w-full">
+                <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-semibold text-gray-900">Monthly Statements</h3>
+                  </div>
+                  <ChevronDown className="h-5 w-5 text-gray-600" />
+                </div>
+              </CollapsibleTrigger>
+              
               <CollapsibleContent>
-                <CardContent>
-                  <div className="relative">
-                    <div className="overflow-x-auto">
-                      <Table>
+                <CardContent className="pt-0 pb-4 space-y-4">
+                  <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+                    <Table>
                         <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-[280px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
-                            {selectedMonths.map(monthValue => {
+                          <TableRow className="bg-gray-400 h-10 border-none">
+                            <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">ACCOUNT</TableHead>
+                            {selectedMonths.map((monthValue, index) => {
                               const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                               return (
-                                <TableHead key={monthValue} className="text-center min-w-[120px]">
-                                  {monthLabel}
+                                <TableHead key={monthValue} className={`text-center font-bold text-white py-3 px-3 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                                  {monthLabel.toUpperCase()}
                                 </TableHead>
                               );
                             })}
                           </TableRow>
                         </TableHeader>
-                  <TableBody>
-                    {accounts.map((account, accountIndex) => (
-                      <TableRow key={account.name}>
-                        <TableCell className="font-medium sticky left-0 bg-white z-20">
-                          <div>
-                            <div className="font-medium">{account.name}</div>
-                            <div className="flex flex-wrap justify-center gap-1 mt-1 mb-2">
-                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium text-center ${
-                                account.type === 'Asset' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                {account.type}
-                              </span>
-                              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 text-center">
-                                {account.accountType}
-                              </span>
-                            </div>
-                            <div className="text-xs text-gray-500 space-y-0.5">
-                              {account.apr && (
-                                <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
-                              )}
-                              {account.dueDate && (
-                                <div>Due: {account.dueDate}th</div>
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
+                        <TableBody>
+                          {accounts.map((account, accountIndex) => (
+                            <TableRow key={account.name} className="hover:bg-gray-50">
+                              <TableCell className="font-medium py-4 px-4 text-gray-900 border-r border-gray-200">
+                                <div className="space-y-1">
+                                  <div className="text-sm font-semibold">{account.name}</div>
+                                  <div className="flex gap-2">
+                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                      account.type === 'Asset' 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
+                                    }`}>
+                                      {account.type}
+                                    </span>
+                                    <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                                      {account.accountType}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {account.apr && (
+                                      <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
+                                    )}
+                                    {account.dueDate && (
+                                      <div>Due: {account.dueDate}th</div>
+                                    )}
+                                  </div>
+                                </div>
+                              </TableCell>
 
-                        {selectedMonths.map(monthValue => (
-                          <TableCell key={`${account.name}-${monthValue}`} className="text-center">
-                            <div className="space-y-1">
-                              <div className="relative">
-                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
-                                <Input
-                                  type="text"
-                                  defaultValue={
-                                    account.name === "Checking Account" ? "12,345.67" :
-                                    account.name === "Savings Account" ? "25,890.12" :
-                                    account.name === "Money Market" ? "8,500.00" :
-                                    account.name === "Credit Card" ? "2,456.78" :
-                                    account.name === "Mortgage" ? "285,000.00" :
-                                    "15,250.00"
-                                  }
-                                  className="w-28 text-center pl-6"
-                                />
-                                <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
-                              </div>
-                              <div className="relative">
-                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
-                                <Input
-                                  type="text"
-                                  defaultValue={
-                                    account.name === "Checking Account" ? "0.00" :
-                                    account.name === "Savings Account" ? "95.43" :
-                                    account.name === "Money Market" ? "25.18" :
-                                    account.name === "Credit Card" ? "47.23" :
-                                    account.name === "Mortgage" ? "1,542.88" :
-                                    "78.95"
-                                  }
-                                  className="w-28 text-center text-xs pl-6"
-                                />
-                                <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
-                              </div>
-                            </div>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                      </TableBody>
+                              {selectedMonths.map((monthValue, monthIndex) => (
+                                <TableCell key={`${account.name}-${monthValue}`} className={`text-center py-4 px-3 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-200' : ''}`}>
+                                  <div className="space-y-2">
+                                    <div className="relative">
+                                      <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                      <Input
+                                        type="text"
+                                        defaultValue={
+                                          account.name === "Checking Account" ? "12,345.67" :
+                                          account.name === "Savings Account" ? "25,890.12" :
+                                          account.name === "Money Market" ? "8,500.00" :
+                                          account.name === "Credit Card" ? "2,456.78" :
+                                          account.name === "Mortgage" ? "285,000.00" :
+                                          "15,250.00"
+                                        }
+                                        className="w-32 text-center pl-6 text-sm font-medium"
+                                      />
+                                      <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">BAL</span>
+                                    </div>
+                                    {account.type === 'Debt' && (
+                                      <div className="text-xs text-red-600 italic font-medium">
+                                        Interest: ${
+                                          account.name === "Credit Card" ? "47.23" :
+                                          account.name === "Mortgage" ? "1,542.88" :
+                                          "78.95"
+                                        }
+                                      </div>
+                                    )}
+                                  </div>
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
                       </Table>
                     </div>
                   </div>
@@ -289,71 +231,6 @@ export default function StatementsPage() {
             </Card>
           </Collapsible>
         )}
-
-        {/* Interest Chart - Debt Accounts Only */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Monthly Interest Expense by Debt Account</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={interestData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis 
-                    dataKey="month" 
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => `$${value}`}
-                  />
-                  <RechartsTooltip 
-                    formatter={(value, name) => [`$${value}`, `${name} Interest`]}
-                    labelFormatter={(label) => `Month: ${label}`}
-                    labelStyle={{ 
-                      color: '#374151',
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      marginBottom: '4px'
-                    }}
-                    contentStyle={{ 
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                      padding: '12px',
-                      minWidth: '180px',
-                      fontSize: '13px'
-                    }}
-                    itemStyle={{
-                      color: '#374151',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      padding: '2px 0'
-                    }}
-                    cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
-                  />
-                  <Legend />
-                  <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
-                  <Bar dataKey="Mortgage" stackId="a" fill={chartColors['Mortgage']} />
-                  <Bar dataKey="Auto Loan" stackId="a" fill={chartColors['Auto Loan']} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </AppShell>
   );
