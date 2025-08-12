@@ -61,7 +61,7 @@ export default function AccountsPage() {
   const [selectedDebtAccount, setSelectedDebtAccount] = useState<string | null>(null);
   
   // Debt sort/filter state
-  const [debtSortBy, setDebtSortBy] = useState<'name' | 'balance' | 'interest' | 'payoff'>('balance');
+  const [debtSortBy, setDebtSortBy] = useState<'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff'>('balance');
   const [debtFilterBy, setDebtFilterBy] = useState<string[]>([]);
   
   // Payment form state
@@ -444,8 +444,12 @@ export default function AccountsPage() {
       switch (debtSortBy) {
         case 'name':
           return a.name.localeCompare(b.name);
+        case 'nameDesc':
+          return b.name.localeCompare(a.name);
         case 'balance':
           return bBalance - aBalance; // Highest balance first
+        case 'balanceAsc':
+          return aBalance - bBalance; // Lowest balance first
         case 'interest':
           const aInterest = (a.apr || 0) * aBalance / 100 / 12;
           const bInterest = (b.apr || 0) * bBalance / 100 / 12;
@@ -1201,13 +1205,15 @@ export default function AccountsPage() {
                   {/* Sort Dropdown */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm font-medium text-gray-700">Sort:</label>
-                    <Select value={debtSortBy} onValueChange={(value: 'name' | 'balance' | 'interest' | 'payoff') => setDebtSortBy(value)}>
+                    <Select value={debtSortBy} onValueChange={(value: 'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff') => setDebtSortBy(value)}>
                       <SelectTrigger className="w-40">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="balance">Balance (High → Low)</SelectItem>
+                        <SelectItem value="balanceAsc">Balance (Low → High)</SelectItem>
                         <SelectItem value="name">Name (A → Z)</SelectItem>
+                        <SelectItem value="nameDesc">Name (Z → A)</SelectItem>
                         <SelectItem value="interest">Interest (High → Low)</SelectItem>
                         <SelectItem value="payoff">Payoff Time (Short → Long)</SelectItem>
                       </SelectContent>
