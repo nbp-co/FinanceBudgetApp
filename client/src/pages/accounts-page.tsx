@@ -47,6 +47,8 @@ export default function AccountsPage() {
   // Statements tab state
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
+  const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<'name' | 'type'>('type');
   const [isStatementsOpen, setIsStatementsOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const accountsPerPage = 5;
@@ -97,18 +99,29 @@ export default function AccountsPage() {
     'Money Market': '#3b82f6', // blue
   };
 
-  // Sort accounts by type and subtype
+  // Get unique sub-types for filtering
+  const allSubTypes = [...new Set(allAccounts.map(account => account.accountType))];
+
+  // Sort accounts based on sortBy preference
   const sortedAccounts = allAccounts.sort((a, b) => {
-    if (a.type !== b.type) {
-      return a.type === 'Asset' ? -1 : 1;
+    if (sortBy === 'name') {
+      return a.name.localeCompare(b.name);
+    } else { // sortBy === 'type'
+      // First by type (Debt first, then Asset)
+      if (a.type !== b.type) {
+        return a.type === 'Debt' ? -1 : 1;
+      }
+      // Then by account sub-type within same type
+      return a.accountType.localeCompare(b.accountType);
     }
-    return a.accountType.localeCompare(b.accountType);
   });
 
-  // Filter accounts based on selected types
-  const filteredAccounts = sortedAccounts.filter(account => 
-    selectedAccountTypes.includes(account.type)
-  );
+  // Filter accounts based on selected types and sub-types
+  const filteredAccounts = sortedAccounts.filter(account => {
+    const typeMatch = selectedAccountTypes.includes(account.type);
+    const subTypeMatch = selectedSubTypes.length === 0 || selectedSubTypes.includes(account.accountType);
+    return typeMatch && subTypeMatch;
+  });
 
   // Pagination logic for statements
   const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
@@ -187,6 +200,20 @@ export default function AccountsPage() {
         : [...prev, accountType]
     );
     setCurrentPage(0); // Reset to first page when filter changes
+  };
+
+  const toggleSubType = (subType: string) => {
+    setSelectedSubTypes(prev => 
+      prev.includes(subType) 
+        ? prev.filter(t => t !== subType)
+        : [...prev, subType]
+    );
+    setCurrentPage(0); // Reset to first page when filter changes
+  };
+
+  const handleSortChange = (newSortBy: 'name' | 'type') => {
+    setSortBy(newSortBy);
+    setCurrentPage(0); // Reset to first page when sort changes
   };
   
   const form = useForm<AccountFormData>({
@@ -498,6 +525,47 @@ export default function AccountsPage() {
                                 onCheckedChange={() => toggleAccountType(type)}
                               />
                               <span className="text-sm text-gray-700">{type}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Sort by:</p>
+                        <div className="flex gap-4">
+                          <label className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              name="sortBy"
+                              checked={sortBy === 'type'}
+                              onChange={() => handleSortChange('type')}
+                              className="text-blue-600"
+                            />
+                            <span className="text-sm text-gray-700">Type (Debt → Asset)</span>
+                          </label>
+                          <label className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              name="sortBy"
+                              checked={sortBy === 'name'}
+                              onChange={() => handleSortChange('name')}
+                              className="text-blue-600"
+                            />
+                            <span className="text-sm text-gray-700">Name (A → Z)</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Filter by Sub-type:</p>
+                        <div className="flex flex-wrap gap-4">
+                          {allSubTypes.map(subType => (
+                            <label key={subType} className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={selectedSubTypes.includes(subType)}
+                                onCheckedChange={() => toggleSubType(subType)}
+                              />
+                              <span className="text-sm text-gray-700">{subType}</span>
                             </label>
                           ))}
                         </div>
