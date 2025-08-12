@@ -1193,103 +1193,6 @@ export default function AccountsPage() {
                 </Card>
               )}
 
-              {/* Debt by Type Monthly Summary Table */}
-              {getDebtAccounts().length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Debt by Type - Monthly Summary</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-blue-50">
-                            <TableHead className="font-bold text-gray-900 bg-blue-100">DEBT BY TYPE</TableHead>
-                            <TableHead className="text-center font-bold text-gray-900">JAN 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-900">FEB 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-900">MAR 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-900">APR 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-900">MAY 2024</TableHead>
-                            <TableHead className="text-center font-bold text-gray-900">JUN 2024</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {(() => {
-                            const debtAccounts = getDebtAccounts();
-                            const debtTypes = [...new Set(debtAccounts.map(account => account.accountType))];
-                            const monthlyData = [];
-                            let totalsByMonth = Array(6).fill(0).map(() => ({ balance: 0, interest: 0 }));
-
-                            // Calculate data for each debt type
-                            debtTypes.forEach(debtType => {
-                              const typeAccounts = debtAccounts.filter(account => account.accountType === debtType);
-                              const monthData = [];
-                              
-                              // For each month (Jan-Jun 2024)
-                              for (let month = 1; month <= 6; month++) {
-                                let totalBalance = 0;
-                                let totalInterest = 0;
-                                
-                                typeAccounts.forEach(account => {
-                                  const balance = getBalance(account.name);
-                                  const monthlyInterest = balance * (account.apr || 0) / 100 / 12;
-                                  
-                                  totalBalance += balance;
-                                  totalInterest += monthlyInterest;
-                                });
-                                
-                                monthData.push({ balance: totalBalance, interest: totalInterest });
-                                totalsByMonth[month - 1].balance += totalBalance;
-                                totalsByMonth[month - 1].interest += totalInterest;
-                              }
-                              
-                              monthlyData.push({ type: debtType, months: monthData });
-                            });
-
-                            return (
-                              <>
-                                {monthlyData.map(({ type, months }) => (
-                                  <TableRow key={type} className="border-b">
-                                    <TableCell className="font-medium text-gray-700 bg-gray-50">
-                                      {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                    </TableCell>
-                                    {months.map((month, index) => (
-                                      <TableCell key={`month-${index}`} className="text-center text-sm">
-                                        <div className="space-y-1">
-                                          <div>${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}</div>
-                                          <div className="text-xs text-gray-600">
-                                            ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
-                                          </div>
-                                        </div>
-                                      </TableCell>
-                                    ))}
-                                  </TableRow>
-                                ))}
-                                
-                                {/* Total Row */}
-                                <TableRow className="border-t-2 border-gray-300 bg-gray-100 font-bold">
-                                  <TableCell className="font-bold text-gray-900 bg-gray-200">TOTAL</TableCell>
-                                  {totalsByMonth.map((total, index) => (
-                                    <TableCell key={`total-month-${index}`} className="text-center text-sm font-bold">
-                                      <div className="space-y-1">
-                                        <div>${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}</div>
-                                        <div className="text-xs text-gray-600">
-                                          ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
-                                        </div>
-                                      </div>
-                                    </TableCell>
-                                  ))}
-                                </TableRow>
-                              </>
-                            );
-                          })()}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
               {/* Sort and Filter Controls - Right Aligned */}
               {getDebtAccounts().length > 0 && (
                 <div className="flex items-center justify-end gap-4 p-3 bg-gray-50 rounded-lg border">
@@ -1686,6 +1589,103 @@ export default function AccountsPage() {
                 </div>
               </DialogContent>
             </Dialog>
+
+            {/* Debt by Type Monthly Summary Table - Moved to Bottom */}
+            {getDebtAccounts().length > 0 && (
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle>Debt by Type - Monthly Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-2">
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-blue-50 h-8">
+                          <TableHead className="font-bold text-gray-900 bg-blue-100 py-2">DEBT BY TYPE</TableHead>
+                          <TableHead className="text-center font-bold text-gray-900 py-2">JAN 2024</TableHead>
+                          <TableHead className="text-center font-bold text-gray-900 py-2">FEB 2024</TableHead>
+                          <TableHead className="text-center font-bold text-gray-900 py-2">MAR 2024</TableHead>
+                          <TableHead className="text-center font-bold text-gray-900 py-2">APR 2024</TableHead>
+                          <TableHead className="text-center font-bold text-gray-900 py-2">MAY 2024</TableHead>
+                          <TableHead className="text-center font-bold text-gray-900 py-2">JUN 2024</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(() => {
+                          const debtAccounts = getDebtAccounts();
+                          const debtTypes = [...new Set(debtAccounts.map(account => account.accountType))];
+                          const monthlyData = [];
+                          let totalsByMonth = Array(6).fill(0).map(() => ({ balance: 0, interest: 0 }));
+
+                          // Calculate data for each debt type
+                          debtTypes.forEach(debtType => {
+                            const typeAccounts = debtAccounts.filter(account => account.accountType === debtType);
+                            const monthData = [];
+                            
+                            // For each month (Jan-Jun 2024)
+                            for (let month = 1; month <= 6; month++) {
+                              let totalBalance = 0;
+                              let totalInterest = 0;
+                              
+                              typeAccounts.forEach(account => {
+                                const balance = getBalance(account.name);
+                                const monthlyInterest = balance * (account.apr || 0) / 100 / 12;
+                                
+                                totalBalance += balance;
+                                totalInterest += monthlyInterest;
+                              });
+                              
+                              monthData.push({ balance: totalBalance, interest: totalInterest });
+                              totalsByMonth[month - 1].balance += totalBalance;
+                              totalsByMonth[month - 1].interest += totalInterest;
+                            }
+                            
+                            monthlyData.push({ type: debtType, months: monthData });
+                          });
+
+                          return (
+                            <>
+                              {monthlyData.map(({ type, months }) => (
+                                <TableRow key={type} className="border-b h-12">
+                                  <TableCell className="font-medium text-gray-700 bg-gray-50 py-1">
+                                    {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                  </TableCell>
+                                  {months.map((month, index) => (
+                                    <TableCell key={`month-${index}`} className="text-center text-sm py-1">
+                                      <div className="space-y-0.5">
+                                        <div className="text-sm">${month.balance > 0 ? Math.round(month.balance).toLocaleString() : '-'}</div>
+                                        <div className="text-xs text-gray-600">
+                                          ${month.interest > 0 ? Math.round(month.interest).toLocaleString() : '-'}
+                                        </div>
+                                      </div>
+                                    </TableCell>
+                                  ))}
+                                </TableRow>
+                              ))}
+                              
+                              {/* Total Row */}
+                              <TableRow className="border-t-2 border-gray-300 bg-gray-100 font-bold h-12">
+                                <TableCell className="font-bold text-gray-900 bg-gray-200 py-1">TOTAL</TableCell>
+                                {totalsByMonth.map((total, index) => (
+                                  <TableCell key={`total-month-${index}`} className="text-center text-sm font-bold py-1">
+                                    <div className="space-y-0.5">
+                                      <div className="text-sm">${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}</div>
+                                      <div className="text-xs text-gray-600">
+                                        ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                ))}
+                              </TableRow>
+                            </>
+                          );
+                        })()}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
 
