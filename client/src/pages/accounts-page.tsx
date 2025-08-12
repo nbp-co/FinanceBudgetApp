@@ -537,7 +537,7 @@ export default function AccountsPage() {
                                   {selectedMonths.map(monthValue => {
                                     const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                                     return (
-                                      <TableHead key={monthValue} className="text-center min-w-[120px]">
+                                      <TableHead key={monthValue} className="text-center min-w-[100px]">
                                         {monthLabel}
                                       </TableHead>
                                     );
