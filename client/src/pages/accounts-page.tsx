@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,10 +14,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, TrendingDown, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const accountFormSchema = z.object({
   name: z.string().min(1, "Account name is required"),
@@ -52,6 +53,12 @@ export default function AccountsPage() {
   const [isStatementsOpen, setIsStatementsOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const accountsPerPage = 5;
+
+  // Debt payoff tab state
+  const [paymentSchedules, setPaymentSchedules] = useState<{ [accountName: string]: { frequency: string; amount: number; paymentAccount: string; nextDueDate: string } }>({});
+  const [expandedCharts, setExpandedCharts] = useState<{ [accountName: string]: boolean }>({});
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [selectedDebtAccount, setSelectedDebtAccount] = useState<string | null>(null);
 
   // Statements data
   const availableMonths = [
@@ -231,6 +238,84 @@ export default function AccountsPage() {
     setSortBy(newSortBy);
     setCurrentPage(0); // Reset to first page when sort changes
   };
+
+  // Debt payoff helper functions
+  const getDebtAccounts = () => allAccounts.filter(account => account.type === 'Debt');
+  
+  const calculatePayoffProjection = (balance: number, apr: number, monthlyPayment: number) => {
+    const months = [];
+    let currentBalance = balance;
+    const monthlyRate = apr / 100 / 12;
+    
+    // Previous 3 months (mock data for now)
+    for (let i = 3; i > 0; i--) {
+      const prevBalance = balance * (1 + (i * 0.02)); // Mock previous balances
+      months.push({
+        month: new Date(Date.now() - i * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+        balance: prevBalance,
+        isPast: true
+      });
+    }
+    
+    // Current month
+    months.push({
+      month: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+      balance: currentBalance,
+      isPast: false
+    });
+    
+    // Future 6 months projection
+    for (let i = 1; i <= 6; i++) {
+      const interestCharge = currentBalance * monthlyRate;
+      currentBalance = Math.max(0, currentBalance + interestCharge - monthlyPayment);
+      months.push({
+        month: new Date(Date.now() + i * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+        balance: currentBalance,
+        isPast: false
+      });
+      
+      if (currentBalance <= 0) break;
+    }
+    
+    return months;
+  };
+  
+  const calculatePayoffDate = (balance: number, apr: number, monthlyPayment: number) => {
+    if (monthlyPayment <= 0) return null;
+    
+    let currentBalance = balance;
+    const monthlyRate = apr / 100 / 12;
+    let months = 0;
+    
+    while (currentBalance > 0.01 && months < 600) { // Max 50 years
+      const interestCharge = currentBalance * monthlyRate;
+      currentBalance = currentBalance + interestCharge - monthlyPayment;
+      months++;
+      
+      if (monthlyPayment <= interestCharge) return null; // Payment too low
+    }
+    
+    const payoffDate = new Date();
+    payoffDate.setMonth(payoffDate.getMonth() + months);
+    
+    return {
+      months,
+      date: payoffDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }),
+      totalInterest: (monthlyPayment * months) - balance
+    };
+  };
+
+  const toggleChartExpansion = (accountName: string) => {
+    setExpandedCharts(prev => ({
+      ...prev,
+      [accountName]: !prev[accountName]
+    }));
+  };
+
+  const openPaymentDialog = (accountName: string) => {
+    setSelectedDebtAccount(accountName);
+    setIsPaymentDialogOpen(true);
+  };
   
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountFormSchema),
@@ -299,9 +384,10 @@ export default function AccountsPage() {
     <AppShell>
       <div className="p-4 lg:p-8">
         <Tabs defaultValue="accounts" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg">
             <TabsTrigger value="accounts">My Accounts</TabsTrigger>
             <TabsTrigger value="statements">Statements</TabsTrigger>
+            <TabsTrigger value="debt-payoff">Debt Payoff</TabsTrigger>
           </TabsList>
           
           <TabsContent value="accounts" className="space-y-8">
@@ -856,6 +942,253 @@ export default function AccountsPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="debt-payoff" className="space-y-6">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Debt Payoff</h2>
+                  <p className="text-gray-600">Manage payment schedules and track debt reduction progress</p>
+                </div>
+                <Button onClick={() => openPaymentDialog('new')} className="flex items-center space-x-2">
+                  <Plus className="h-4 w-4" />
+                  <span>Schedule Payment</span>
+                </Button>
+              </div>
+
+              <div className="grid gap-6">
+                {getDebtAccounts().map(account => {
+                  const balance = getBalance(account.name);
+                  const monthlyPayment = paymentSchedules[account.name]?.amount || (balance * 0.02); // Default 2% of balance
+                  const payoffInfo = calculatePayoffDate(balance, account.apr || 0, monthlyPayment);
+                  const projectionData = calculatePayoffProjection(balance, account.apr || 0, monthlyPayment);
+                  
+                  return (
+                    <Card key={account.name} className="overflow-hidden">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle className="text-lg">{account.name}</CardTitle>
+                            <div className="flex items-center space-x-4 mt-1">
+                              <p className="text-sm text-gray-600">Balance: <span className="font-semibold text-red-600">${balance.toLocaleString()}</span></p>
+                              {account.apr && <p className="text-sm text-gray-600">APR: {account.apr}%</p>}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => toggleChartExpansion(account.name)}
+                            >
+                              <TrendingDown className="h-4 w-4 mr-1" />
+                              {expandedCharts[account.name] ? 'Hide Chart' : 'Show Chart'}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openPaymentDialog(account.name)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+
+                      <CardContent className="space-y-4">
+                        {/* Payment Schedule Info */}
+                        <div className="grid md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+                          <div>
+                            <p className="text-sm text-gray-600">Monthly Payment</p>
+                            <p className="font-semibold text-lg">${monthlyPayment.toFixed(2)}</p>
+                            <p className="text-xs text-gray-500">
+                              {paymentSchedules[account.name]?.frequency || 'Monthly'} • 
+                              {paymentSchedules[account.name]?.paymentAccount || 'Checking Account'}
+                            </p>
+                          </div>
+                          
+                          {payoffInfo && (
+                            <>
+                              <div>
+                                <p className="text-sm text-gray-600">Payoff Date</p>
+                                <p className="font-semibold text-lg text-green-600">{payoffInfo.date}</p>
+                                <p className="text-xs text-gray-500">{payoffInfo.months} months remaining</p>
+                              </div>
+                              
+                              <div>
+                                <p className="text-sm text-gray-600">Total Interest</p>
+                                <p className="font-semibold text-lg text-orange-600">${payoffInfo.totalInterest.toFixed(2)}</p>
+                                <p className="text-xs text-gray-500">Over life of loan</p>
+                              </div>
+                            </>
+                          )}
+                          
+                          {!payoffInfo && (
+                            <div className="md:col-span-2">
+                              <p className="text-sm text-red-600">⚠️ Payment too low to cover interest charges</p>
+                              <p className="text-xs text-gray-500">Increase payment amount to make progress</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Balance Projection Chart */}
+                        {expandedCharts[account.name] && (
+                          <div className="mt-4">
+                            <h4 className="font-medium mb-3 flex items-center">
+                              <TrendingDown className="h-4 w-4 mr-2" />
+                              Balance Projection (Previous 3 months • Next 6 months)
+                            </h4>
+                            <div className="h-64 w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={projectionData}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                  <XAxis 
+                                    dataKey="month" 
+                                    tick={{ fontSize: 12 }}
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={60}
+                                  />
+                                  <YAxis 
+                                    tick={{ fontSize: 12 }}
+                                    tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
+                                  />
+                                  <RechartsTooltip 
+                                    formatter={(value) => [`$${value.toLocaleString()}`, 'Balance']}
+                                    labelFormatter={(label) => `${label}`}
+                                  />
+                                  <Line 
+                                    type="monotone" 
+                                    dataKey="balance" 
+                                    stroke="#ef4444"
+                                    strokeWidth={3}
+                                    dot={(props) => {
+                                      const { payload } = props;
+                                      return (
+                                        <circle
+                                          {...props}
+                                          fill={payload?.isPast ? "#6b7280" : "#ef4444"}
+                                          stroke={payload?.isPast ? "#6b7280" : "#ef4444"}
+                                          strokeWidth={2}
+                                          r={4}
+                                        />
+                                      );
+                                    }}
+                                  />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Next Payment Due */}
+                        <div className="flex items-center justify-between p-3 border border-blue-200 bg-blue-50 rounded-lg">
+                          <div>
+                            <p className="font-medium text-blue-900">Next Payment Due</p>
+                            <p className="text-sm text-blue-700">
+                              {account.dueDate ? `${account.dueDate}th of each month` : 'Not scheduled'} • 
+                              ${monthlyPayment.toFixed(2)}
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm" className="text-blue-700 border-blue-300">
+                            Make Payment
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+              
+              {getDebtAccounts().length === 0 && (
+                <Card>
+                  <CardContent className="text-center py-12">
+                    <div className="text-gray-400 mb-4">
+                      <TrendingDown className="h-12 w-12 mx-auto" />
+                    </div>
+                    <p className="text-gray-600 text-lg">No debt accounts found</p>
+                    <p className="text-gray-500 text-sm">Add debt accounts in the My Accounts tab to track payoff progress</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Payment Schedule Dialog */}
+            <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Schedule Payment</DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="payment-account">Debt Account</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select debt account" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getDebtAccounts().map(account => (
+                          <SelectItem key={account.name} value={account.name}>
+                            {account.name} (${getBalance(account.name).toLocaleString()})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="payment-amount">Payment Amount</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                      <Input 
+                        id="payment-amount" 
+                        type="number" 
+                        placeholder="0.00"
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="frequency">Payment Frequency</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select frequency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="payment-source">Payment Account</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select payment source" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="checking">Checking Account</SelectItem>
+                        <SelectItem value="business-checking">Business Checking</SelectItem>
+                        <SelectItem value="savings">Savings Account</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex justify-end space-x-2 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setIsPaymentDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button type="button" onClick={() => setIsPaymentDialogOpen(false)}>
+                      Schedule Payment
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
         </Tabs>
 
