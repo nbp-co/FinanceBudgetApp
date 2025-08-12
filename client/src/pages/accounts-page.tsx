@@ -77,6 +77,9 @@ export default function AccountsPage() {
     startDate: new Date().toISOString().split('T')[0]
   });
 
+  // Debt summary view mode state
+  const [summaryViewMode, setSummaryViewMode] = useState<'table' | 'chart'>('table');
+
   // Mock monthly statements data for debt overview calculation
   const monthlyStatements = [
     { id: 1, accountId: "credit-card", year: 2024, month: 1, startingBalance: 2500.0 },
@@ -1613,18 +1616,47 @@ export default function AccountsPage() {
               </DialogContent>
             </Dialog>
 
-            {/* Debt by Type Monthly Summary Table - Enhanced Visual Appeal */}
+            {/* Debt by Type Monthly Summary - Enhanced with Chart Toggle */}
             {getDebtAccounts().length > 0 && (
               <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
                 <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    Debt by Type - Monthly Summary
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                      Debt by Type - Monthly Summary
+                    </CardTitle>
+                    <div className="flex items-center gap-2 bg-white/20 rounded-lg p-1">
+                      <Button
+                        variant={summaryViewMode === 'table' ? 'secondary' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSummaryViewMode('table')}
+                        className={`h-8 px-3 text-xs ${
+                          summaryViewMode === 'table' 
+                            ? 'bg-white text-blue-700 hover:bg-white' 
+                            : 'text-white hover:bg-white/20'
+                        }`}
+                      >
+                        Table
+                      </Button>
+                      <Button
+                        variant={summaryViewMode === 'chart' ? 'secondary' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSummaryViewMode('chart')}
+                        className={`h-8 px-3 text-xs ${
+                          summaryViewMode === 'chart' 
+                            ? 'bg-white text-blue-700 hover:bg-white' 
+                            : 'text-white hover:bg-white/20'
+                        }`}
+                      >
+                        Chart
+                      </Button>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
-                    <Table>
+                  {summaryViewMode === 'table' ? (
+                    <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+                      <Table>
                       <TableHeader>
                         <TableRow className="bg-gradient-to-r from-blue-600 to-blue-700 h-10 border-none">
                           <TableHead className="font-bold text-white bg-blue-800 py-3 px-4 rounded-tl-lg border-r border-blue-500">DEBT BY TYPE</TableHead>
@@ -1674,16 +1706,7 @@ export default function AccountsPage() {
                               {monthlyData.map(({ type, months }, rowIndex) => (
                                 <TableRow key={type} className={`border-b border-slate-200 h-14 hover:bg-slate-50 transition-colors ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-25'}`}>
                                   <TableCell className="font-semibold text-slate-800 bg-gradient-to-r from-slate-100 to-slate-50 py-2 px-4 border-r border-slate-200">
-                                    <div className="flex items-center gap-2">
-                                      <div className={`w-3 h-3 rounded-full ${
-                                        type === 'Credit Card' ? 'bg-red-500' :
-                                        type === 'Mortgage' ? 'bg-orange-500' :
-                                        type === 'Auto Loan' ? 'bg-yellow-500' :
-                                        type === 'Student Loan' ? 'bg-green-500' :
-                                        'bg-blue-500'
-                                      }`}></div>
-                                      {type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
-                                    </div>
+                                    {type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                                   </TableCell>
                                   {months.map((month, index) => (
                                     <TableCell key={`month-${index}`} className="text-center py-2 px-3 border-r border-slate-100">
@@ -1703,10 +1726,7 @@ export default function AccountsPage() {
                               {/* Total Row */}
                               <TableRow className="border-t-2 border-blue-300 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold h-14">
                                 <TableCell className="font-bold text-white bg-blue-800 py-3 px-4 border-r border-blue-500 rounded-bl-lg">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 bg-white rounded-full"></div>
-                                    TOTAL
-                                  </div>
+                                  TOTAL
                                 </TableCell>
                                 {totalsByMonth.map((total, index) => (
                                   <TableCell key={`total-month-${index}`} className={`text-center font-bold py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-blue-500' : 'rounded-br-lg'}`}>
@@ -1726,7 +1746,96 @@ export default function AccountsPage() {
                         })()}
                       </TableBody>
                     </Table>
-                  </div>
+                    </div>
+                  ) : (
+                    // Chart View
+                    <div className="space-y-4">
+                      {(() => {
+                        const debtAccounts = getDebtAccounts();
+                        const debtTypes = Array.from(new Set(debtAccounts.map(account => account.accountType)));
+                        const chartData = [];
+                        
+                        // Prepare data for chart
+                        for (let month = 1; month <= 6; month++) {
+                          const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'][month - 1];
+                          const monthData: any = { month: `${monthName} 2024` };
+                          
+                          debtTypes.forEach(debtType => {
+                            const typeAccounts = debtAccounts.filter(account => account.accountType === debtType);
+                            let totalBalance = 0;
+                            
+                            typeAccounts.forEach(account => {
+                              const balance = getBalance(account.name);
+                              totalBalance += balance;
+                            });
+                            
+                            monthData[debtType] = totalBalance;
+                          });
+                          
+                          chartData.push(monthData);
+                        }
+                        
+                        const chartColors = {
+                          'Credit Card': '#ef4444', // red
+                          'Mortgage': '#f97316', // orange
+                          'Auto Loan': '#eab308', // yellow
+                          'Student Loan': '#22c55e', // green
+                          'Line of Credit': '#3b82f6', // blue
+                          'Taxes': '#8b5cf6', // purple
+                        };
+                        
+                        return (
+                          <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart
+                                data={chartData}
+                                margin={{
+                                  top: 20,
+                                  right: 30,
+                                  left: 20,
+                                  bottom: 5,
+                                }}
+                              >
+                                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                                <XAxis 
+                                  dataKey="month" 
+                                  tick={{ fontSize: 12 }}
+                                  angle={-45}
+                                  textAnchor="end"
+                                  height={60}
+                                />
+                                <YAxis 
+                                  tick={{ fontSize: 12 }}
+                                  tickFormatter={(value) => `$${value > 10000 ? `${(value/1000).toFixed(1)}k` : value.toLocaleString()}`}
+                                />
+                                <RechartsTooltip 
+                                  formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
+                                  labelFormatter={(label) => `${label}`}
+                                  contentStyle={{ 
+                                    backgroundColor: '#ffffff',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                    padding: '12px'
+                                  }}
+                                />
+                                <Legend />
+                                {debtTypes.map((debtType) => (
+                                  <Bar 
+                                    key={debtType}
+                                    dataKey={debtType} 
+                                    stackId="debt"
+                                    fill={chartColors[debtType as keyof typeof chartColors] || '#64748b'}
+                                    name={debtType.replace('_', ' ')}
+                                  />
+                                ))}
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
