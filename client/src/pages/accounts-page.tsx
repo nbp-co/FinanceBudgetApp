@@ -1285,8 +1285,9 @@ export default function AccountsPage() {
                           </div>
                           
                           {/* Blue Payment Box - simplified */}
-                          <div className="p-1.5 border border-blue-200 bg-blue-50 rounded text-xs mx-3 min-w-[120px]">
-                            <p className="font-medium text-blue-900">
+                          <div className="p-1.5 border border-blue-200 bg-blue-50 rounded text-xs mx-3 min-w-[120px] text-center">
+                            <p className="font-medium text-blue-900 flex items-center justify-center gap-1">
+                              <DollarSign className="h-3 w-3" />
                               ${Math.round(monthlyPayment).toLocaleString()} on {account.dueDate ? `${account.dueDate}th` : 'TBD'}
                             </p>
                           </div>
