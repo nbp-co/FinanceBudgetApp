@@ -975,9 +975,9 @@ export default function AccountsPage() {
                               <TableBody>
                                 {paginatedAccounts.map((account) => (
                                   <TableRow key={account.name} className="hover:bg-gray-50">
-                                    <TableCell className="w-[200px] sticky left-0 bg-white z-10 border-r-2 border-gray-400">
-                                      <div className="space-y-2">
-                                        <div className="font-medium text-gray-900">{account.name}</div>
+                                    <TableCell className="w-[200px] sticky left-0 bg-white z-10 border-r-2 border-gray-400 py-3">
+                                      <div className="space-y-1.5">
+                                        <div className="font-medium text-gray-900 text-sm">{account.name}</div>
                                         <div className="flex flex-wrap gap-1 justify-center">
                                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                                             account.type === 'Asset' 
@@ -990,7 +990,7 @@ export default function AccountsPage() {
                                             {account.accountType}
                                           </span>
                                         </div>
-                                        <div className="text-xs text-gray-500 space-y-0.5">
+                                        <div className="text-xs text-gray-500">
                                           {account.dueDate && (
                                             <div className="flex justify-between items-center">
                                               <span>Due: {account.dueDate}th</span>
@@ -1007,7 +1007,7 @@ export default function AccountsPage() {
                                     </TableCell>
 
                                     {selectedMonths.map(monthValue => (
-                                      <TableCell key={`${account.name}-${monthValue}`} className="text-center border-r border-gray-200">
+                                      <TableCell key={`${account.name}-${monthValue}`} className="text-center border-r border-gray-200 py-3">
                                         <div className="space-y-1">
                                           <div className="relative">
                                             <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
