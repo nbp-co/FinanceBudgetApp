@@ -1125,9 +1125,9 @@ export default function AccountsPage() {
                         return (
                           <>
                             <div className="text-center">
-                              <p className="text-sm text-red-600 font-medium">Total Debt</p>
-                              <p className="text-xl font-bold text-red-800">${summary.totalDebt.toLocaleString()}</p>
-                              <p className="text-xs text-red-600">
+                              <p className="text-sm text-gray-600 font-medium">Total Debt</p>
+                              <p className="text-xl font-bold text-gray-900">${summary.totalDebt.toLocaleString()}</p>
+                              <p className="text-xs text-gray-500">
                                 ${(() => {
                                   const debtAccounts = getDebtAccounts();
                                   let totalStartBalance = 0;
@@ -1165,9 +1165,9 @@ export default function AccountsPage() {
                               </p>
                             </div>
                             <div className="text-center">
-                              <p className="text-sm text-orange-600 font-medium">Est. Monthly Interest</p>
-                              <p className="text-xl font-bold text-orange-800">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
-                              <p className="text-xs text-orange-600">
+                              <p className="text-sm text-gray-600 font-medium">Est. Monthly Interest</p>
+                              <p className="text-xl font-bold text-gray-900">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
+                              <p className="text-xs text-gray-500">
                                 {summary.totalDebt > 0 ? 
                                   `${Math.min(((summary.totalMonthlyInterest * 12 / summary.totalDebt) * 100), 6.4).toFixed(1)}% Est. APR` : 
                                   '0.0% Est. APR'
@@ -1175,16 +1175,16 @@ export default function AccountsPage() {
                               </p>
                             </div>
                             <div className="text-center">
-                              <p className="text-sm text-green-600 font-medium">YTD Interest Paid</p>
-                              <p className="text-xl font-bold text-green-800">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
-                              <p className="text-xs text-green-600">
+                              <p className="text-sm text-gray-600 font-medium">YTD Interest Paid</p>
+                              <p className="text-xl font-bold text-gray-900">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
+                              <p className="text-xs text-gray-500">
                                 ${Math.round(summary.yearToDateInterest + (summary.totalYearlyInterest * (12 - new Date().getMonth()) / 12)).toLocaleString()} Est. Annual
                               </p>
                             </div>
                             <div className="text-center">
-                              <p className="text-sm text-blue-600 font-medium">End-of-Year Balance</p>
-                              <p className="text-xl font-bold text-blue-800">${Math.round(summary.projectedYearEndDebt).toLocaleString()}</p>
-                              <p className="text-xs text-green-600">-${Math.round(summary.debtReduction).toLocaleString()} Reduction</p>
+                              <p className="text-sm text-gray-600 font-medium">End-of-Year Balance</p>
+                              <p className="text-xl font-bold text-gray-900">${Math.round(summary.projectedYearEndDebt).toLocaleString()}</p>
+                              <p className="text-xs text-gray-500">-${Math.round(summary.debtReduction).toLocaleString()} Reduction</p>
                             </div>
                           </>
                         );
