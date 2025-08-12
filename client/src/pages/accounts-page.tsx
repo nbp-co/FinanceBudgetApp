@@ -736,8 +736,8 @@ export default function AccountsPage() {
                         tickFormatter={(value) => `$${value}`}
                       />
                       <RechartsTooltip 
-                        formatter={(value, name) => [`$${value}`, `${name} Interest`]}
-                        labelFormatter={(label) => `Month: ${label}`}
+                        formatter={(value, name) => [`$${value}`, `${name}`]}
+                        labelFormatter={(label) => `${label}`}
                         labelStyle={{ 
                           color: '#374151',
                           fontSize: '14px',
