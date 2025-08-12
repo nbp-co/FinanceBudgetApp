@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Save, Plus, Minus } from "lucide-react";
+import { Save, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export default function StatementsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
+  const [isStatementsOpen, setIsStatementsOpen] = useState(true);
   const availableMonths = [
     { value: "2024-12", label: "Dec 2024" },
     { value: "2024-11", label: "Nov 2024" },
@@ -124,18 +126,25 @@ export default function StatementsPage() {
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Monthly Statements</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="relative">
-                <div className="overflow-x-auto">
-                  <Table>
+          <Collapsible open={isStatementsOpen} onOpenChange={setIsStatementsOpen}>
+            <Card>
+              <CardHeader>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                    <CardTitle>Monthly Statements</CardTitle>
+                    {isStatementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+              </CardHeader>
+              <CollapsibleContent>
+                <CardContent>
+                  <div className="relative">
+                    <div className="overflow-x-auto">
+                      <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[150px] sticky left-0 bg-white z-20 border-r border-gray-200" style={{ boxShadow: '2px 0 0 0 rgb(229 231 235)' }}>Account</TableHead>
-                        <TableHead className="w-[80px] sticky left-[150px] bg-white z-20 border-r border-gray-200" style={{ boxShadow: '2px 0 0 0 rgb(229 231 235)' }}>Type</TableHead>
+                        <TableHead className="w-[150px] sticky left-0 bg-white z-20 border-r-2 border-gray-300">Account</TableHead>
+                        <TableHead className="w-[80px] sticky left-[150px] bg-white z-20 border-r-2 border-gray-300">Type</TableHead>
                       {selectedMonths.map(monthValue => {
                         const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
                         return (
@@ -149,7 +158,7 @@ export default function StatementsPage() {
                   <TableBody>
                     {accounts.map((account, accountIndex) => (
                       <TableRow key={account.name}>
-                        <TableCell className="font-medium sticky left-0 bg-white z-20 border-r border-gray-200" style={{ boxShadow: '2px 0 0 0 rgb(229 231 235)' }}>
+                        <TableCell className="font-medium sticky left-0 bg-white z-20 border-r-2 border-gray-300">
                           <div>
                             <div className="font-medium">{account.name}</div>
                             <div className="text-xs text-gray-500 space-y-0.5">
@@ -162,7 +171,7 @@ export default function StatementsPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="sticky left-[150px] bg-white z-20 border-r border-gray-200" style={{ boxShadow: '2px 0 0 0 rgb(229 231 235)' }}>
+                        <TableCell className="sticky left-[150px] bg-white z-20 border-r-2 border-gray-300">
                           <div className="space-y-2">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium block text-center ${
                               account.type === 'Asset' 
@@ -216,15 +225,15 @@ export default function StatementsPage() {
                         ))}
                       </TableRow>
                     ))}
-                  </TableBody>
-                  </Table>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                      </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         )}
-
-
       </div>
     </AppShell>
   );
