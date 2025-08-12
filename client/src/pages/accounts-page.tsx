@@ -1389,7 +1389,7 @@ export default function AccountsPage() {
                     <Card key={account.name} className="overflow-hidden">
                       <CardHeader className="pb-2 px-4 pt-3">
                         <div className="flex items-center justify-between">
-                          <div className="min-w-0">
+                          <div className="min-w-0 flex-1 max-w-[140px]">
                             <div className="flex items-center space-x-2">
                               <CardTitle className="text-base truncate">{account.name}</CardTitle>
                               {/* Payment Scheduled Indicator */}
@@ -1411,11 +1411,11 @@ export default function AccountsPage() {
                                 </TooltipProvider>
                               )}
                             </div>
-                            <div className="flex items-center space-x-3 mt-1">
+                            <div className="flex items-center space-x-2 mt-1">
                               <p className="text-xs text-gray-600">
                                 <span className="font-semibold text-red-600">${balance.toLocaleString()}</span>
                               </p>
-                              {account.apr && <p className="text-xs text-gray-600 whitespace-nowrap">{account.apr}% APR</p>}
+                              {account.apr && <p className="text-xs text-gray-600 truncate">{account.apr}% APR</p>}
                             </div>
                           </div>
                           
