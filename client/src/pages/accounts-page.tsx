@@ -1061,6 +1061,52 @@ export default function AccountsPage() {
                 </Button>
               </div>
 
+              {/* Debt Summary Card */}
+              {getDebtAccounts().length > 0 && (
+                <Card className="bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
+                  <CardHeader>
+                    <CardTitle className="text-red-800">Debt Overview</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-5 gap-4">
+                      {(() => {
+                        const summary = calculateDebtSummary();
+                        return (
+                          <>
+                            <div>
+                              <p className="text-sm text-red-600 font-medium">Total Debt</p>
+                              <p className="text-xl font-bold text-red-800">${summary.totalDebt.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-orange-600 font-medium">Monthly Interest</p>
+                              <p className="text-xl font-bold text-orange-800">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
+                              <p className="text-xs text-orange-600">${Math.round(summary.totalYearlyInterest).toLocaleString()}/year</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-green-600 font-medium">YTD Interest Paid</p>
+                              <p className="text-xl font-bold text-green-800">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
+                              <p className="text-xs text-green-600">year-to-date</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-blue-600 font-medium">End-of-Year Balance</p>
+                              <p className="text-xl font-bold text-blue-800">${Math.round(summary.projectedYearEndDebt).toLocaleString()}</p>
+                              <p className="text-xs text-green-600">-${Math.round(summary.debtReduction).toLocaleString()} reduction</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-purple-600 font-medium">Progress Rate</p>
+                              <p className="text-xl font-bold text-purple-800">
+                                {((summary.debtReduction / summary.totalDebt) * 100).toFixed(1)}%
+                              </p>
+                              <p className="text-xs text-purple-600">debt reduction/year</p>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Sort and Filter Controls */}
               {getDebtAccounts().length > 0 && (
                 <Card className="p-4 bg-gray-50">
@@ -1151,52 +1197,6 @@ export default function AccountsPage() {
                       Showing {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
                     </div>
                   </div>
-                </Card>
-              )}
-
-              {/* Debt Summary Card */}
-              {getDebtAccounts().length > 0 && (
-                <Card className="bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
-                  <CardHeader>
-                    <CardTitle className="text-red-800">Debt Overview</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-5 gap-4">
-                      {(() => {
-                        const summary = calculateDebtSummary();
-                        return (
-                          <>
-                            <div>
-                              <p className="text-sm text-red-600 font-medium">Total Debt</p>
-                              <p className="text-xl font-bold text-red-800">${summary.totalDebt.toLocaleString()}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-orange-600 font-medium">Monthly Interest</p>
-                              <p className="text-xl font-bold text-orange-800">${Math.round(summary.totalMonthlyInterest).toLocaleString()}</p>
-                              <p className="text-xs text-orange-600">${Math.round(summary.totalYearlyInterest).toLocaleString()}/year</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-green-600 font-medium">YTD Interest Paid</p>
-                              <p className="text-xl font-bold text-green-800">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
-                              <p className="text-xs text-green-600">year-to-date</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-blue-600 font-medium">End-of-Year Balance</p>
-                              <p className="text-xl font-bold text-blue-800">${Math.round(summary.projectedYearEndDebt).toLocaleString()}</p>
-                              <p className="text-xs text-green-600">-${Math.round(summary.debtReduction).toLocaleString()} reduction</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-purple-600 font-medium">Progress Rate</p>
-                              <p className="text-xl font-bold text-purple-800">
-                                {((summary.debtReduction / summary.totalDebt) * 100).toFixed(1)}%
-                              </p>
-                              <p className="text-xs text-purple-600">debt reduction/year</p>
-                            </div>
-                          </>
-                        );
-                      })()}
-                    </div>
-                  </CardContent>
                 </Card>
               )}
 
