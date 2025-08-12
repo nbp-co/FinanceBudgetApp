@@ -14,6 +14,10 @@ import { z } from "zod";
 
 // Enums
 export const accountTypeEnum = pgEnum("account_type", ["ASSET", "DEBT"]);
+export const accountSubtypeEnum = pgEnum("account_subtype", [
+  "checking", "savings", "money_market", "investment", "other_asset",
+  "credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit", "other_debt"
+]);
 export const txnTypeEnum = pgEnum("txn_type", ["INCOME", "EXPENSE", "TRANSFER"]);
 
 // Users table
@@ -32,6 +36,7 @@ export const accounts = pgTable("accounts", {
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   type: accountTypeEnum("type").notNull(),
+  subtype: accountSubtypeEnum("subtype").notNull(),
   currency: text("currency").notNull().default("USD"),
   openingBalance: decimal("opening_balance", { precision: 12, scale: 2 }).notNull().default("0"),
   aprApy: decimal("apr_apy", { precision: 5, scale: 2 }),

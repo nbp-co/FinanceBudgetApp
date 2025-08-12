@@ -19,7 +19,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 const accountFormSchema = z.object({
   name: z.string().min(1, "Account name is required"),
-  type: z.enum(["checking", "savings", "money_market", "investment", "credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit"]),
+  type: z.enum(["checking", "savings", "money_market", "investment", "other_asset", "credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit", "other_debt"]),
   balance: z.string().min(1, "Balance is required"),
   description: z.string().optional(),
   interestRate: z.string().optional(),
@@ -238,6 +238,7 @@ export default function AccountsPage() {
                                   <SelectItem value="savings">Savings</SelectItem>
                                   <SelectItem value="money_market">Money Market</SelectItem>
                                   <SelectItem value="investment">Investment</SelectItem>
+                                  <SelectItem value="other_asset">Other Asset</SelectItem>
                                 </SelectContent>
                               </Select>
                               <FormMessage />
@@ -329,6 +330,31 @@ export default function AccountsPage() {
                               <FormControl>
                                 <Input placeholder="e.g., Main Credit Card" {...field} />
                               </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Account Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select account type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="credit_card">Credit Card</SelectItem>
+                                  <SelectItem value="mortgage">Mortgage</SelectItem>
+                                  <SelectItem value="student_loan">Student Loan</SelectItem>
+                                  <SelectItem value="auto_loan">Auto Loan</SelectItem>
+                                  <SelectItem value="line_of_credit">Line of Credit</SelectItem>
+                                  <SelectItem value="other_debt">Other Debt</SelectItem>
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}
