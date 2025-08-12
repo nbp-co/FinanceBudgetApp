@@ -261,10 +261,19 @@ export function MonthlyCalendar() {
             {selectedDayTransactions.map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    transaction.type === 'income' ? 'bg-green-400' :
-                    transaction.type === 'expense' ? 'bg-red-400' : 'bg-blue-400'
-                  }`} />
+                  {transaction.type === 'transfer' ? (
+                    <div className="w-3 h-3 rounded-full overflow-hidden flex">
+                      <div className="w-1/2 h-full bg-blue-400"></div>
+                      <div className={`w-1/2 h-full ${
+                        (transaction as any).toAccount === 'Checking' || (transaction as any).toAccount === 'Savings' 
+                          ? 'bg-green-400' : 'bg-red-400'
+                      }`}></div>
+                    </div>
+                  ) : (
+                    <div className={`w-3 h-3 rounded-full ${
+                      transaction.type === 'income' ? 'bg-green-400' : 'bg-red-400'
+                    }`} />
+                  )}
                   <div>
                     <p className="font-medium text-sm text-gray-900">{transaction.description}</p>
                     <p className="text-xs text-gray-500">{transaction.category}</p>
@@ -273,7 +282,7 @@ export function MonthlyCalendar() {
                 <div className="text-right">
                   <p className={`font-semibold text-sm ${
                     transaction.type === 'income' ? 'text-green-600' :
-                    transaction.type === 'expense' ? 'text-red-600' : 'text-blue-600'
+                    transaction.type === 'expense' ? 'text-red-600' : 'text-gray-800'
                   }`}>
                     {transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '-' : ''}
                     {formatCurrency(transaction.amount)}
