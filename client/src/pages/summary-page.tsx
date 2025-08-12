@@ -10,6 +10,12 @@ export default function SummaryPage() {
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
+        {/* Header Section */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Financial Summary</h1>
+          <p className="text-lg text-gray-600">Overview of your accounts, transactions, and financial insights</p>
+        </div>
+
         <OverviewCards />
 
         <div className="mt-8">
