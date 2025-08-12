@@ -11,6 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -789,64 +791,7 @@ export default function AccountsPage() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <div className="space-y-4 px-6 pb-2">
-                      <div>
-                        <p className="text-sm text-gray-600 mb-2">Account Types:</p>
-                        <div className="flex gap-4">
-                          {['Asset', 'Debt'].map(type => (
-                            <label key={type} className="flex items-center space-x-2">
-                              <Checkbox
-                                checked={selectedAccountTypes.includes(type)}
-                                onCheckedChange={() => toggleAccountType(type)}
-                              />
-                              <span className="text-sm text-gray-700">{type}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <p className="text-sm text-gray-600 mb-2">Sort by:</p>
-                        <div className="flex gap-4">
-                          <label className="flex items-center space-x-2">
-                            <input
-                              type="radio"
-                              name="sortBy"
-                              checked={sortBy === 'type'}
-                              onChange={() => handleSortChange('type')}
-                              className="text-blue-600"
-                            />
-                            <span className="text-sm text-gray-700">Type (Debt → Asset)</span>
-                          </label>
-                          <label className="flex items-center space-x-2">
-                            <input
-                              type="radio"
-                              name="sortBy"
-                              checked={sortBy === 'name'}
-                              onChange={() => handleSortChange('name')}
-                              className="text-blue-600"
-                            />
-                            <span className="text-sm text-gray-700">Name (A → Z)</span>
-                          </label>
-                        </div>
-                      </div>
-
-                      {availableSubTypes.length > 0 && (
-                        <div>
-                          <p className="text-sm text-gray-600 mb-2">Filter by Sub-type:</p>
-                          <div className="flex flex-wrap gap-4">
-                            {availableSubTypes.map(subType => (
-                              <label key={subType} className="flex items-center space-x-2">
-                                <Checkbox
-                                  checked={selectedSubTypes.includes(subType)}
-                                  onCheckedChange={() => toggleSubType(subType)}
-                                />
-                                <span className="text-sm text-gray-700">{subType}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
+                      {/* Month Selection */}
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
                         <div className="flex flex-wrap gap-4">
@@ -859,6 +804,93 @@ export default function AccountsPage() {
                               <span className="text-sm text-gray-700">{month.label}</span>
                             </label>
                           ))}
+                        </div>
+                      </div>
+
+                      {/* Controls */}
+                      <div className="flex items-center gap-4 pt-2">
+                        {/* Filter Dropdown */}
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm font-medium text-gray-600">Filter:</Label>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="min-w-[120px] justify-between">
+                                {selectedAccountTypes.length === 2 ? 'All Types' : 
+                                 selectedAccountTypes.length === 1 ? selectedAccountTypes[0] + ' Only' : 
+                                 'No Types'}
+                                <ChevronDown className="h-4 w-4 ml-2" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56 p-3" align="start">
+                              <div className="space-y-3">
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Account Types:</Label>
+                                  <div className="space-y-2">
+                                    {['Asset', 'Debt'].map((type) => (
+                                      <div key={type} className="flex items-center space-x-2">
+                                        <Checkbox
+                                          id={`acc-filter-type-${type}`}
+                                          checked={selectedAccountTypes.includes(type)}
+                                          onCheckedChange={() => toggleAccountType(type)}
+                                        />
+                                        <Label htmlFor={`acc-filter-type-${type}`} className="text-sm cursor-pointer">
+                                          {type}
+                                        </Label>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                {availableSubTypes.length > 0 && (
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">Sub-types:</Label>
+                                    <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto">
+                                      {availableSubTypes.map((subType) => (
+                                        <div key={subType} className="flex items-center space-x-2">
+                                          <Checkbox
+                                            id={`acc-filter-subtype-${subType}`}
+                                            checked={selectedSubTypes.includes(subType)}
+                                            onCheckedChange={() => toggleSubType(subType)}
+                                          />
+                                          <Label htmlFor={`acc-filter-subtype-${subType}`} className="text-sm cursor-pointer">
+                                            {subType}
+                                          </Label>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+
+                        {/* Sort Dropdown */}
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm font-medium text-gray-600">Sort:</Label>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="min-w-[140px] justify-between">
+                                {sortBy === 'type' ? 'Type (Debt → Asset)' : 'Name (A → Z)'}
+                                <ChevronDown className="h-4 w-4 ml-2" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-48 p-2" align="start">
+                              <RadioGroup value={sortBy} onValueChange={handleSortChange} className="space-y-2">
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="type" id="acc-sort-type" />
+                                  <Label htmlFor="acc-sort-type" className="text-sm cursor-pointer">
+                                    Type (Debt → Asset)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="name" id="acc-sort-name" />
+                                  <Label htmlFor="acc-sort-name" className="text-sm cursor-pointer">
+                                    Name (A → Z)
+                                  </Label>
+                                </div>
+                              </RadioGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
                     </div>
