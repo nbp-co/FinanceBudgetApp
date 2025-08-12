@@ -1139,97 +1139,59 @@ export default function AccountsPage() {
                 </Card>
               )}
 
-              {/* Sort and Filter Controls */}
+              {/* Sort and Filter Controls - Compact */}
               {getDebtAccounts().length > 0 && (
-                <Card className="p-4 bg-gray-50">
-                  <div className="space-y-4">
-                    {/* Sort by */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">Sort by:</label>
-                      <div className="flex flex-wrap gap-3">
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="radio"
-                            id="sort-balance"
-                            name="sort"
-                            checked={debtSortBy === 'balance'}
-                            onChange={() => setDebtSortBy('balance')}
-                            className="text-blue-600"
-                          />
-                          <label htmlFor="sort-balance" className="text-sm text-gray-700">Balance (High → Low)</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="radio"
-                            id="sort-name"
-                            name="sort"
-                            checked={debtSortBy === 'name'}
-                            onChange={() => setDebtSortBy('name')}
-                            className="text-blue-600"
-                          />
-                          <label htmlFor="sort-name" className="text-sm text-gray-700">Name (A → Z)</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="radio"
-                            id="sort-interest"
-                            name="sort"
-                            checked={debtSortBy === 'interest'}
-                            onChange={() => setDebtSortBy('interest')}
-                            className="text-blue-600"
-                          />
-                          <label htmlFor="sort-interest" className="text-sm text-gray-700">Interest (High → Low)</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="radio"
-                            id="sort-payoff"
-                            name="sort"
-                            checked={debtSortBy === 'payoff'}
-                            onChange={() => setDebtSortBy('payoff')}
-                            className="text-blue-600"
-                          />
-                          <label htmlFor="sort-payoff" className="text-sm text-gray-700">Payoff Time (Short → Long)</label>
-                        </div>
-                      </div>
+                <div className="flex items-center justify-between gap-4 p-3 bg-gray-50 rounded-lg border">
+                  <div className="flex items-center gap-4">
+                    {/* Sort Dropdown */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700">Sort:</label>
+                      <Select value={debtSortBy} onValueChange={(value: 'name' | 'balance' | 'interest' | 'payoff') => setDebtSortBy(value)}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="balance">Balance (High → Low)</SelectItem>
+                          <SelectItem value="name">Name (A → Z)</SelectItem>
+                          <SelectItem value="interest">Interest (High → Low)</SelectItem>
+                          <SelectItem value="payoff">Payoff Time (Short → Long)</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
-                    {/* Filter by Sub-type */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">Filter by Sub-type:</label>
-                      <div className="flex flex-wrap gap-3">
-                        {getUniqueDebtSubTypes().map(subType => (
-                          <div key={subType} className="flex items-center space-x-1">
-                            <Checkbox
-                              id={`filter-${subType}`}
-                              checked={debtFilterBy.length === 0 || debtFilterBy.includes(subType)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  if (debtFilterBy.length === 0) {
-                                    // If showing all, add just this one
-                                    setDebtFilterBy([subType]);
-                                  } else {
-                                    setDebtFilterBy(prev => [...prev, subType]);
-                                  }
-                                } else {
-                                  setDebtFilterBy(prev => prev.filter(type => type !== subType));
-                                }
-                              }}
-                            />
-                            <label htmlFor={`filter-${subType}`} className="text-sm text-gray-700">
+                    {/* Filter Dropdown */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700">Filter:</label>
+                      <Select 
+                        value={debtFilterBy.length === 0 ? "all" : debtFilterBy[0]} 
+                        onValueChange={(value) => {
+                          if (value === "all") {
+                            setDebtFilterBy([]);
+                          } else {
+                            setDebtFilterBy([value]);
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="w-36">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Types</SelectItem>
+                          {getUniqueDebtSubTypes().map(subType => (
+                            <SelectItem key={subType} value={subType}>
                               {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Results Counter */}
-                    <div className="text-sm text-gray-500 pt-2 border-t">
-                      Showing {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-                </Card>
+
+                  {/* Results Counter */}
+                  <div className="text-sm text-gray-500">
+                    {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
+                  </div>
+                </div>
               )}
 
               <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
