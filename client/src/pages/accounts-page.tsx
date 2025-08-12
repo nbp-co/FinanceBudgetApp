@@ -1286,8 +1286,9 @@ export default function AccountsPage() {
                           
                           {/* Blue Payment Box - simplified */}
                           <div className="p-1.5 border border-blue-200 bg-blue-50 rounded text-xs mx-3 min-w-[120px]">
-                            <p className="font-medium text-blue-900">Next: ${Math.round(monthlyPayment).toLocaleString()}</p>
-                            <p className="text-blue-700">{account.dueDate ? `${account.dueDate}th` : 'Not scheduled'}</p>
+                            <p className="font-medium text-blue-900">
+                              ${Math.round(monthlyPayment).toLocaleString()} on {account.dueDate ? `${account.dueDate}th` : 'TBD'}
+                            </p>
                           </div>
                           
                           <div className="flex items-center space-x-1 flex-shrink-0">
