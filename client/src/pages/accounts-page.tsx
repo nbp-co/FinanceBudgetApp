@@ -1107,7 +1107,7 @@ export default function AccountsPage() {
                     <CardTitle className="text-red-800">Debt Overview</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid md:grid-cols-5 gap-4">
+                    <div className="grid md:grid-cols-4 gap-4">
                       {(() => {
                         const summary = calculateDebtSummary();
                         return (
@@ -1130,13 +1130,6 @@ export default function AccountsPage() {
                               <p className="text-sm text-green-600 font-medium">YTD Interest Paid</p>
                               <p className="text-xl font-bold text-green-800">${Math.round(summary.yearToDateInterest).toLocaleString()}</p>
                               <p className="text-xs text-green-600">year-to-date</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-purple-600 font-medium">Progress Rate</p>
-                              <p className="text-xl font-bold text-purple-800">
-                                {((summary.debtReduction / summary.totalDebt) * 100).toFixed(1)}%
-                              </p>
-                              <p className="text-xs text-purple-600">debt reduction/year</p>
                             </div>
                           </>
                         );
