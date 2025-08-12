@@ -1197,10 +1197,11 @@ export default function AccountsPage() {
               {/* Sort and Filter Controls - Right Aligned */}
               {getDebtAccounts().length > 0 && (
                 <div className="flex items-center justify-end gap-4 p-3 bg-gray-50 rounded-lg border">
-                  {/* Results Counter */}
-                  <div className="text-sm text-gray-500 mr-auto">
-                    {getFilteredAndSortedDebtAccounts().length} of {getDebtAccounts().length} accounts
-                  </div>
+                  {/* Schedule Payment Button */}
+                  <Button onClick={() => openPaymentDialog('new')} size="sm" className="flex items-center space-x-1 mr-auto">
+                    <Plus className="h-4 w-4" />
+                    <span>Schedule Payment</span>
+                  </Button>
 
                   {/* Filter Dropdown */}
                   <div className="flex items-center gap-2">
