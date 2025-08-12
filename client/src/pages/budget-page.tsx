@@ -148,192 +148,190 @@ export default function BudgetPage() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Expenses Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl font-semibold">Budget Expenses</CardTitle>
-                <Button size="sm">
-                  <Plus className="mr-1 h-4 w-4" />
-                  Add Expense
-                </Button>
+        {/* Income Section - Top */}
+        <Card className="mb-8">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl font-semibold">Recurring Income</CardTitle>
+              <Button size="sm">
+                <Plus className="mr-1 h-4 w-4" />
+                Add Income
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Primary Salary</p>
+                  <p className="text-sm text-gray-600">Checking Account</p>
+                  <p className="text-sm text-gray-500">Next: 2025-02-01</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-green-600">$5,200</p>
+                  <p className="text-sm text-gray-500">Monthly</p>
+                </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {categories.map((category) => (
-                  <Collapsible
-                    key={category.key}
-                    open={openCategories[category.key]}
-                    onOpenChange={() => toggleCategory(category.key)}
-                  >
-                    <div className="border border-gray-200 rounded-lg">
-                      <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          {openCategories[category.key] ? (
-                            <ChevronDown className="h-4 w-4 text-gray-600" />
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Side Business</p>
+                  <p className="text-sm text-gray-600">Business Checking</p>
+                  <p className="text-sm text-gray-500">Next: 2025-02-15</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-green-600">$800</p>
+                  <p className="text-sm text-gray-500">Monthly</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Expenses Section - Bottom */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl font-semibold">Budget Expenses</CardTitle>
+              <Button size="sm">
+                <Plus className="mr-1 h-4 w-4" />
+                Add Expense
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {categories.map((category) => (
+                <Collapsible
+                  key={category.key}
+                  open={openCategories[category.key]}
+                  onOpenChange={() => toggleCategory(category.key)}
+                >
+                  <div className="border border-gray-200 rounded-lg">
+                    <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        {openCategories[category.key] ? (
+                          <ChevronDown className="h-4 w-4 text-gray-600" />
+                        ) : (
+                          <ChevronUp className="h-4 w-4 text-gray-600" />
+                        )}
+                        <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`font-semibold ${category.color}`}>
+                          ${getCategoryTotal(category.key as keyof typeof expenses).toLocaleString()}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleEditing(category.key);
+                          }}
+                          className="h-7 px-2"
+                        >
+                          {editingCategories[category.key] ? (
+                            <Save className="h-3 w-3" />
                           ) : (
-                            <ChevronUp className="h-4 w-4 text-gray-600" />
+                            <Edit className="h-3 w-3" />
                           )}
-                          <h3 className="font-semibold text-gray-900">{category.name}</h3>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className={`font-semibold ${category.color}`}>
-                            ${getCategoryTotal(category.key as keyof typeof expenses).toLocaleString()}
-                          </span>
+                        </Button>
+                        {editingCategories[category.key] && (
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={(e) => {
                               e.stopPropagation();
-                              toggleEditing(category.key);
+                              addExpense(category.key as keyof typeof expenses);
                             }}
                             className="h-7 px-2"
                           >
-                            {editingCategories[category.key] ? (
-                              <Save className="h-3 w-3" />
-                            ) : (
-                              <Edit className="h-3 w-3" />
-                            )}
+                            <Plus className="h-3 w-3" />
                           </Button>
-                          {editingCategories[category.key] && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                addExpense(category.key as keyof typeof expenses);
-                              }}
-                              className="h-7 px-2"
-                            >
-                              <Plus className="h-3 w-3" />
-                            </Button>
-                          )}
-                        </div>
-                      </CollapsibleTrigger>
-                      
-                      <CollapsibleContent>
-                        <div className="px-4 pb-4 space-y-2">
-                          {expenses[category.key as keyof typeof expenses].map((expense, index) => (
-                            <div key={expense.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg group">
-                              {editingCategories[category.key] && (
-                                <GripVertical className="h-4 w-4 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </div>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                      <div className="px-4 pb-4 space-y-2">
+                        {expenses[category.key as keyof typeof expenses].map((expense, index) => (
+                          <div key={expense.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg group">
+                            {editingCategories[category.key] && (
+                              <GripVertical className="h-4 w-4 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity" />
+                            )}
+                            
+                            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                              {editingCategories[category.key] ? (
+                                <input
+                                  type="text"
+                                  value={expense.name}
+                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'name', e.target.value)}
+                                  className="font-medium bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                  placeholder="Expense name"
+                                />
+                              ) : (
+                                <p className="font-medium">{expense.name}</p>
                               )}
                               
-                              <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
-                                {editingCategories[category.key] ? (
-                                  <input
-                                    type="text"
-                                    value={expense.name}
-                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'name', e.target.value)}
-                                    className="font-medium bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                                    placeholder="Expense name"
-                                  />
-                                ) : (
-                                  <p className="font-medium">{expense.name}</p>
-                                )}
-                                
-                                {editingCategories[category.key] ? (
-                                  <input
-                                    type="text"
-                                    value={expense.category}
-                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'category', e.target.value)}
-                                    className="text-sm text-gray-600 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                                    placeholder="Category"
-                                  />
-                                ) : (
-                                  <p className="text-sm text-gray-600">{expense.category}</p>
-                                )}
-                                
-                                {expense.dueDate && (
-                                  editingCategories[category.key] ? (
-                                    <input
-                                      type="date"
-                                      value={expense.dueDate}
-                                      onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'dueDate', e.target.value)}
-                                      className="text-sm text-gray-500 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
-                                    />
-                                  ) : (
-                                    <p className="text-sm text-gray-500">Due: {expense.dueDate}</p>
-                                  )
-                                )}
-                              </div>
+                              {editingCategories[category.key] ? (
+                                <input
+                                  type="text"
+                                  value={expense.category}
+                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'category', e.target.value)}
+                                  className="text-sm text-gray-600 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                  placeholder="Category"
+                                />
+                              ) : (
+                                <p className="text-sm text-gray-600">{expense.category}</p>
+                              )}
                               
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-500">$</span>
-                                {editingCategories[category.key] ? (
+                              {expense.dueDate && (
+                                editingCategories[category.key] ? (
                                   <input
-                                    type="text"
-                                    value={expense.amount}
-                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'amount', e.target.value)}
-                                    className="w-20 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                                    type="date"
+                                    value={expense.dueDate}
+                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'dueDate', e.target.value)}
+                                    className="text-sm text-gray-500 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                                   />
                                 ) : (
-                                  <p className="w-20 text-right font-semibold text-red-600">{expense.amount}</p>
-                                )}
-                                
-                                {editingCategories[category.key] && (
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => deleteExpense(category.key as keyof typeof expenses, expense.id)}
-                                    className="h-7 w-7 p-0 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </Button>
-                                )}
-                              </div>
+                                  <p className="text-sm text-gray-500">Due: {expense.dueDate}</p>
+                                )
+                              )}
                             </div>
-                          ))}
-                        </div>
-                      </CollapsibleContent>
-                    </div>
-                  </Collapsible>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Income Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl font-semibold">Recurring Income</CardTitle>
-                <Button size="sm">
-                  <Plus className="mr-1 h-4 w-4" />
-                  Add Income
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Primary Salary</p>
-                    <p className="text-sm text-gray-600">Checking Account</p>
-                    <p className="text-sm text-gray-500">Next: 2025-02-01</p>
+                            
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-500">$</span>
+                              {editingCategories[category.key] ? (
+                                <input
+                                  type="text"
+                                  value={expense.amount}
+                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'amount', e.target.value)}
+                                  className="w-20 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                                />
+                              ) : (
+                                <p className="w-20 text-right font-semibold text-red-600">{expense.amount}</p>
+                              )}
+                              
+                              {editingCategories[category.key] && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => deleteExpense(category.key as keyof typeof expenses, expense.id)}
+                                  className="h-7 w-7 p-0 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-green-600">$5,200</p>
-                    <p className="text-sm text-gray-500">Monthly</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Side Business</p>
-                    <p className="text-sm text-gray-600">Business Checking</p>
-                    <p className="text-sm text-gray-500">Next: 2025-02-15</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-green-600">$800</p>
-                    <p className="text-sm text-gray-500">Monthly</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                </Collapsible>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </AppShell>
   );
