@@ -286,22 +286,69 @@ export default function AccountsPage() {
     let currentBalance = balance;
     const monthlyRate = apr / 100 / 12;
     let months = 0;
+    let totalInterestPaid = 0;
     
     while (currentBalance > 0.01 && months < 600) { // Max 50 years
       const interestCharge = currentBalance * monthlyRate;
-      currentBalance = currentBalance + interestCharge - monthlyPayment;
-      months++;
+      const principalPayment = Math.min(monthlyPayment - interestCharge, currentBalance);
       
-      if (monthlyPayment <= interestCharge) return null; // Payment too low
+      if (principalPayment <= 0) return null; // Payment too low to cover interest
+      
+      totalInterestPaid += interestCharge;
+      currentBalance -= principalPayment;
+      months++;
     }
     
     const payoffDate = new Date();
     payoffDate.setMonth(payoffDate.getMonth() + months);
     
+    // Calculate end-of-year balance (12 months from now)
+    let yearEndBalance = balance;
+    const monthlyRate12 = apr / 100 / 12;
+    for (let i = 0; i < 12; i++) {
+      const interestCharge = yearEndBalance * monthlyRate12;
+      const principalPayment = Math.min(monthlyPayment - interestCharge, yearEndBalance);
+      if (principalPayment <= 0) break;
+      yearEndBalance = Math.max(0, yearEndBalance - principalPayment);
+      if (yearEndBalance <= 0) break;
+    }
+    
     return {
       months,
       date: payoffDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }),
-      totalInterest: (monthlyPayment * months) - balance
+      totalInterest: totalInterestPaid,
+      monthlyInterest: balance * monthlyRate,
+      yearEndBalance: yearEndBalance,
+      yearlyInterest: balance * monthlyRate * 12
+    };
+  };
+
+  const calculateDebtSummary = () => {
+    const debtAccounts = getDebtAccounts();
+    let totalDebt = 0;
+    let totalMonthlyInterest = 0;
+    let totalYearlyInterest = 0;
+    let projectedYearEndDebt = 0;
+
+    debtAccounts.forEach(account => {
+      const balance = getBalance(account.name);
+      const monthlyPayment = paymentSchedules[account.name]?.amount || (balance * 0.02);
+      const payoffInfo = calculatePayoffDate(balance, account.apr || 0, monthlyPayment);
+      
+      totalDebt += balance;
+      if (payoffInfo) {
+        totalMonthlyInterest += payoffInfo.monthlyInterest;
+        totalYearlyInterest += payoffInfo.yearlyInterest;
+        projectedYearEndDebt += payoffInfo.yearEndBalance;
+      }
+    });
+
+    return {
+      totalDebt,
+      totalMonthlyInterest,
+      totalYearlyInterest,
+      projectedYearEndDebt,
+      debtReduction: totalDebt - projectedYearEndDebt
     };
   };
 
@@ -959,6 +1006,47 @@ export default function AccountsPage() {
                 </Button>
               </div>
 
+              {/* Debt Summary Card */}
+              {getDebtAccounts().length > 0 && (
+                <Card className="bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
+                  <CardHeader>
+                    <CardTitle className="text-red-800">Debt Overview</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-4 gap-4">
+                      {(() => {
+                        const summary = calculateDebtSummary();
+                        return (
+                          <>
+                            <div>
+                              <p className="text-sm text-red-600 font-medium">Total Debt</p>
+                              <p className="text-xl font-bold text-red-800">${summary.totalDebt.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-orange-600 font-medium">Monthly Interest</p>
+                              <p className="text-xl font-bold text-orange-800">${summary.totalMonthlyInterest.toFixed(2)}</p>
+                              <p className="text-xs text-orange-600">${(summary.totalYearlyInterest).toFixed(2)}/year</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-blue-600 font-medium">End-of-Year Balance</p>
+                              <p className="text-xl font-bold text-blue-800">${summary.projectedYearEndDebt.toLocaleString()}</p>
+                              <p className="text-xs text-green-600">-${summary.debtReduction.toLocaleString()} reduction</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-purple-600 font-medium">Progress Rate</p>
+                              <p className="text-xl font-bold text-purple-800">
+                                {((summary.debtReduction / summary.totalDebt) * 100).toFixed(1)}%
+                              </p>
+                              <p className="text-xs text-purple-600">debt reduction/year</p>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               <div className="grid gap-6">
                 {getDebtAccounts().map(account => {
                   const balance = getBalance(account.name);
@@ -999,7 +1087,7 @@ export default function AccountsPage() {
 
                       <CardContent className="space-y-4">
                         {/* Payment Schedule Info */}
-                        <div className="grid md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
                           <div>
                             <p className="text-sm text-gray-600">Monthly Payment</p>
                             <p className="font-semibold text-lg">${monthlyPayment.toFixed(2)}</p>
@@ -1012,23 +1100,29 @@ export default function AccountsPage() {
                           {payoffInfo && (
                             <>
                               <div>
-                                <p className="text-sm text-gray-600">Payoff Date</p>
-                                <p className="font-semibold text-lg text-green-600">{payoffInfo.date}</p>
-                                <p className="text-xs text-gray-500">{payoffInfo.months} months remaining</p>
+                                <p className="text-sm text-gray-600">Monthly Interest</p>
+                                <p className="font-semibold text-lg text-red-600">${payoffInfo.monthlyInterest.toFixed(2)}</p>
+                                <p className="text-xs text-gray-500">${payoffInfo.yearlyInterest.toFixed(2)}/year</p>
                               </div>
                               
                               <div>
-                                <p className="text-sm text-gray-600">Total Interest</p>
-                                <p className="font-semibold text-lg text-orange-600">${payoffInfo.totalInterest.toFixed(2)}</p>
-                                <p className="text-xs text-gray-500">Over life of loan</p>
+                                <p className="text-sm text-gray-600">End-of-Year Balance</p>
+                                <p className="font-semibold text-lg text-blue-600">${payoffInfo.yearEndBalance.toLocaleString()}</p>
+                                <p className="text-xs text-green-500">-${(balance - payoffInfo.yearEndBalance).toLocaleString()} reduction</p>
+                              </div>
+                              
+                              <div>
+                                <p className="text-sm text-gray-600">Payoff Date</p>
+                                <p className="font-semibold text-lg text-green-600">{payoffInfo.date}</p>
+                                <p className="text-xs text-gray-500">{payoffInfo.months} months • ${payoffInfo.totalInterest.toFixed(2)} total interest</p>
                               </div>
                             </>
                           )}
                           
                           {!payoffInfo && (
-                            <div className="md:col-span-2">
+                            <div className="lg:col-span-3">
                               <p className="text-sm text-red-600">⚠️ Payment too low to cover interest charges</p>
-                              <p className="text-xs text-gray-500">Increase payment amount to make progress</p>
+                              <p className="text-xs text-gray-500">Current monthly interest: ${((balance * (account.apr || 0)) / 100 / 12).toFixed(2)} - Increase payment amount to make progress</p>
                             </div>
                           )}
                         </div>
