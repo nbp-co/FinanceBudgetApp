@@ -1047,7 +1047,7 @@ export default function AccountsPage() {
                 </Card>
               )}
 
-              <div className="grid gap-6">
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {getDebtAccounts().map(account => {
                   const balance = getBalance(account.name);
                   const monthlyPayment = paymentSchedules[account.name]?.amount || (balance * 0.02); // Default 2% of balance
@@ -1056,98 +1056,91 @@ export default function AccountsPage() {
                   
                   return (
                     <Card key={account.name} className="overflow-hidden">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <CardTitle className="text-lg">{account.name}</CardTitle>
-                            <div className="flex items-center space-x-4 mt-1">
-                              <p className="text-sm text-gray-600">Balance: <span className="font-semibold text-red-600">${balance.toLocaleString()}</span></p>
-                              {account.apr && <p className="text-sm text-gray-600">APR: {account.apr}%</p>}
+                      <CardHeader className="pb-2 px-4 pt-3">
+                        <div className="flex items-start justify-between">
+                          <div className="min-w-0 flex-1">
+                            <CardTitle className="text-base truncate">{account.name}</CardTitle>
+                            <div className="flex items-center space-x-3 mt-1">
+                              <p className="text-xs text-gray-600">
+                                <span className="font-semibold text-red-600">${balance.toLocaleString()}</span>
+                              </p>
+                              {account.apr && <p className="text-xs text-gray-600">{account.apr}% APR</p>}
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-1 flex-shrink-0">
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               size="sm"
+                              className="h-7 w-7 p-0"
                               onClick={() => toggleChartExpansion(account.name)}
                             >
-                              <TrendingDown className="h-4 w-4 mr-1" />
-                              {expandedCharts[account.name] ? 'Hide Chart' : 'Show Chart'}
+                              <TrendingDown className="h-3 w-3" />
                             </Button>
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               size="sm"
+                              className="h-7 w-7 p-0"
                               onClick={() => openPaymentDialog(account.name)}
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-3 w-3" />
                             </Button>
                           </div>
                         </div>
                       </CardHeader>
 
-                      <CardContent className="space-y-4">
-                        {/* Payment Schedule Info */}
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
-                          <div>
-                            <p className="text-sm text-gray-600">Monthly Payment</p>
-                            <p className="font-semibold text-lg">${monthlyPayment.toFixed(2)}</p>
-                            <p className="text-xs text-gray-500">
-                              {paymentSchedules[account.name]?.frequency || 'Monthly'} • 
-                              {paymentSchedules[account.name]?.paymentAccount || 'Checking Account'}
-                            </p>
+                      <CardContent className="px-4 pb-3 space-y-2">
+                        {/* Compact Payment Schedule Info */}
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="space-y-1">
+                            <p className="text-gray-500">Payment</p>
+                            <p className="font-semibold">${monthlyPayment.toFixed(0)}</p>
                           </div>
                           
                           {payoffInfo && (
                             <>
-                              <div>
-                                <p className="text-sm text-gray-600">Monthly Interest</p>
-                                <p className="font-semibold text-lg text-red-600">${payoffInfo.monthlyInterest.toFixed(2)}</p>
-                                <p className="text-xs text-gray-500">${payoffInfo.yearlyInterest.toFixed(2)}/year</p>
+                              <div className="space-y-1">
+                                <p className="text-gray-500">Interest/mo</p>
+                                <p className="font-semibold text-red-600">${payoffInfo.monthlyInterest.toFixed(0)}</p>
                               </div>
                               
-                              <div>
-                                <p className="text-sm text-gray-600">End-of-Year Balance</p>
-                                <p className="font-semibold text-lg text-blue-600">${payoffInfo.yearEndBalance.toLocaleString()}</p>
-                                <p className="text-xs text-green-500">-${(balance - payoffInfo.yearEndBalance).toLocaleString()} reduction</p>
+                              <div className="space-y-1">
+                                <p className="text-gray-500">Year-end</p>
+                                <p className="font-semibold text-blue-600">${(payoffInfo.yearEndBalance/1000).toFixed(0)}k</p>
                               </div>
                               
-                              <div>
-                                <p className="text-sm text-gray-600">Payoff Date</p>
-                                <p className="font-semibold text-lg text-green-600">{payoffInfo.date}</p>
-                                <p className="text-xs text-gray-500">{payoffInfo.months} months • ${payoffInfo.totalInterest.toFixed(2)} total interest</p>
+                              <div className="space-y-1">
+                                <p className="text-gray-500">Payoff</p>
+                                <p className="font-semibold text-green-600">{payoffInfo.months}mo</p>
                               </div>
                             </>
                           )}
                           
                           {!payoffInfo && (
-                            <div className="lg:col-span-3">
-                              <p className="text-sm text-red-600">⚠️ Payment too low to cover interest charges</p>
-                              <p className="text-xs text-gray-500">Current monthly interest: ${((balance * (account.apr || 0)) / 100 / 12).toFixed(2)} - Increase payment amount to make progress</p>
+                            <div className="col-span-2">
+                              <p className="text-xs text-red-600">⚠️ Payment too low</p>
+                              <p className="text-xs text-gray-500">Need: ${((balance * (account.apr || 0)) / 100 / 12).toFixed(0)}/mo interest</p>
                             </div>
                           )}
                         </div>
 
-                        {/* Balance Projection Chart */}
+                        {/* Compact Chart */}
                         {expandedCharts[account.name] && (
-                          <div className="mt-4">
-                            <h4 className="font-medium mb-3 flex items-center">
-                              <TrendingDown className="h-4 w-4 mr-2" />
-                              Balance Projection (Previous 3 months • Next 6 months)
-                            </h4>
-                            <div className="h-64 w-full">
+                          <div className="mt-2">
+                            <div className="h-32 w-full">
                               <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={projectionData}>
-                                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                                   <XAxis 
                                     dataKey="month" 
-                                    tick={{ fontSize: 12 }}
-                                    angle={-45}
-                                    textAnchor="end"
-                                    height={60}
+                                    tick={{ fontSize: 10 }}
+                                    axisLine={false}
+                                    tickLine={false}
                                   />
                                   <YAxis 
-                                    tick={{ fontSize: 12 }}
-                                    tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
+                                    tick={{ fontSize: 10 }}
+                                    tickFormatter={(value) => `${(value/1000).toFixed(0)}k`}
+                                    axisLine={false}
+                                    tickLine={false}
+                                    width={30}
                                   />
                                   <RechartsTooltip 
                                     formatter={(value) => [`$${value.toLocaleString()}`, 'Balance']}
@@ -1157,7 +1150,7 @@ export default function AccountsPage() {
                                     type="monotone" 
                                     dataKey="balance" 
                                     stroke="#ef4444"
-                                    strokeWidth={3}
+                                    strokeWidth={2}
                                     dot={(props) => {
                                       const { payload } = props;
                                       return (
@@ -1165,8 +1158,8 @@ export default function AccountsPage() {
                                           {...props}
                                           fill={payload?.isPast ? "#6b7280" : "#ef4444"}
                                           stroke={payload?.isPast ? "#6b7280" : "#ef4444"}
-                                          strokeWidth={2}
-                                          r={4}
+                                          strokeWidth={1}
+                                          r={2}
                                         />
                                       );
                                     }}
@@ -1177,17 +1170,14 @@ export default function AccountsPage() {
                           </div>
                         )}
 
-                        {/* Next Payment Due */}
-                        <div className="flex items-center justify-between p-3 border border-blue-200 bg-blue-50 rounded-lg">
+                        {/* Compact Next Payment */}
+                        <div className="flex items-center justify-between p-2 border border-blue-200 bg-blue-50 rounded text-xs">
                           <div>
-                            <p className="font-medium text-blue-900">Next Payment Due</p>
-                            <p className="text-sm text-blue-700">
-                              {account.dueDate ? `${account.dueDate}th of each month` : 'Not scheduled'} • 
-                              ${monthlyPayment.toFixed(2)}
-                            </p>
+                            <p className="font-medium text-blue-900">Next: ${monthlyPayment.toFixed(0)}</p>
+                            <p className="text-blue-700">{account.dueDate ? `${account.dueDate}th` : 'Not scheduled'}</p>
                           </div>
-                          <Button variant="outline" size="sm" className="text-blue-700 border-blue-300">
-                            Make Payment
+                          <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 h-6 px-2 text-xs">
+                            Pay
                           </Button>
                         </div>
                       </CardContent>
