@@ -336,8 +336,8 @@ export default function AccountsPage() {
                                 </FormControl>
                                 <SelectContent>
                                   <SelectItem value="checking">Checking</SelectItem>
-                                  <SelectItem value="business_checking">Business Checking</SelectItem>
                                   <SelectItem value="savings">Savings</SelectItem>
+                                  <SelectItem value="business_checking">Business Checking</SelectItem>
                                   <SelectItem value="money_market">Money Market</SelectItem>
                                   <SelectItem value="investment">Investment</SelectItem>
                                   <SelectItem value="other_asset">Other Asset</SelectItem>
