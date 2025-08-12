@@ -64,6 +64,10 @@ export default function AccountsPage() {
   const [debtSortBy, setDebtSortBy] = useState<'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff'>('balance');
   const [debtFilterBy, setDebtFilterBy] = useState<string[]>([]);
   
+  // Debt payoff info popup state
+  const [showDebtPayoffInfo, setShowDebtPayoffInfo] = useState(false);
+  const [hideDebtPayoffInfo, setHideDebtPayoffInfo] = useState(localStorage.getItem('hideDebtPayoffInfo') === 'true');
+  
   // Payment form state
   const [currentPaymentForm, setCurrentPaymentForm] = useState({
     account: '',
@@ -1102,8 +1106,12 @@ export default function AccountsPage() {
           <TabsContent value="debt-payoff" className="space-y-6">
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Debt Payoff</h2>
-                <p className="text-gray-600">Manage payment schedules and track debt reduction progress</p>
+                <h2 
+                  className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={() => !hideDebtPayoffInfo && setShowDebtPayoffInfo(true)}
+                >
+                  Debt Payoff
+                </h2>
               </div>
 
               {/* Debt Summary Card */}
@@ -1621,6 +1629,47 @@ export default function AccountsPage() {
                 </div>
               </form>
             </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Debt Payoff Info Popup */}
+        <Dialog open={showDebtPayoffInfo} onOpenChange={setShowDebtPayoffInfo}>
+          <DialogContent className="sm:max-w-md animate-in fade-in-0 zoom-in-95 duration-300">
+            <DialogHeader>
+              <DialogTitle className="text-blue-600">Debt Payoff</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                Manage payment schedules and track debt reduction progress. Use this section to:
+              </p>
+              <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                <li>Schedule automatic payments for debt accounts</li>
+                <li>View debt payoff projections and timelines</li>
+                <li>Track interest payments and debt reduction</li>
+                <li>Analyze debt payoff strategies</li>
+              </ul>
+              
+              <div className="flex items-center space-x-2 pt-4">
+                <Checkbox 
+                  id="hide-info"
+                  checked={hideDebtPayoffInfo}
+                  onCheckedChange={(checked) => {
+                    const hide = checked === true;
+                    setHideDebtPayoffInfo(hide);
+                    localStorage.setItem('hideDebtPayoffInfo', hide.toString());
+                  }}
+                />
+                <Label htmlFor="hide-info" className="text-sm text-gray-600">
+                  Don't show this again
+                </Label>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <Button onClick={() => setShowDebtPayoffInfo(false)}>
+                  Got it
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
