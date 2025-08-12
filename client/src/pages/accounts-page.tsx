@@ -1690,6 +1690,9 @@ export default function AccountsPage() {
                             >
                               <ChevronLeft className="h-4 w-4" />
                             </Button>
+                            <span className="text-sm px-3 text-gray-700 font-medium">
+                              {summaryMonthOffset === 0 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
+                            </span>
                             <Button
                               variant="ghost"
                               size="sm"
