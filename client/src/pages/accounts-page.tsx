@@ -1648,8 +1648,8 @@ export default function AccountsPage() {
 
             {/* Debt by Type Monthly Summary - Enhanced with Chart Toggle */}
             {getDebtAccounts().length > 0 && (
-              <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
-                <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
+              <Card className="bg-white border-slate-200 shadow-sm">
+                <CardHeader className="pb-3 bg-slate-600 text-white rounded-t-lg">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold flex items-center gap-2">
                       <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -1668,14 +1668,7 @@ export default function AccountsPage() {
                           <ChevronLeft className="h-4 w-4" />
                         </Button>
                         <span className="text-xs px-2 text-white font-medium">
-                          {(() => {
-                            const currentDate = new Date();
-                            const currentYear = currentDate.getFullYear();
-                            const baseMonth = summaryMonthOffset * 6;
-                            const startMonth = new Date(currentYear, 5 + baseMonth);
-                            const endMonth = new Date(currentYear, 10 + baseMonth);
-                            return `${startMonth.toLocaleDateString('en-US', { month: 'short' })} - ${endMonth.toLocaleDateString('en-US', { month: 'short' })} ${currentYear}`;
-                          })()}
+                          {summaryMonthOffset === 0 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
                         </span>
                         <Button
                           variant="ghost"
@@ -1753,23 +1746,21 @@ export default function AccountsPage() {
                     <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                       <Table>
                       <TableHeader>
-                        <TableRow className="bg-gradient-to-r from-blue-600 to-blue-700 h-10 border-none">
-                          <TableHead className="font-bold text-white bg-blue-800 py-3 px-4 rounded-tl-lg border-r border-blue-500">DEBT BY TYPE</TableHead>
+                        <TableRow className="bg-slate-500 h-10 border-none">
+                          <TableHead className="font-medium text-white py-3 px-4 rounded-tl-lg border-r border-slate-400">DEBT BY TYPE</TableHead>
                           {(() => {
-                            const currentDate = new Date();
-                            const currentYear = currentDate.getFullYear();
-                            const baseMonth = summaryMonthOffset * 6;
                             const months = [];
+                            const monthLabels = summaryMonthOffset === 0 
+                              ? ['JUL 2024', 'AUG 2024', 'SEP 2024', 'OCT 2024', 'NOV 2024', 'DEC 2024']
+                              : ['JAN 2024', 'FEB 2024', 'MAR 2024', 'APR 2024', 'MAY 2024', 'JUN 2024'];
                             
-                            for (let i = 5; i >= 0; i--) {
-                              const monthDate = new Date(currentYear, 5 + baseMonth - i);
-                              const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase();
+                            monthLabels.forEach((label, index) => {
                               months.push(
-                                <TableHead key={`header-${i}`} className={`text-center font-bold text-white py-3 px-3 ${i === 0 ? 'rounded-tr-lg' : 'border-r border-blue-500'}`}>
-                                  {monthLabel}
+                                <TableHead key={`header-${index}`} className={`text-center font-medium text-white py-3 px-3 ${index === monthLabels.length - 1 ? 'rounded-tr-lg' : 'border-r border-slate-300'}`}>
+                                  {label}
                                 </TableHead>
                               );
-                            }
+                            });
                             return months;
                           })()}
                         </TableRow>
@@ -1810,8 +1801,8 @@ export default function AccountsPage() {
                           return (
                             <>
                               {monthlyData.map(({ type, months }, rowIndex) => (
-                                <TableRow key={type} className={`border-b border-slate-200 h-14 hover:bg-slate-50 transition-colors ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-25'}`}>
-                                  <TableCell className="font-semibold text-slate-800 bg-gradient-to-r from-slate-100 to-slate-50 py-2 px-4 border-r border-slate-200">
+                                <TableRow key={type} className={`border-b border-slate-200 h-12 hover:bg-slate-50 transition-colors ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
+                                  <TableCell className="font-medium text-slate-700 bg-slate-100 py-2 px-4 border-r border-slate-200">
                                     {type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                                   </TableCell>
                                   {months.map((month, index) => (
@@ -1830,17 +1821,17 @@ export default function AccountsPage() {
                               ))}
                               
                               {/* Total Row */}
-                              <TableRow className="border-t-2 border-blue-300 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold h-14">
-                                <TableCell className="font-bold text-white bg-blue-800 py-3 px-4 border-r border-blue-500 rounded-bl-lg">
+                              <TableRow className="border-t-2 border-slate-300 bg-slate-500 text-white font-medium h-12">
+                                <TableCell className="font-medium text-white py-3 px-4 border-r border-slate-400 rounded-bl-lg">
                                   TOTAL
                                 </TableCell>
                                 {totalsByMonth.map((total, index) => (
-                                  <TableCell key={`total-month-${index}`} className={`text-center font-bold py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-blue-500' : 'rounded-br-lg'}`}>
+                                  <TableCell key={`total-month-${index}`} className={`text-center font-medium py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-slate-400' : 'rounded-br-lg'}`}>
                                     <div className="space-y-1">
-                                      <div className="text-sm font-bold text-white">
+                                      <div className="text-sm font-medium text-white">
                                         ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
                                       </div>
-                                      <div className="text-xs text-blue-100 bg-blue-800 px-2 py-0.5 rounded-full inline-block">
+                                      <div className="text-xs text-slate-200 bg-slate-600 px-2 py-0.5 rounded inline-block">
                                         ${total.interest > 0 ? Math.round(total.interest).toLocaleString() : '-'}
                                       </div>
                                     </div>
@@ -1861,14 +1852,12 @@ export default function AccountsPage() {
                         const debtTypes = Array.from(new Set(debtAccounts.map(account => account.accountType)));
                         const chartData = [];
                         
-                        // Prepare data for chart using month offset
-                        const currentDate = new Date();
-                        const currentYear = currentDate.getFullYear();
-                        const baseMonth = summaryMonthOffset * 6;
+                        // Prepare data for chart using JAN-JUN and JUL-DEC periods
+                        const monthLabels = summaryMonthOffset === 0 
+                          ? ['Jul 2024', 'Aug 2024', 'Sep 2024', 'Oct 2024', 'Nov 2024', 'Dec 2024']
+                          : ['Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024'];
                         
-                        for (let i = 5; i >= 0; i--) {
-                          const monthDate = new Date(currentYear, 5 + baseMonth - i);
-                          const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                        monthLabels.forEach(monthLabel => {
                           const monthData: any = { month: monthLabel };
                           
                           debtTypes.forEach(debtType => {
@@ -1890,7 +1879,7 @@ export default function AccountsPage() {
                           });
                           
                           chartData.push(monthData);
-                        }
+                        });
                         
                         const chartColors = {
                           'Credit Card': '#ef4444', // red
