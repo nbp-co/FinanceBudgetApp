@@ -3,12 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Save, ChevronDown } from "lucide-react";
+import { Save, ChevronDown, Filter } from "lucide-react";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function StatementsPage() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
@@ -106,69 +107,82 @@ export default function StatementsPage() {
             <CollapsibleContent>
               <CardContent className="pt-0 pb-4 space-y-6">
                 {/* Filter Controls */}
-                <div className="grid gap-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                <div className="flex justify-between items-start gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
                   
-                  {/* Account Types */}
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Account Types:</Label>
-                    <div className="flex gap-4">
-                      {['Asset', 'Debt'].map((type) => (
-                        <div key={type} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`type-${type}`}
-                            checked={selectedAccountTypes.includes(type)}
-                            onCheckedChange={() => toggleAccountType(type)}
-                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                          />
-                          <Label htmlFor={`type-${type}`} className="text-sm cursor-pointer">
-                            {type}
-                          </Label>
+                  {/* Sort & Filter Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="flex items-center gap-2">
+                        <Filter className="h-4 w-4" />
+                        Sort & Filter
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-80 p-4" align="start">
+                      <div className="space-y-6">
+                        {/* Account Types */}
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 mb-3 block">Account Types:</Label>
+                          <div className="flex gap-4">
+                            {['Asset', 'Debt'].map((type) => (
+                              <div key={type} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={`type-${type}`}
+                                  checked={selectedAccountTypes.includes(type)}
+                                  onCheckedChange={() => toggleAccountType(type)}
+                                  className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                                />
+                                <Label htmlFor={`type-${type}`} className="text-sm cursor-pointer">
+                                  {type}
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Sort By */}
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Sort by:</Label>
-                    <RadioGroup value={sortBy} onValueChange={setSortBy} className="flex gap-6">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="type" id="sort-type" className="border-teal-600 text-teal-600" />
-                        <Label htmlFor="sort-type" className="text-sm cursor-pointer">
-                          Type (Debt → Asset)
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="name" id="sort-name" className="border-teal-600 text-teal-600" />
-                        <Label htmlFor="sort-name" className="text-sm cursor-pointer">
-                          Name (A → Z)
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-
-                  {/* Filter by Sub-type */}
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Filter by Sub-type:</Label>
-                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                      {['Checking', 'Business Checking', 'Savings', 'Money Market', 'Investment', 'Credit Card', 'Mortgage', 'Auto Loan', 'Student Loan', 'Line of Credit', 'Taxes'].map((subType) => (
-                        <div key={subType} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`subtype-${subType}`}
-                            checked={selectedSubTypes.includes(subType)}
-                            onCheckedChange={() => toggleSubType(subType)}
-                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                          />
-                          <Label htmlFor={`subtype-${subType}`} className="text-sm cursor-pointer">
-                            {subType}
-                          </Label>
+                        {/* Sort By */}
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 mb-3 block">Sort by:</Label>
+                          <RadioGroup value={sortBy} onValueChange={setSortBy} className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="type" id="sort-type" className="border-teal-600 text-teal-600" />
+                              <Label htmlFor="sort-type" className="text-sm cursor-pointer">
+                                Type (Debt → Asset)
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="name" id="sort-name" className="border-teal-600 text-teal-600" />
+                              <Label htmlFor="sort-name" className="text-sm cursor-pointer">
+                                Name (A → Z)
+                              </Label>
+                            </div>
+                          </RadioGroup>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+
+                        {/* Filter by Sub-type */}
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 mb-3 block">Filter by Sub-type:</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {['Checking', 'Business Checking', 'Savings', 'Money Market', 'Investment', 'Credit Card', 'Mortgage', 'Auto Loan', 'Student Loan', 'Line of Credit', 'Taxes'].map((subType) => (
+                              <div key={subType} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={`subtype-${subType}`}
+                                  checked={selectedSubTypes.includes(subType)}
+                                  onCheckedChange={() => toggleSubType(subType)}
+                                  className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                                />
+                                <Label htmlFor={`subtype-${subType}`} className="text-sm cursor-pointer">
+                                  {subType}
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
 
                   {/* Select months to edit */}
-                  <div>
+                  <div className="flex-1">
                     <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                       {availableMonths.map((month) => (
