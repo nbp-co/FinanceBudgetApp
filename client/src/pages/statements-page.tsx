@@ -17,18 +17,18 @@ export default function StatementsPage() {
   const [sortBy, setSortBy] = useState<'name' | 'type' | 'name-reverse' | 'type-reverse'>('type');
   const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>(['Checking', 'Savings', 'Money Market', 'Credit Card', 'Mortgage', 'Auto Loan']);
   const availableMonths = [
-    { value: "2025-01", label: "Jan 2025" },
-    { value: "2025-02", label: "Feb 2025" },
-    { value: "2025-03", label: "Mar 2025" },
-    { value: "2025-04", label: "Apr 2025" },
-    { value: "2025-05", label: "May 2025" },
-    { value: "2025-06", label: "Jun 2025" },
-    { value: "2025-07", label: "Jul 2025" },
-    { value: "2025-08", label: "Aug 2025" },
-    { value: "2025-09", label: "Sep 2025" },
-    { value: "2025-10", label: "Oct 2025" },
-    { value: "2025-11", label: "Nov 2025" },
-    { value: "2025-12", label: "Dec 2025" },
+    { value: "2025-01", label: "JAN 2025" },
+    { value: "2025-02", label: "FEB 2025" },
+    { value: "2025-03", label: "MAR 2025" },
+    { value: "2025-04", label: "APR 2025" },
+    { value: "2025-05", label: "MAY 2025" },
+    { value: "2025-06", label: "JUN 2025" },
+    { value: "2025-07", label: "JUL 2025" },
+    { value: "2025-08", label: "AUG 2025" },
+    { value: "2025-09", label: "SEP 2025" },
+    { value: "2025-10", label: "OCT 2025" },
+    { value: "2025-11", label: "NOV 2025" },
+    { value: "2025-12", label: "DEC 2025" },
   ];
 
   const allAccounts = [
@@ -125,7 +125,7 @@ export default function StatementsPage() {
                 <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm mb-4">
                   <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
                   <div className="space-y-3">
-                    <div className="flex flex-wrap gap-3">
+                    <div className="grid grid-cols-6 gap-3">
                       {availableMonths.slice(0, 6).map((month) => (
                         <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
                           <Checkbox
@@ -140,7 +140,7 @@ export default function StatementsPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="grid grid-cols-6 gap-3">
                       {availableMonths.slice(6).map((month) => (
                         <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
                           <Checkbox
