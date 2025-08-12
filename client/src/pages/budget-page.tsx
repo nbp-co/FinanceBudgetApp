@@ -2,9 +2,92 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Plus, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Plus, TrendingUp, TrendingDown, DollarSign, ChevronDown, ChevronUp, X, GripVertical } from "lucide-react";
+import { useState } from "react";
 
 export default function BudgetPage() {
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
+    primary: true,
+    savings: true,
+    debt: true,
+    secondary: true
+  });
+
+  const [expenses, setExpenses] = useState({
+    primary: [
+      { id: 1, name: "Mortgage Payment", category: "Mortgage/Rent", amount: "1543", dueDate: "2025-02-01" },
+      { id: 2, name: "Electric Bill", category: "Home Utilities", amount: "125", dueDate: "2025-02-15" },
+      { id: 3, name: "Gas Bill", category: "Home Utilities", amount: "85", dueDate: "2025-02-10" },
+      { id: 4, name: "Grocery Budget", category: "Groceries", amount: "600", dueDate: null }
+    ],
+    savings: [
+      { id: 5, name: "401k Contribution", category: "401(k)/Investments", amount: "520", dueDate: null },
+      { id: 6, name: "Emergency Savings", category: "Savings", amount: "300", dueDate: null }
+    ],
+    debt: [
+      { id: 7, name: "Car Payment", category: "Auto Loans", amount: "285", dueDate: "2025-02-05" },
+      { id: 8, name: "Credit Card Payment", category: "Credit Cards", amount: "150", dueDate: "2025-02-20" }
+    ],
+    secondary: [
+      { id: 9, name: "Restaurants and Bars", category: "Restaurants and Bars", amount: "400", dueDate: null },
+      { id: 10, name: "Monthly Subscriptions", category: "Monthly Subscriptions", amount: "89", dueDate: null },
+      { id: 11, name: "Entertainment", category: "Entertainment", amount: "200", dueDate: null },
+      { id: 12, name: "General Spending", category: "General Spending", amount: "250", dueDate: null },
+      { id: 13, name: "Haircut/Grooming", category: "Haircut/Grooming", amount: "60", dueDate: null }
+    ]
+  });
+
+  const toggleCategory = (category: string) => {
+    setOpenCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
+  const addExpense = (categoryKey: keyof typeof expenses) => {
+    const newId = Math.max(...Object.values(expenses).flat().map(e => e.id)) + 1;
+    const newExpense = {
+      id: newId,
+      name: "New Expense",
+      category: "General",
+      amount: "0",
+      dueDate: null
+    };
+    
+    setExpenses(prev => ({
+      ...prev,
+      [categoryKey]: [...prev[categoryKey], newExpense]
+    }));
+  };
+
+  const deleteExpense = (categoryKey: keyof typeof expenses, expenseId: number) => {
+    setExpenses(prev => ({
+      ...prev,
+      [categoryKey]: prev[categoryKey].filter(e => e.id !== expenseId)
+    }));
+  };
+
+  const updateExpense = (categoryKey: keyof typeof expenses, expenseId: number, field: string, value: string) => {
+    setExpenses(prev => ({
+      ...prev,
+      [categoryKey]: prev[categoryKey].map(e => 
+        e.id === expenseId ? { ...e, [field]: value } : e
+      )
+    }));
+  };
+
+  const getCategoryTotal = (categoryKey: keyof typeof expenses) => {
+    return expenses[categoryKey].reduce((sum, expense) => sum + parseFloat(expense.amount || "0"), 0);
+  };
+
+  const categories = [
+    { key: 'primary', name: 'Primary Expenses', color: 'text-red-600' },
+    { key: 'savings', name: 'Savings/Investments', color: 'text-red-600' },
+    { key: 'debt', name: 'Debt Expenses', color: 'text-red-600' },
+    { key: 'secondary', name: 'Secondary Expenses', color: 'text-red-600' }
+  ];
+
   return (
     <AppShell>
       <div className="px-4 py-6 sm:px-6 lg:px-8">
@@ -64,197 +147,96 @@ export default function BudgetPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {/* Primary Expenses */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Primary Expenses</h3>
-                    <span className="font-semibold text-red-600">$2,353</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Mortgage Payment</p>
-                        <p className="text-sm text-gray-600">Mortgage/Rent</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-01</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="1543" 
-                        className="w-20 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
+              <div className="space-y-4">
+                {categories.map((category) => (
+                  <Collapsible
+                    key={category.key}
+                    open={openCategories[category.key]}
+                    onOpenChange={() => toggleCategory(category.key)}
+                  >
+                    <div className="border border-gray-200 rounded-lg">
+                      <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          {openCategories[category.key] ? (
+                            <ChevronDown className="h-4 w-4 text-gray-600" />
+                          ) : (
+                            <ChevronUp className="h-4 w-4 text-gray-600" />
+                          )}
+                          <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`font-semibold ${category.color}`}>
+                            ${getCategoryTotal(category.key as keyof typeof expenses).toLocaleString()}
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addExpense(category.key as keyof typeof expenses);
+                            }}
+                            className="h-7 px-2"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </CollapsibleTrigger>
+                      
+                      <CollapsibleContent>
+                        <div className="px-4 pb-4 space-y-2">
+                          {expenses[category.key as keyof typeof expenses].map((expense, index) => (
+                            <div key={expense.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg group">
+                              <GripVertical className="h-4 w-4 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity" />
+                              
+                              <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <input
+                                  type="text"
+                                  value={expense.name}
+                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'name', e.target.value)}
+                                  className="font-medium bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                  placeholder="Expense name"
+                                />
+                                <input
+                                  type="text"
+                                  value={expense.category}
+                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'category', e.target.value)}
+                                  className="text-sm text-gray-600 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                  placeholder="Category"
+                                />
+                                {expense.dueDate && (
+                                  <input
+                                    type="date"
+                                    value={expense.dueDate}
+                                    onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'dueDate', e.target.value)}
+                                    className="text-sm text-gray-500 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                                  />
+                                )}
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-500">$</span>
+                                <input
+                                  type="text"
+                                  value={expense.amount}
+                                  onChange={(e) => updateExpense(category.key as keyof typeof expenses, expense.id, 'amount', e.target.value)}
+                                  className="w-20 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => deleteExpense(category.key as keyof typeof expenses, expense.id)}
+                                  className="h-7 w-7 p-0 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Electric Bill</p>
-                        <p className="text-sm text-gray-600">Home Utilities</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-15</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="125" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Gas Bill</p>
-                        <p className="text-sm text-gray-600">Home Utilities</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-10</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="85" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Grocery Budget</p>
-                        <p className="text-sm text-gray-600">Groceries</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="600" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                  </div>
-                  <Separator className="mt-4" />
-                </div>
-
-                {/* Savings/Investments */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Savings/Investments</h3>
-                    <span className="font-semibold text-red-600">$820</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">401k Contribution</p>
-                        <p className="text-sm text-gray-600">401(k)/Investments</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="520" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Emergency Savings</p>
-                        <p className="text-sm text-gray-600">Savings</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="300" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                  </div>
-                  <Separator className="mt-4" />
-                </div>
-
-                {/* Debt Expenses */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Debt Expenses</h3>
-                    <span className="font-semibold text-red-600">$435</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Car Payment</p>
-                        <p className="text-sm text-gray-600">Auto Loans</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-05</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="285" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Credit Card Payment</p>
-                        <p className="text-sm text-gray-600">Credit Cards</p>
-                        <p className="text-sm text-gray-500">Due: 2025-02-20</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="150" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                  </div>
-                  <Separator className="mt-4" />
-                </div>
-
-                {/* Secondary Expenses */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">Secondary Expenses</h3>
-                    <span className="font-semibold text-red-600">$999</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Restaurants and Bars</p>
-                        <p className="text-sm text-gray-600">Restaurants and Bars</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="400" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Monthly Subscriptions</p>
-                        <p className="text-sm text-gray-600">Monthly Subscriptions</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="89" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Entertainment</p>
-                        <p className="text-sm text-gray-600">Entertainment</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="200" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">General Spending</p>
-                        <p className="text-sm text-gray-600">General Spending</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="250" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Haircut/Grooming</p>
-                        <p className="text-sm text-gray-600">Haircut/Grooming</p>
-                      </div>
-                      <input 
-                        type="text" 
-                        defaultValue="60" 
-                        className="w-16 px-2 py-1 text-right border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold text-red-600"
-                      />
-                    </div>
-                  </div>
-                </div>
+                  </Collapsible>
+                ))}
               </div>
             </CardContent>
           </Card>
