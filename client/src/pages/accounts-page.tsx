@@ -1313,33 +1313,33 @@ export default function AccountsPage() {
                         </div>
                       </CardHeader>
 
-                      <CardContent className="px-4 pb-3 space-y-2">
-                        {/* Compact Payment Schedule Info */}
-                        <div className="grid grid-cols-2 gap-2 text-xs">
+                      <CardContent className="px-4 pb-3">
+                        {/* Compact Payment Schedule Info - Horizontal Layout */}
+                        <div className="flex justify-between items-start text-xs">
                           <div className="space-y-1">
                             <p className="text-gray-500">Payment</p>
                             <p className="font-semibold">${Math.round(monthlyPayment).toLocaleString()}</p>
                           </div>
                           
                           {payoffInfo && (
-                            <div className="flex space-x-6">
-                              <div className="space-y-1">
+                            <>
+                              <div className="space-y-1 text-center">
                                 <p className="text-gray-500">Interest/mo</p>
                                 <p className="font-semibold text-red-600">${Math.round(payoffInfo.monthlyInterest).toLocaleString()}</p>
                               </div>
                               
-                              <div className="space-y-1">
+                              <div className="space-y-1 text-center">
                                 <p className="text-gray-500">Year-end</p>
                                 <p className="font-semibold text-blue-600">${Math.round(payoffInfo.yearEndBalance).toLocaleString()}</p>
                               </div>
                               
-                              <div className="space-y-1">
+                              <div className="space-y-1 text-right">
                                 <p className="text-gray-500">Expected</p>
                                 <p className="font-semibold text-green-600">
                                   {new Date(Date.now() + payoffInfo.months * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                                 </p>
                               </div>
-                            </div>
+                            </>
                           )}
                           
                           {!payoffInfo && (
