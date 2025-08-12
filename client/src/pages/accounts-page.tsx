@@ -1352,7 +1352,7 @@ export default function AccountsPage() {
 
                         {/* Compact Chart */}
                         {expandedCharts[account.name] && (
-                          <div className="mt-2">
+                          <div className="mt-2 space-y-3">
                             <div className="h-32 w-full">
                               <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={projectionData}>
@@ -1409,6 +1409,40 @@ export default function AccountsPage() {
                                   />
                                 </LineChart>
                               </ResponsiveContainer>
+                            </div>
+
+                            {/* Payment Summary Cards */}
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="p-2 bg-blue-50 border border-blue-200 rounded text-center">
+                                <p className="text-xs text-blue-600 font-medium">YTD Payments</p>
+                                <p className="text-sm font-bold text-blue-800">
+                                  ${(() => {
+                                    const monthsPassed = new Date().getMonth() + 1;
+                                    return Math.round(monthlyPayment * monthsPassed).toLocaleString();
+                                  })()}
+                                </p>
+                              </div>
+                              
+                              <div className="p-2 bg-green-50 border border-green-200 rounded text-center">
+                                <p className="text-xs text-green-600 font-medium">Auto-Payments</p>
+                                <p className="text-sm font-bold text-green-800">
+                                  {paymentSchedules[account.name] ? 
+                                    `$${Math.round(paymentSchedules[account.name].amount).toLocaleString()}` : 
+                                    '$0'
+                                  }
+                                </p>
+                              </div>
+                              
+                              <div className="p-2 bg-purple-50 border border-purple-200 rounded text-center">
+                                <p className="text-xs text-purple-600 font-medium">Add'l Payments</p>
+                                <p className="text-sm font-bold text-purple-800">
+                                  ${(() => {
+                                    const scheduledAmount = paymentSchedules[account.name]?.amount || 0;
+                                    const additionalAmount = Math.max(0, monthlyPayment - scheduledAmount);
+                                    return Math.round(additionalAmount).toLocaleString();
+                                  })()}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         )}
