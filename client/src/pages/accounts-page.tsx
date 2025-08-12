@@ -1284,15 +1284,10 @@ export default function AccountsPage() {
                             </div>
                           </div>
                           
-                          {/* Blue Payment Box - horizontal layout */}
-                          <div className="flex items-center justify-between p-1.5 border border-blue-200 bg-blue-50 rounded text-xs mx-3 min-w-[140px]">
-                            <div>
-                              <p className="font-medium text-blue-900">Next: ${Math.round(monthlyPayment).toLocaleString()}</p>
-                              <p className="text-blue-700">{account.dueDate ? `${account.dueDate}th` : 'Not scheduled'}</p>
-                            </div>
-                            <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 h-5 px-1.5 text-xs ml-2">
-                              Pay
-                            </Button>
+                          {/* Blue Payment Box - simplified */}
+                          <div className="p-1.5 border border-blue-200 bg-blue-50 rounded text-xs mx-3 min-w-[120px]">
+                            <p className="font-medium text-blue-900">Next: ${Math.round(monthlyPayment).toLocaleString()}</p>
+                            <p className="text-blue-700">{account.dueDate ? `${account.dueDate}th` : 'Not scheduled'}</p>
                           </div>
                           
                           <div className="flex items-center space-x-1 flex-shrink-0">
