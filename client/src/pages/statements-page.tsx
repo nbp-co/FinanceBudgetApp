@@ -94,39 +94,49 @@ export default function StatementsPage() {
     <AppShell>
       <div className="p-4 lg:p-8">
         <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg mb-6">
-          <CardContent className="p-4 space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900">Monthly Statements</h1>
-            
-            {/* Filter Controls */}
-            <div className="flex justify-between items-start gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-              {/* Select months to edit */}
-              <div className="flex-1">
-                <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
-                <div className="flex flex-wrap gap-3">
-                  {availableMonths.map((month) => (
-                    <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
-                      <Checkbox
-                        id={`month-${month.value}`}
-                        checked={selectedMonths.includes(month.value)}
-                        onCheckedChange={() => toggleMonth(month.value)}
-                        className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                      />
-                      <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
-                        {month.label}
-                      </Label>
-                    </div>
-                  ))}
+          <Collapsible defaultOpen={true}>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl font-bold text-gray-900">Monthly Statements</h1>
                 </div>
+                <ChevronDown className="h-5 w-5 text-gray-600" />
               </div>
+            </CollapsibleTrigger>
+            
+            <CollapsibleContent>
+              <CardContent className="pt-0 pb-4 space-y-6">
+                {/* Filter Controls */}
+                <div className="flex justify-between items-start gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  
+                  {/* Select months to edit */}
+                  <div className="flex-1">
+                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
+                    <div className="flex flex-wrap gap-3">
+                      {availableMonths.map((month) => (
+                        <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
+                          <Checkbox
+                            id={`month-${month.value}`}
+                            checked={selectedMonths.includes(month.value)}
+                            onCheckedChange={() => toggleMonth(month.value)}
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                            {month.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Sort & Filter Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Filter className="h-4 w-4" />
-                    Sort & Filter
-                  </Button>
-                </DropdownMenuTrigger>
+                  {/* Sort & Filter Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="flex items-center gap-2">
+                        <Filter className="h-4 w-4" />
+                        Sort & Filter
+                      </Button>
+                    </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-80 p-4" align="start">
                       <div className="space-y-6">
                         {/* Account Types */}
@@ -191,16 +201,18 @@ export default function StatementsPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-              {/* Save Button */}
-              <Button 
-                disabled={selectedMonths.length === 0}
-                className="bg-teal-600 hover:bg-teal-700 text-white"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                Save All ({selectedMonths.length})
-              </Button>
-            </div>
-          </CardContent>
+                  {/* Save Button */}
+                  <Button 
+                    disabled={selectedMonths.length === 0}
+                    className="bg-teal-600 hover:bg-teal-700 text-white"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save All ({selectedMonths.length})
+                  </Button>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
         </Card>
 
         {selectedMonths.length === 0 ? (
@@ -211,102 +223,113 @@ export default function StatementsPage() {
           </Card>
         ) : (
           <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
-            <CardContent className="p-4 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Monthly Statements</h3>
+            <Collapsible defaultOpen={true}>
+              <CollapsibleTrigger className="w-full">
+                <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-semibold text-gray-900">Monthly Statements</h3>
+                  </div>
+                  <ChevronDown className="h-5 w-5 text-gray-600" />
+                </div>
+              </CollapsibleTrigger>
               
-              <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-400 h-6 border-none">
-                      <TableHead className="font-bold text-white py-1 px-2 rounded-tl-lg border-r border-gray-300 text-xs leading-tight">ACCOUNT</TableHead>
-                      {selectedMonths.map((monthValue, index) => {
-                        const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
-                        return (
-                          <TableHead key={monthValue} className={`text-center font-bold text-white py-1 px-2 text-xs leading-tight ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
-                            {monthLabel.toUpperCase()}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody className="bg-white">
-                    {accounts.map((account, accountIndex) => (
-                      <TableRow key={account.name} className="border-b border-gray-200 hover:bg-gray-50">
-                        <TableCell className="py-0.5 px-2 border-r border-gray-300">
-                          <div className="space-y-0.5">
-                            <div className="font-semibold text-gray-900 text-xs leading-tight">{account.name}</div>
-                            <div className="flex gap-1">
-                              <span className={`px-1 py-0 rounded text-xs font-medium leading-tight ${
-                                account.type === 'Asset' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                {account.type}
-                              </span>
-                              <span className="px-1 py-0 rounded text-xs font-medium bg-gray-100 text-gray-700 leading-tight">
-                                {account.accountType}
-                              </span>
-                            </div>
-                            <div className="text-xs text-gray-500 leading-tight">
-                              {account.apr && (
-                                <span>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</span>
-                              )}
-                              {account.dueDate && (
-                                <span className="ml-2">Due: {account.dueDate}th</span>
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
-
-                        {selectedMonths.map((monthValue, monthIndex) => (
-                          <TableCell key={`${account.name}-${monthValue}`} className={`py-0.5 px-2 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
-                            <div className="space-y-0.5">
-                              <div>
-                                <div className="text-xs text-gray-400 font-medium leading-tight">B</div>
-                                <div className="flex items-center">
-                                  <span className="text-xs text-gray-500 mr-1">$</span>
-                                  <Input
-                                    type="text"
-                                    defaultValue={
-                                      account.name === "Auto Loan" ? "18,450.00" :
-                                      account.name === "Credit Card" ? "2,456.78" :
-                                      account.name === "Checking Account" ? "12,345.67" :
-                                      account.name === "Savings Account" ? "25,890.12" :
-                                      account.name === "Money Market" ? "8,500.00" :
-                                      account.name === "Mortgage" ? "285,000.00" :
-                                      "15,250.00"
-                                    }
-                                    className="flex-1 border-0 p-0 text-xs font-medium bg-transparent focus:ring-0 focus:outline-none leading-tight"
-                                  />
+              <CollapsibleContent>
+                <CardContent className="pt-0 pb-4 space-y-4">
+                  <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-gray-400 h-10 border-none">
+                          <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">ACCOUNT</TableHead>
+                          {selectedMonths.map((monthValue, index) => {
+                            const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                            return (
+                              <TableHead key={monthValue} className={`text-center font-bold text-white py-3 px-3 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                                {monthLabel.toUpperCase()}
+                              </TableHead>
+                            );
+                          })}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody className="bg-white">
+                        {accounts.map((account, accountIndex) => (
+                          <TableRow key={account.name} className="border-b border-gray-200 hover:bg-gray-50">
+                            <TableCell className="py-6 px-4 border-r border-gray-300">
+                              <div className="space-y-3">
+                                <div className="font-semibold text-gray-900 text-base">{account.name}</div>
+                                <div className="flex gap-2">
+                                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                    account.type === 'Asset' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {account.type}
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                                    {account.accountType}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-gray-500 space-y-1">
+                                  {account.apr && (
+                                    <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
+                                  )}
+                                  {account.dueDate && (
+                                    <div>Due: {account.dueDate}th</div>
+                                  )}
                                 </div>
                               </div>
-                              {account.type === 'Debt' && (
-                                <div>
-                                  <div className="text-xs text-gray-400 font-medium leading-tight">I</div>
-                                  <div className="flex items-center">
-                                    <span className="text-xs text-gray-500 mr-1">$</span>
-                                    <Input
-                                      type="text"
-                                      defaultValue={
-                                        account.name === "Auto Loan" ? "78.95" :
-                                        account.name === "Credit Card" ? "47.23" :
-                                        account.name === "Mortgage" ? "1,542.88" :
-                                        "78.95"
-                                      }
-                                      className="flex-1 border-0 p-0 text-xs font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic leading-tight"
-                                    />
+                            </TableCell>
+
+                            {selectedMonths.map((monthValue, monthIndex) => (
+                              <TableCell key={`${account.name}-${monthValue}`} className={`py-6 px-4 ${monthIndex < selectedMonths.length - 1 ? 'border-r border-gray-300' : ''}`}>
+                                <div className="space-y-4">
+                                  <div>
+                                    <div className="text-xs text-gray-400 font-medium mb-2">B</div>
+                                    <div className="flex items-center">
+                                      <span className="text-sm text-gray-500 mr-1">$</span>
+                                      <Input
+                                        type="text"
+                                        defaultValue={
+                                          account.name === "Auto Loan" ? "18,450.00" :
+                                          account.name === "Credit Card" ? "2,456.78" :
+                                          account.name === "Checking Account" ? "12,345.67" :
+                                          account.name === "Savings Account" ? "25,890.12" :
+                                          account.name === "Money Market" ? "8,500.00" :
+                                          account.name === "Mortgage" ? "285,000.00" :
+                                          "15,250.00"
+                                        }
+                                        className="flex-1 border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none"
+                                      />
+                                    </div>
                                   </div>
+                                  {account.type === 'Debt' && (
+                                    <div>
+                                      <div className="text-xs text-gray-400 font-medium mb-2">I</div>
+                                      <div className="flex items-center">
+                                        <span className="text-sm text-gray-500 mr-1">$</span>
+                                        <Input
+                                          type="text"
+                                          defaultValue={
+                                            account.name === "Auto Loan" ? "78.95" :
+                                            account.name === "Credit Card" ? "47.23" :
+                                            account.name === "Mortgage" ? "1,542.88" :
+                                            "78.95"
+                                          }
+                                          className="flex-1 border-0 p-0 text-sm font-medium bg-transparent focus:ring-0 focus:outline-none text-red-600 italic"
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          </TableCell>
+                              </TableCell>
+                            ))}
+                          </TableRow>
                         ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
           </Card>
         )}
       </div>
