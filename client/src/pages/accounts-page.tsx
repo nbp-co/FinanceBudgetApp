@@ -5,12 +5,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Building, CreditCard, Edit, Settings } from "lucide-react";
+import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const accountFormSchema = z.object({
   name: z.string().min(1, "Account name is required"),
@@ -37,6 +42,78 @@ export default function AccountsPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<{ name: string; balance: number } | null>(null);
   const [editingAccount, setEditingAccount] = useState<AccountFormData | null>(null);
+  
+  // Statements tab state
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
+  const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
+  const [isStatementsOpen, setIsStatementsOpen] = useState(true);
+
+  // Statements data
+  const availableMonths = [
+    { value: "2024-12", label: "Dec 2024" },
+    { value: "2024-11", label: "Nov 2024" },
+    { value: "2024-10", label: "Oct 2024" },
+    { value: "2024-09", label: "Sep 2024" },
+    { value: "2024-08", label: "Aug 2024" },
+    { value: "2024-07", label: "Jul 2024" },
+  ];
+
+  const allAccounts = [
+    { name: "Checking Account", type: "Asset", accountType: "Checking", apr: null, dueDate: null },
+    { name: "Savings Account", type: "Asset", accountType: "Savings", apr: 4.25, dueDate: null },
+    { name: "Money Market", type: "Asset", accountType: "Money Market", apr: 3.5, dueDate: null },
+    { name: "Credit Card", type: "Debt", accountType: "Credit Card", apr: 24.99, dueDate: 15 },
+    { name: "Mortgage", type: "Debt", accountType: "Mortgage", apr: 6.5, dueDate: 1 },
+    { name: "Auto Loan", type: "Debt", accountType: "Auto Loan", apr: 5.2, dueDate: 10 },
+  ];
+
+  // Interest data by month - debt accounts only
+  const interestData = [
+    { month: 'Jul 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Aug 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Sep 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Oct 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Nov 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Dec 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+  ];
+
+  // Colors for different account sub-types
+  const chartColors = {
+    'Credit Card': '#ef4444', // red
+    'Mortgage': '#f97316', // orange
+    'Auto Loan': '#eab308', // yellow
+    'Savings': '#22c55e', // green
+    'Money Market': '#3b82f6', // blue
+  };
+
+  // Sort accounts by type and subtype
+  const sortedAccounts = allAccounts.sort((a, b) => {
+    if (a.type !== b.type) {
+      return a.type === 'Asset' ? -1 : 1;
+    }
+    return a.accountType.localeCompare(b.accountType);
+  });
+
+  // Filter accounts based on selected types
+  const accounts = sortedAccounts.filter(account => 
+    selectedAccountTypes.includes(account.type)
+  );
+
+  const toggleMonth = (monthValue: string) => {
+    setSelectedMonths(prev => 
+      prev.includes(monthValue) 
+        ? prev.filter(m => m !== monthValue)
+        : [...prev, monthValue].sort().reverse()
+    );
+  };
+
+  const toggleAccountType = (accountType: string) => {
+    setSelectedAccountTypes(prev => 
+      prev.includes(accountType) 
+        ? prev.filter(t => t !== accountType)
+        : [...prev, accountType]
+    );
+  };
   
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountFormSchema),
@@ -535,15 +612,22 @@ export default function AccountsPage() {
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        {/* Asset Accounts */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-              <Building className="mr-2 h-5 w-5 text-green-600" />
-              Asset Accounts
-            </h2>
-            <AddAssetAccountDialog />
-          </div>
+        <Tabs defaultValue="accounts" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="accounts">My Accounts</TabsTrigger>
+            <TabsTrigger value="statements">Statements</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="accounts" className="space-y-8">
+            {/* Asset Accounts */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <Building className="mr-2 h-5 w-5 text-green-600" />
+                  Asset Accounts
+                </h2>
+                <AddAssetAccountDialog />
+              </div>
           <div className="grid gap-4">
             <Card>
               <CardContent className="p-6">
@@ -670,8 +754,211 @@ export default function AccountsPage() {
           </div>
         </div>
         
-        <EditAccountDialog />
-        <BalanceAdjustmentDialog />
+            <EditAccountDialog />
+            <BalanceAdjustmentDialog />
+          </TabsContent>
+
+          <TabsContent value="statements" className="space-y-6">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">Account Types:</p>
+                  <div className="flex gap-4">
+                    {['Asset', 'Debt'].map(type => (
+                      <label key={type} className="flex items-center space-x-2">
+                        <Checkbox
+                          checked={selectedAccountTypes.includes(type)}
+                          onCheckedChange={() => toggleAccountType(type)}
+                        />
+                        <span className="text-sm text-gray-700">{type}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
+                  <div className="flex flex-wrap gap-4">
+                    {availableMonths.map(month => (
+                      <label key={month.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          checked={selectedMonths.includes(month.value)}
+                          onCheckedChange={() => toggleMonth(month.value)}
+                        />
+                        <span className="text-sm text-gray-700">{month.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {selectedMonths.length > 0 && (
+                <Collapsible open={isStatementsOpen} onOpenChange={setIsStatementsOpen}>
+                  <Card>
+                    <CollapsibleTrigger asChild>
+                      <CardHeader className="cursor-pointer hover:bg-gray-50">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-xl">Monthly Statements</CardTitle>
+                          <Button variant="ghost" size="sm">
+                            {isStatementsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <CardContent className="pt-0">
+                        <div className="flex justify-end mb-4">
+                          <Button variant="outline" size="sm">
+                            <Save className="mr-1 h-3 w-3" />
+                            Save All Changes
+                          </Button>
+                        </div>
+                        
+                        <div className="relative">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="w-[280px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
+                                  {selectedMonths.map(monthValue => {
+                                    const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                                    return (
+                                      <TableHead key={monthValue} className="text-center min-w-[120px]">
+                                        {monthLabel}
+                                      </TableHead>
+                                    );
+                                  })}
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {accounts.map((account) => (
+                                  <TableRow key={account.name} className="hover:bg-gray-50">
+                                    <TableCell className="sticky left-0 bg-white z-10 border-r-2 border-gray-400">
+                                      <div className="space-y-2">
+                                        <div className="font-medium text-gray-900">{account.name}</div>
+                                        <div className="flex flex-wrap gap-1">
+                                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                            account.type === 'Asset' 
+                                              ? 'bg-green-100 text-green-800' 
+                                              : 'bg-red-100 text-red-800'
+                                          }`}>
+                                            {account.type}
+                                          </span>
+                                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 text-center">
+                                            {account.accountType}
+                                          </span>
+                                        </div>
+                                        <div className="text-xs text-gray-500 space-y-0.5">
+                                          {account.apr && (
+                                            <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
+                                          )}
+                                          {account.dueDate && (
+                                            <div>Due: {account.dueDate}th</div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </TableCell>
+
+                                    {selectedMonths.map(monthValue => (
+                                      <TableCell key={`${account.name}-${monthValue}`} className="text-center">
+                                        <div className="space-y-1">
+                                          <div className="relative">
+                                            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                            <Input
+                                              type="text"
+                                              defaultValue={
+                                                account.name === "Checking Account" ? "12,345.67" :
+                                                account.name === "Savings Account" ? "25,890.12" :
+                                                account.name === "Money Market" ? "8,500.00" :
+                                                account.name === "Credit Card" ? "2,456.78" :
+                                                account.name === "Mortgage" ? "285,000.00" :
+                                                "15,250.00"
+                                              }
+                                              className="w-28 text-center pl-6"
+                                            />
+                                            <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
+                                          </div>
+                                          <div className="relative">
+                                            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
+                                            <Input
+                                              type="text"
+                                              defaultValue={
+                                                account.name === "Checking Account" ? "0.00" :
+                                                account.name === "Savings Account" ? "95.43" :
+                                                account.name === "Money Market" ? "25.18" :
+                                                account.name === "Credit Card" ? "47.23" :
+                                                account.name === "Mortgage" ? "1,542.88" :
+                                                "78.95"
+                                              }
+                                              className="w-28 text-center text-xs pl-6"
+                                            />
+                                            <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
+                                          </div>
+                                        </div>
+                                      </TableCell>
+                                    ))}
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </Collapsible>
+              )}
+
+              {/* Interest Chart - Debt Accounts Only */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Monthly Interest Expense by Debt Account</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={interestData}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                        <XAxis 
+                          dataKey="month" 
+                          tick={{ fontSize: 12 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                        />
+                        <YAxis 
+                          tick={{ fontSize: 12 }}
+                          tickFormatter={(value) => `$${value}`}
+                        />
+                        <Tooltip 
+                          formatter={(value) => [`$${value}`, '']}
+                          labelStyle={{ color: '#374151' }}
+                          contentStyle={{ 
+                            backgroundColor: '#f9fafb',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <Legend />
+                        <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
+                        <Bar dataKey="Mortgage" stackId="a" fill={chartColors['Mortgage']} />
+                        <Bar dataKey="Auto Loan" stackId="a" fill={chartColors['Auto Loan']} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </AppShell>
   );
