@@ -132,6 +132,9 @@ export default function AccountsPage() {
     'Credit Card': '#ef4444', // red
     'Mortgage': '#f97316', // orange
     'Auto Loan': '#eab308', // yellow
+    'Student Loan': '#22c55e', // bright green (updated from dull green/grey)
+    'Line of Credit': '#10b981', // emerald green (updated from dull green/grey)
+    'Taxes': '#8b5cf6', // purple
     'Savings': '#22c55e', // green
     'Money Market': '#3b82f6', // blue
   };
