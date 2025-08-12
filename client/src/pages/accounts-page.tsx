@@ -1963,12 +1963,12 @@ export default function AccountsPage() {
                               ))}
                               
                               {/* Total Row */}
-                              <TableRow className="border-t-2 border-gray-300 bg-gray-400 text-white font-bold h-12">
-                                <TableCell className="font-bold text-white py-3 px-4 border-r border-gray-300 rounded-bl-lg">
+                              <TableRow className="border-t-2 border-gray-300 bg-gray-400 text-white font-bold h-8">
+                                <TableCell className="font-bold text-white py-1.5 px-4 border-r border-gray-300 rounded-bl-lg">
                                   TOTAL
                                 </TableCell>
                                 {totalsByMonth.map((total, index) => (
-                                  <TableCell key={`total-month-${index}`} className={`text-center font-bold py-3 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-gray-300' : 'rounded-br-lg'}`}>
+                                  <TableCell key={`total-month-${index}`} className={`text-center font-bold py-1.5 px-3 ${index < totalsByMonth.length - 1 ? 'border-r border-gray-300' : 'rounded-br-lg'}`}>
                                     <div className="space-y-1">
                                       <div className="text-sm font-bold text-white">
                                         ${total.balance > 0 ? Math.round(total.balance).toLocaleString() : '-'}
