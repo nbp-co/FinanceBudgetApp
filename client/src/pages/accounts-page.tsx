@@ -20,25 +20,13 @@ export default function AccountsPage() {
         </div>
         
         <Tabs defaultValue="accounts" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="accounts">My Accounts</TabsTrigger>
-            <TabsTrigger value="statements">Statements</TabsTrigger>
             <TabsTrigger value="debt-payoff">Debt Payoff</TabsTrigger>
           </TabsList>
           
           <TabsContent value="accounts" className="space-y-6">
             <AccountList />
-          </TabsContent>
-          
-          <TabsContent value="statements" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Monthly Statements</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-500">Monthly statement features coming soon...</p>
-              </CardContent>
-            </Card>
           </TabsContent>
           
           <TabsContent value="debt-payoff" className="space-y-6">

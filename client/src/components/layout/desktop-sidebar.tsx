@@ -13,6 +13,7 @@ import {
 const navigation = [
   { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Accounts", href: "/accounts", icon: Building },
+  { name: "Statements", href: "/statements", icon: FileText },
   { name: "Summary", href: "/summary", icon: Home },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
