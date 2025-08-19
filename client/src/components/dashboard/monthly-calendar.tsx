@@ -8,7 +8,11 @@ import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import type { Account, Transaction } from "@shared/schema";
 
-export function MonthlyCalendar() {
+interface MonthlyCalendarProps {
+  onDateSelect?: (date: Date | null) => void;
+}
+
+export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
@@ -44,7 +48,19 @@ export function MonthlyCalendar() {
   // Reset selected date when month changes
   useEffect(() => {
     setSelectedDate(null);
-  }, [currentDate]);
+    onDateSelect?.(null);
+  }, [currentDate, onDateSelect]);
+
+  // Update parent when selected date changes
+  useEffect(() => {
+    onDateSelect?.(selectedDate);
+  }, [selectedDate, onDateSelect]);
+
+  // Reset selected date when account changes to avoid confusion
+  useEffect(() => {
+    setSelectedDate(null);
+    onDateSelect?.(null);
+  }, [selectedAccountId, onDateSelect]);
   
   // Get days from previous month to fill the grid
   const startPadding = getDay(monthStart);

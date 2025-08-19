@@ -6,19 +6,24 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import type { Account, Category } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  defaultDate?: string;
 }
 
-export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProps) {
+export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransactionModalProps) {
   const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE" | "TRANSFER">("EXPENSE");
   const [isRecurring, setIsRecurring] = useState(false);
   const [formData, setFormData] = useState({
     description: "",
     amount: "",
-    date: new Date().toISOString().split('T')[0],
+    date: defaultDate || new Date().toISOString().split('T')[0],
     accountId: "",
     toAccountId: "",
     categoryId: "",
@@ -26,11 +31,72 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
     interval: "1"
   });
 
+  const { toast } = useToast();
+
+  // Fetch accounts
+  const { data: accounts = [] } = useQuery<Account[]>({
+    queryKey: ["/api/accounts"],
+  });
+
+  // Fetch categories for the selected type
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ["/api/categories", transactionType],
+    queryFn: () => {
+      const params = new URLSearchParams({ kind: transactionType });
+      return fetch(`/api/categories?${params.toString()}`, {
+        credentials: "include",
+      }).then(res => res.json());
+    },
+    enabled: transactionType !== "TRANSFER",
+  });
+
+  const createTransactionMutation = useMutation({
+    mutationFn: async (transactionData: any) => {
+      const res = await apiRequest("POST", "/api/transactions", transactionData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
+      toast({
+        title: "Transaction created",
+        description: "Your transaction has been added successfully.",
+      });
+      onClose();
+      // Reset form
+      setFormData({
+        description: "",
+        amount: "",
+        date: defaultDate || new Date().toISOString().split('T')[0],
+        accountId: "",
+        toAccountId: "",
+        categoryId: "",
+        frequency: "monthly",
+        interval: "1"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error creating transaction",
+        description: error.message || "Failed to create transaction",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement transaction creation
-    console.log("Creating transaction:", { ...formData, type: transactionType, isRecurring });
-    onClose();
+    
+    const transactionData = {
+      type: transactionType,
+      amount: parseFloat(formData.amount),
+      description: formData.description,
+      date: new Date(formData.date).toISOString(),
+      accountId: formData.accountId,
+      toAccountId: transactionType === "TRANSFER" ? formData.toAccountId : null,
+      categoryId: transactionType !== "TRANSFER" ? formData.categoryId || null : null,
+    };
+
+    createTransactionMutation.mutate(transactionData);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -160,9 +226,11 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
                 <SelectValue placeholder="Select account..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="checking">Checking Account</SelectItem>
-                <SelectItem value="savings">Savings Account</SelectItem>
-                <SelectItem value="credit">Credit Card</SelectItem>
+                {accounts.map((account) => (
+                  <SelectItem key={account.id} value={account.id}>
+                    {account.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -176,9 +244,11 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
                   <SelectValue placeholder="Select destination account..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="checking">Checking Account</SelectItem>
-                  <SelectItem value="savings">Savings Account</SelectItem>
-                  <SelectItem value="credit">Credit Card</SelectItem>
+                  {accounts.filter(account => account.id !== formData.accountId).map((account) => (
+                    <SelectItem key={account.id} value={account.id}>
+                      {account.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -193,20 +263,11 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
                   <SelectValue placeholder="Select category..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {transactionType === "INCOME" ? (
-                    <>
-                      <SelectItem value="salary">Salary</SelectItem>
-                      <SelectItem value="freelance">Freelance</SelectItem>
-                      <SelectItem value="investment">Investment Income</SelectItem>
-                    </>
-                  ) : (
-                    <>
-                      <SelectItem value="groceries">Groceries</SelectItem>
-                      <SelectItem value="transportation">Transportation</SelectItem>
-                      <SelectItem value="entertainment">Entertainment</SelectItem>
-                      <SelectItem value="housing">Housing</SelectItem>
-                    </>
-                  )}
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -217,8 +278,8 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancel
             </Button>
-            <Button type="submit" className="flex-1">
-              Save Transaction
+            <Button type="submit" className="flex-1" disabled={createTransactionMutation.isPending}>
+              {createTransactionMutation.isPending ? "Saving..." : "Save Transaction"}
             </Button>
           </div>
         </form>
