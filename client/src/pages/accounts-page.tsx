@@ -1154,7 +1154,7 @@ export default function AccountsPage() {
 
           <TabsContent value="debt-payoff" className="space-y-6">
             {/* Debt Overview */}
-            <Card className="bg-pink-50">
+            <Card className="bg-orange-50">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold text-gray-900">Debt Overview</CardTitle>
               </CardHeader>
