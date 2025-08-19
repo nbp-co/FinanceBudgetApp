@@ -1,17 +1,50 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import type { Account, Transaction } from "@shared/schema";
 
 export function MonthlyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  // Fetch user accounts
+  const { data: accounts = [], isLoading: accountsLoading } = useQuery<Account[]>({
+    queryKey: ["/api/accounts"],
+  });
+
+  // Fetch transactions for the current month
+  const { data: transactions = [], isLoading: transactionsLoading, refetch: refetchTransactions } = useQuery<Transaction[]>({
+    queryKey: ["/api/transactions", selectedAccountId, monthStart.toISOString(), monthEnd.toISOString()],
+    queryFn: () => {
+      const params = new URLSearchParams({
+        startDate: monthStart.toISOString(),
+        endDate: monthEnd.toISOString(),
+      });
+      
+      if (selectedAccountId !== "all") {
+        params.append("accountId", selectedAccountId);
+      }
+      
+      return fetch(`/api/transactions?${params.toString()}`, {
+        credentials: "include",
+      }).then(res => res.json());
+    },
+  });
+
+  // Reset selected date when month changes
+  useEffect(() => {
+    setSelectedDate(null);
+  }, [currentDate]);
   
   // Get days from previous month to fill the grid
   const startPadding = getDay(monthStart);
@@ -51,61 +84,52 @@ export function MonthlyCalendar() {
     setSelectedDate(today);
   };
 
-  // Mock starting balance - would come from API
-  const startingBalance = 12345.67;
+  // Group transactions by date for efficient lookup
+  const transactionsByDate = useMemo(() => {
+    const grouped: Record<string, Transaction[]> = {};
+    
+    transactions.forEach(transaction => {
+      const date = new Date(transaction.date);
+      const dateKey = format(date, 'yyyy-MM-dd');
+      
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(transaction);
+    });
+    
+    return grouped;
+  }, [transactions]);
 
-  // Mock transaction data - would come from API
-  const getTransactionsForDay = (date: Date) => {
-    const dayOfMonth = date.getDate();
+  // Get transactions for a specific day
+  const getTransactionsForDay = (date: Date): Transaction[] => {
     if (!isSameMonth(date, currentDate)) return [];
     
-    // Mock some transactions with more detail
-    if (dayOfMonth === 1) return [
-      { id: '1', type: 'income', amount: 4500, description: 'Salary Deposit', category: 'Salary' }
-    ];
-    if (dayOfMonth === 3) return [
-      { id: '2', type: 'expense', amount: 127, description: 'Grocery Shopping', category: 'Groceries' },
-      { id: '3', type: 'income', amount: 50, description: 'Freelance Payment', category: 'Freelance' }
-    ];
-    if (dayOfMonth === 5) return [
-      { id: '4', type: 'transfer', amount: 5000, description: 'Transfer to Savings', category: 'Transfer', fromAccount: 'Checking', toAccount: 'Savings' },
-      { id: '5', type: 'transfer', amount: 3000, description: 'Investment Transfer', category: 'Transfer', fromAccount: 'Savings', toAccount: 'Investment' },
-      { id: '6', type: 'transfer', amount: 2500, description: 'Credit Payment', category: 'Transfer', fromAccount: 'Checking', toAccount: 'Credit Card' },
-      { id: '7', type: 'transfer', amount: 6269, description: 'Business Transfer', category: 'Transfer', fromAccount: 'Business', toAccount: 'Checking' }
-    ];
-    if (dayOfMonth === 10) return [
-      { id: '5', type: 'income', amount: 500, description: 'Investment Dividend', category: 'Investment' },
-      { id: '6', type: 'expense', amount: 200, description: 'Utility Bill', category: 'Utilities' },
-      { id: '7', type: 'transfer', amount: 300, description: 'Credit Card Payment', category: 'Transfer', fromAccount: 'Checking', toAccount: 'Credit Card' }
-    ];
-    if (isToday(date)) return [
-      { id: '8', type: 'expense', amount: 85, description: 'Coffee & Lunch', category: 'Food' },
-      { id: '9', type: 'expense', amount: 45, description: 'Gas Station', category: 'Transportation' }
-    ];
-    return [];
+    const dateKey = format(date, 'yyyy-MM-dd');
+    return transactionsByDate[dateKey] || [];
   };
 
-  // Calculate daily balance for a given date
-  const getDailyBalance = (date: Date) => {
-    let balance = startingBalance;
-    const monthStart = startOfMonth(currentDate);
-    
-    // Calculate balance from start of month to the given date
+  // Calculate running balance up to a given date
+  const getDailyBalance = (date: Date): number => {
     const daysToCalculate = eachDayOfInterval({ start: monthStart, end: date });
     
+    let runningBalance = 0;
+    
     for (const day of daysToCalculate) {
-      const transactions = getTransactionsForDay(day);
-      for (const transaction of transactions) {
-        if (transaction.type === 'income') {
-          balance += transaction.amount;
-        } else if (transaction.type === 'expense') {
-          balance -= transaction.amount;
+      const dayTransactions = getTransactionsForDay(day);
+      for (const transaction of dayTransactions) {
+        const amount = parseFloat(transaction.amount);
+        
+        if (transaction.type === 'INCOME') {
+          runningBalance += amount;
+        } else if (transaction.type === 'EXPENSE') {
+          runningBalance -= amount;
         }
-        // Transfer transactions don't affect the total balance in this simplified example
+        // TRANSFER transactions don't affect total balance in this view
       }
     }
     
-    return balance;
+    return runningBalance;
   };
 
   const handleDayClick = (day: Date) => {
@@ -122,19 +146,41 @@ export function MonthlyCalendar() {
       <div className="lg:col-span-2">
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
+            <div className="flex items-center justify-between mb-4">
+              <Button variant="ghost" size="icon" onClick={goToPrevMonth} disabled={transactionsLoading}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <div className="flex items-center space-x-3">
                 <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
-                <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
+                <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0" disabled={transactionsLoading}>
                   <Calendar className="h-3 w-3" />
                 </Button>
               </div>
-              <Button variant="ghost" size="icon" onClick={goToNextMonth}>
+              <Button variant="ghost" size="icon" onClick={goToNextMonth} disabled={transactionsLoading}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
+            </div>
+            
+            {/* Account Selection */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Account:</span>
+              <Select
+                value={selectedAccountId}
+                onValueChange={setSelectedAccountId}
+                disabled={accountsLoading}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select account..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  {accounts.map((account) => (
+                    <SelectItem key={account.id} value={account.id}>
+                      {account.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardHeader>
       <CardContent>
@@ -182,23 +228,20 @@ export function MonthlyCalendar() {
                   </div>
                   <div className="flex gap-1 justify-center mt-1">
                     {transactions.slice(0, 2).map((transaction, txIndex) => {
-                      if (transaction.type === 'income') {
+                      if (transaction.type === 'INCOME') {
                         return (
                           <div key={txIndex} className="w-1.5 h-1.5 bg-green-400 rounded-full" />
                         );
-                      } else if (transaction.type === 'expense') {
+                      } else if (transaction.type === 'EXPENSE') {
                         return (
                           <div key={txIndex} className="w-1.5 h-1.5 bg-red-400 rounded-full" />
                         );
-                      } else if (transaction.type === 'transfer') {
+                      } else if (transaction.type === 'TRANSFER') {
                         // Split transfer dot: left half blue (base), right half green/red (direction)
-                        // Blue/Green for incoming transfers, Blue/Red for outgoing transfers
-                        const toAccount = (transaction as any).toAccount;
-                        const isIncoming = toAccount === 'Checking' || toAccount === 'Savings';
                         return (
                           <div key={txIndex} className="w-1.5 h-1.5 rounded-full overflow-hidden flex">
                             <div className="w-1/2 h-full bg-blue-400"></div>
-                            <div className={`w-1/2 h-full ${isIncoming ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                            <div className="w-1/2 h-full bg-gray-400"></div>
                           </div>
                         );
                       }
@@ -238,10 +281,16 @@ export function MonthlyCalendar() {
               </div>
               <div className="text-right">
                 <p className="text-lg font-bold text-primary">
-                  {formatCurrency(getDailyBalance(selectedDate))}
+                  {transactionsLoading ? "Loading..." : formatCurrency(getDailyBalance(selectedDate))}
                 </p>
               </div>
             </div>
+          </div>
+        )}
+        
+        {transactionsLoading && (
+          <div className="mt-4 text-center text-sm text-gray-500">
+            Loading transactions...
           </div>
         )}
       </CardContent>
@@ -257,12 +306,14 @@ export function MonthlyCalendar() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {selectedDayTransactions.length > 0 ? (
+        {transactionsLoading ? (
+          <div className="text-center py-8 text-sm text-gray-500">Loading...</div>
+        ) : selectedDayTransactions.length > 0 ? (
           <div className="space-y-3">
             {selectedDayTransactions.map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  {transaction.type === 'transfer' ? (
+                  {transaction.type === 'TRANSFER' ? (
                     <div className="w-3 h-3 rounded-full overflow-hidden flex">
                       <div className="w-1/2 h-full bg-blue-400"></div>
                       <div className={`w-1/2 h-full ${
@@ -272,21 +323,21 @@ export function MonthlyCalendar() {
                     </div>
                   ) : (
                     <div className={`w-3 h-3 rounded-full ${
-                      transaction.type === 'income' ? 'bg-green-400' : 'bg-red-400'
+                      transaction.type === 'INCOME' ? 'bg-green-400' : 'bg-red-400'
                     }`} />
                   )}
                   <div>
                     <p className="font-medium text-sm text-gray-900">{transaction.description}</p>
-                    <p className="text-xs text-gray-500">{transaction.category}</p>
+                    <p className="text-xs text-gray-500">{transaction.categoryId ? 'Categorized' : 'Uncategorized'}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className={`font-semibold text-sm ${
-                    transaction.type === 'income' ? 'text-green-600' :
-                    transaction.type === 'expense' ? 'text-red-600' : 'text-gray-800'
+                    transaction.type === 'INCOME' ? 'text-green-600' :
+                    transaction.type === 'EXPENSE' ? 'text-red-600' : 'text-gray-800'
                   }`}>
-                    {transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '-' : ''}
-                    {formatCurrency(transaction.amount)}
+                    {transaction.type === 'INCOME' ? '+' : transaction.type === 'EXPENSE' ? '-' : ''}
+                    {formatCurrency(parseFloat(transaction.amount))}
                   </p>
                 </div>
               </div>
