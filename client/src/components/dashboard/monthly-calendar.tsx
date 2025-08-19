@@ -249,7 +249,40 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
   // Get daily balance from database or calculate if needed
   const getDailyBalance = (date: Date): number | null => {
     const balance = getBalanceForDay(date);
-    return balance ? parseFloat(balance) : null;
+    if (balance !== null) {
+      return parseFloat(balance);
+    }
+    
+    // If no daily balance exists, calculate it on the fly using transactions
+    if (!selectedAccountId || !Array.isArray(transactions)) return null;
+    
+    const account = accounts.find(acc => acc.id === selectedAccountId);
+    if (!account) return null;
+    
+    // Get all transactions up to this date for this account
+    const transactionsUpToDate = transactions.filter(tx => {
+      const txDate = new Date(tx.date);
+      return txDate <= date && tx.accountId === selectedAccountId;
+    });
+    
+    // Start with opening balance
+    let calculatedBalance = parseFloat(account.openingBalance || "0");
+    
+    // Apply transactions
+    transactionsUpToDate.forEach(tx => {
+      const amount = parseFloat(tx.amount);
+      if (tx.type === 'INCOME') {
+        calculatedBalance += amount;
+      } else if (tx.type === 'EXPENSE') {
+        if (account.type === 'ASSET') {
+          calculatedBalance -= amount;
+        } else {
+          calculatedBalance += amount; // For debt accounts
+        }
+      }
+    });
+    
+    return calculatedBalance;
   };
 
   const handleDayClick = (day: Date) => {
@@ -404,7 +437,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
               </div>
               <div className="text-right">
                 <p className="text-lg font-bold text-primary">
-                  {transactionsLoading ? "Loading..." : formatCurrency(getDailyBalance(selectedDate))}
+                  {transactionsLoading ? "Loading..." : (getDailyBalance(selectedDate) !== null ? formatCurrency(getDailyBalance(selectedDate)!) : "$0.00")}
                 </p>
               </div>
             </div>

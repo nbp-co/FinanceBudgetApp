@@ -222,6 +222,12 @@ export function registerRoutes(app: Express): Server {
       // Create the initial transaction
       const transaction = await storage.createTransaction(transactionData);
       
+      // Update daily balances for this account starting from the transaction date
+      const today = new Date();
+      const transactionDate = new Date(transactionData.date);
+      const endDate = new Date(Math.max(today.getTime(), transactionDate.getTime()));
+      await storage.updateDailyBalancesForAccount(transactionData.accountId, transactionDate, endDate);
+      
       // If this is a recurring transaction, create the recurring rule and future transactions
       if (isRecurring) {
         console.log("Creating recurring rule for transaction");
@@ -258,6 +264,12 @@ export function registerRoutes(app: Express): Server {
         
         // Update the original transaction with the recurring ID
         await storage.updateTransaction(transaction.id, { recurringId: recurringRule.id });
+        
+        // Update daily balances for all future transaction dates
+        if (futureTransactions.length > 0) {
+          const lastFutureDate = new Date(futureTransactions[futureTransactions.length - 1].date);
+          await storage.updateDailyBalancesForAccount(transactionData.accountId, transactionDate, lastFutureDate);
+        }
       }
       
       res.status(201).json(transaction);
@@ -283,6 +295,19 @@ export function registerRoutes(app: Express): Server {
       }
       
       const updatedTransaction = await storage.updateTransaction(req.params.id, updateData);
+      
+      // Update daily balances if the date or amount changed
+      if (req.body.date || req.body.amount) {
+        const today = new Date();
+        const oldDate = new Date(transaction.date);
+        const newDate = updateData.date ? new Date(updateData.date) : oldDate;
+        
+        // Update balances from the earliest affected date to today
+        const startDate = new Date(Math.min(oldDate.getTime(), newDate.getTime()));
+        const endDate = new Date(Math.max(today.getTime(), oldDate.getTime(), newDate.getTime()));
+        await storage.updateDailyBalancesForAccount(transaction.accountId, startDate, endDate);
+      }
+      
       res.json(updatedTransaction);
     } catch (error) {
       res.status(400).json({ message: "Failed to update transaction" });
@@ -318,6 +343,12 @@ export function registerRoutes(app: Express): Server {
         // Delete only this specific transaction
         await storage.deleteTransaction(req.params.id);
       }
+      
+      // Update daily balances after deletion
+      const today = new Date();
+      const transactionDate = new Date(transaction.date);
+      const endDate = new Date(Math.max(today.getTime(), transactionDate.getTime()));
+      await storage.updateDailyBalancesForAccount(transaction.accountId, transactionDate, endDate);
       
       res.sendStatus(200);
     } catch (error) {
@@ -598,6 +629,34 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Error calculating daily balances:", error);
       res.status(500).json({ error: "Failed to calculate daily balances" });
+    }
+  });
+
+  // Recalculate all daily balances for all accounts
+  app.post("/api/daily-balances/recalculate-all", requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const accounts = await storage.getAccountsByUser(userId);
+      
+      // Get date range - from earliest transaction to 1 year in future
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+      
+      const oneYearFuture = new Date();
+      oneYearFuture.setFullYear(oneYearFuture.getFullYear() + 1);
+      
+      for (const account of accounts) {
+        console.log(`Recalculating daily balances for account: ${account.name}`);
+        await storage.updateDailyBalancesForAccount(account.id, oneYearAgo, oneYearFuture);
+      }
+      
+      res.json({ 
+        message: "All daily balances recalculated successfully",
+        accountsProcessed: accounts.length 
+      });
+    } catch (error) {
+      console.error("Error recalculating all daily balances:", error);
+      res.status(500).json({ error: "Failed to recalculate daily balances" });
     }
   });
 
