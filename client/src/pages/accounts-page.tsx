@@ -1234,55 +1234,63 @@ export default function AccountsPage() {
                       </div>
                     </div>
 
-                    {/* Debt Accounts Table */}
-                    <div className="space-y-3">
+                    {/* Debt Accounts Grid */}
+                    <div className="grid grid-cols-3 gap-4">
                       {[
-                        { name: "Mortgage", balance: 285000, apr: 6.5, minPayment: 1844, payoffMonths: 360, dueDate: "Jan 2054" },
-                        { name: "Student Loan", balance: 23800, apr: 4.8, minPayment: 268, payoffMonths: 120, dueDate: "May 2034" },
-                        { name: "Auto Loan", balance: 18450, apr: 5.2, minPayment: 349, payoffMonths: 60, dueDate: "Apr 2029" },
-                        { name: "Personal Loan", balance: 5200, apr: 12.5, minPayment: 168, payoffMonths: 36, dueDate: "Dec 2027" },
-                        { name: "Credit Card", balance: 2456, apr: 24.99, minPayment: 49, payoffMonths: 120, dueDate: "Never at minimum" },
-                        { name: "Business Credit Card", balance: 1850, apr: 18.9, minPayment: 37, payoffMonths: 84, dueDate: "Jan 2032" }
+                        { name: "Mortgage", balance: 285000, apr: 6.5, rate: "6.5%", paymentDue: "$1,844", color: "blue", dueDate: "Jan 2054", nextPayment: "Jan 2025" },
+                        { name: "Student Loan", balance: 23800, apr: 4.8, rate: "4.8%", paymentDue: "$268", color: "green", dueDate: "May 2034", nextPayment: "Sep 2025" },
+                        { name: "Auto Loan", balance: 18450, apr: 5.2, rate: "5.2%", paymentDue: "$349", color: "purple", dueDate: "Apr 2029", nextPayment: "Apr 2025" },
+                        { name: "Personal Loan", balance: 5200, apr: 12.5, rate: "12.5%", paymentDue: "$168", color: "orange", dueDate: "Dec 2027", nextPayment: "Mar 2025" },
+                        { name: "Credit Card", balance: 2456, apr: 24.99, rate: "24.99%", paymentDue: "$49", color: "red", dueDate: "Never at minimum", nextPayment: "Sep 2025" },
+                        { name: "Business Credit Card", balance: 1850, apr: 18.9, rate: "18.9%", paymentDue: "$37", color: "teal", dueDate: "Jan 2032", nextPayment: "Dec 2024" }
                       ].map((debt, index) => (
-                        <div key={debt.name} className="border rounded-lg p-4 bg-white hover:bg-gray-50">
-                          <div className="grid grid-cols-7 gap-4 items-center">
-                            <div>
-                              <h3 className="font-semibold text-gray-900">{debt.name}</h3>
-                              <p className="text-sm text-gray-500">{debt.apr}% APR</p>
-                            </div>
-                            <div className="text-center">
-                              <p className="text-lg font-bold text-red-600">{formatCurrency(debt.balance)}</p>
-                              <p className="text-xs text-gray-500">Balance</p>
-                            </div>
-                            <div className="text-center">
-                              <p className="text-sm font-semibold text-gray-700">{formatCurrency(debt.minPayment)}</p>
-                              <p className="text-xs text-gray-500">Min Payment</p>
-                            </div>
-                            <div className="text-center">
-                              <p className="text-sm font-semibold text-orange-600">{formatCurrency(Math.round(debt.balance * debt.apr / 100 / 12))}</p>
-                              <p className="text-xs text-gray-500">Monthly Interest</p>
-                            </div>
-                            <div className="text-center">
-                              <p className="text-sm font-semibold text-blue-600">{debt.dueDate}</p>
-                              <p className="text-xs text-gray-500">Payoff Date</p>
-                            </div>
-                            <div className="text-center">
-                              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                              </div>
-                              <p className="text-xs text-gray-500 mt-1">Auto Pay</p>
-                            </div>
+                        <div key={debt.name} className="bg-white border rounded-lg p-4 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-gray-900 text-sm">{debt.name}</h3>
                             <div className="flex space-x-1">
-                              <Button variant="ghost" size="sm" className="p-1">
-                                <TrendingUp className="h-4 w-4 text-blue-600" />
+                              <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
+                                <TrendingUp className="h-3 w-3 text-blue-600" />
                               </Button>
-                              <Button variant="ghost" size="sm" className="p-1">
-                                <Calendar className="h-4 w-4 text-gray-600" />
-                              </Button>
-                              <Button variant="ghost" size="sm" className="p-1">
-                                <Settings className="h-4 w-4 text-gray-600" />
+                              <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
+                                <Settings className="h-3 w-3 text-gray-400" />
                               </Button>
                             </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4 text-xs">
+                            <div>
+                              <p className="text-gray-500 mb-1">Balance</p>
+                              <p className="font-bold text-gray-900">{formatCurrency(debt.balance)}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 mb-1">Rate</p>
+                              <p className="font-semibold text-gray-700">{debt.rate}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 mb-1">Payment Due</p>
+                              <p className="font-semibold text-red-600">{debt.paymentDue}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 mb-1">Next Payment</p>
+                              <p className="font-semibold text-gray-700">{debt.nextPayment}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                            <div className="flex items-center space-x-2">
+                              <div className={`w-2 h-2 rounded-full ${
+                                debt.color === 'blue' ? 'bg-blue-500' :
+                                debt.color === 'green' ? 'bg-green-500' :
+                                debt.color === 'purple' ? 'bg-purple-500' :
+                                debt.color === 'orange' ? 'bg-orange-500' :
+                                debt.color === 'red' ? 'bg-red-500' :
+                                debt.color === 'teal' ? 'bg-teal-500' : 'bg-gray-500'
+                              }`}></div>
+                              <span className="text-xs text-gray-600">Payoff: {debt.dueDate}</span>
+                            </div>
+                            <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6 text-blue-600 hover:bg-blue-50">
+                              Details
+                            </Button>
                           </div>
                         </div>
                       ))}
@@ -1348,10 +1356,10 @@ export default function AccountsPage() {
                     <div className="overflow-x-auto rounded-lg border border-gray-200">
                       <Table>
                         <TableHeader>
-                          <TableRow className="bg-gray-400">
-                            <TableHead className="font-bold text-white py-3 px-4 border-r border-gray-300">DEBT BY TYPE</TableHead>
-                            {['JAN 2025', 'FEB 2025', 'MAR 2025', 'APR 2025', 'MAY 2025', 'JUN 2025'].map((month, index) => (
-                              <TableHead key={month} className={`text-center font-bold text-white py-3 px-3 ${index < 5 ? 'border-r border-gray-300' : ''}`}>
+                          <TableRow className="bg-gray-500">
+                            <TableHead className="font-bold text-white py-2 px-4 border-r border-gray-400 text-left">DEBT BY TYPE</TableHead>
+                            {['JUL 2025', 'AUG 2025', 'SEP 2025', 'OCT 2025', 'NOV 2025', 'DEC 2025'].map((month, index) => (
+                              <TableHead key={month} className={`text-center font-bold text-white py-2 px-3 ${index < 5 ? 'border-r border-gray-400' : ''} text-xs`}>
                                 {month}
                               </TableHead>
                             ))}
@@ -1363,13 +1371,13 @@ export default function AccountsPage() {
                             { type: "Credit Card", values: [4307, 4307, 4307, 4307, 4307, 4307], interest: [90, 90, 90, 90, 90, 90] },
                             { type: "Line Of Credit", values: [5200, 3100, 2500, 1900, 1300, 700], interest: [54, 32, 26, 20, 14, 7] }
                           ].map((row, index) => (
-                            <TableRow key={row.type} className={`border-b border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                              <TableCell className="font-semibold text-gray-800 bg-gray-100 py-3 px-4 border-r border-gray-300">
+                            <TableRow key={row.type} className={`border-b border-gray-200 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                              <TableCell className="font-semibold text-gray-800 bg-gray-200 py-2 px-4 border-r border-gray-300 text-sm">
                                 {row.type}
                               </TableCell>
                               {row.values.map((value, monthIndex) => (
-                                <TableCell key={monthIndex} className="text-center py-3 px-3 border-r border-gray-200">
-                                  <div className="space-y-1">
+                                <TableCell key={monthIndex} className="text-center py-2 px-2 border-r border-gray-200">
+                                  <div className="space-y-0.5">
                                     <div className="text-sm font-bold text-gray-900">
                                       {formatCurrency(value)}
                                     </div>
