@@ -19,7 +19,7 @@ function requireAuth(req: any, res: any, next: any) {
 }
 
 function getUserId(req: any): string {
-  return getUserId(req);
+  return req.user.id;
 }
 
 export function registerRoutes(app: Express): Server {
