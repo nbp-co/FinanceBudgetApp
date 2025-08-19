@@ -358,7 +358,7 @@ export function MonthlyCalendar() {
                     <p className="text-xs text-gray-500">{transaction.category}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex-shrink-0 min-w-0">
                   <p className={`font-semibold text-sm ${
                     transaction.type === 'income' ? 'text-green-600' :
                     transaction.type === 'expense' ? 'text-red-600' : 'text-gray-800'
