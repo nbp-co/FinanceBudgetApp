@@ -971,21 +971,10 @@ export default function AccountsPage() {
                       {/* Month Selection */}
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
-                        <div className="space-y-3">
-                          <div className="grid grid-cols-6 gap-4">
-                            {availableMonths.slice(0, 6).map(month => (
-                              <label key={month.value} className="flex items-center space-x-2">
-                                <Checkbox
-                                  checked={selectedMonths.includes(month.value)}
-                                  onCheckedChange={() => toggleMonth(month.value)}
-                                />
-                                <span className="text-sm text-gray-700">{month.label}</span>
-                              </label>
-                            ))}
-                          </div>
-                          <div className="grid grid-cols-6 gap-4">
-                            {availableMonths.slice(6).map(month => (
-                              <label key={month.value} className="flex items-center space-x-2">
+                        <div className="overflow-x-auto scrollbar-hide">
+                          <div className="flex gap-4 pb-2 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible" style={{ width: 'max-content' }}>
+                            {availableMonths.map(month => (
+                              <label key={month.value} className="flex items-center space-x-2 whitespace-nowrap min-w-[120px] lg:min-w-0">
                                 <Checkbox
                                   checked={selectedMonths.includes(month.value)}
                                   onCheckedChange={() => toggleMonth(month.value)}
@@ -1121,21 +1110,17 @@ export default function AccountsPage() {
                                   <TableHead className="w-[200px] sticky left-0 bg-gray-200 z-20 border-r-2 border-gray-400 font-bold text-gray-800 py-2 px-4 rounded-tl-lg h-12">
                                     ACCOUNT
                                   </TableHead>
-                                  {(() => {
-                                    // Limit months based on screen size: 2 on mobile, 3 on desktop
-                                    const visibleMonths = window.innerWidth < 1024 ? selectedMonths.slice(0, 2) : selectedMonths.slice(0, 3);
-                                    return visibleMonths.map((monthValue, index) => {
-                                      const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
-                                      const [month, year] = monthLabel.split(' ');
-                                      return (
-                                        <TableHead key={monthValue} className={`text-center min-w-[100px] py-2 px-3 bg-gray-400 text-white font-bold h-12 ${index === visibleMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
-                                          <div className="text-sm font-bold whitespace-nowrap">
-                                            {month.slice(0, 3).toUpperCase()} {year}
-                                          </div>
-                                        </TableHead>
-                                      );
-                                    });
-                                  })()}
+                                  {selectedMonths.map((monthValue, index) => {
+                                    const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                                    const [month, year] = monthLabel.split(' ');
+                                    return (
+                                      <TableHead key={monthValue} className={`text-center min-w-[100px] py-2 px-3 bg-gray-400 text-white font-bold h-12 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                                        <div className="text-sm font-bold whitespace-nowrap">
+                                          {month.slice(0, 3).toUpperCase()} {year}
+                                        </div>
+                                      </TableHead>
+                                    );
+                                  })}
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -1172,10 +1157,7 @@ export default function AccountsPage() {
                                       </div>
                                     </TableCell>
 
-                                    {(() => {
-                                      // Limit months based on screen size: 2 on mobile, 3 on desktop
-                                      const visibleMonths = window.innerWidth < 1024 ? selectedMonths.slice(0, 2) : selectedMonths.slice(0, 3);
-                                      return visibleMonths.map(monthValue => (
+                                    {selectedMonths.map(monthValue => (
                                       <TableCell key={`${account.name}-${monthValue}`} className="text-center border-r border-gray-200 py-3">
                                         <div className="space-y-1">
                                           <div className="relative">
@@ -1262,8 +1244,7 @@ export default function AccountsPage() {
                                           </TooltipProvider>
                                         </div>
                                       </TableCell>
-                                      ));
-                                    })()}
+                                    ))}
                                   </TableRow>
                                 ))}
                               </TableBody>
