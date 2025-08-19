@@ -91,10 +91,17 @@ export default function AccountsPage() {
     startDate: new Date().toISOString().split('T')[0]
   });
 
+  // Mobile tab navigation state
+  const [activeTab, setActiveTab] = useState("accounts");
+
   // Debt summary view mode state
   const [summaryViewMode, setSummaryViewMode] = useState<'table' | 'chart'>('table');
   const [summaryChartMode, setSummaryChartMode] = useState<'balance' | 'interest'>('balance');
   const [summaryMonthOffset, setSummaryMonthOffset] = useState(1); // 1 = JUL-DEC 2025, 0 = JAN-JUN 2025, -1 = JUL-DEC 2024, -2 = JAN-JUN 2024
+
+  // Collapsible section states
+  const [isDebtAccountsExpanded, setIsDebtAccountsExpanded] = useState(true);
+  const [isDebtSummaryExpanded, setIsDebtSummaryExpanded] = useState(true);
 
   // Mock monthly statements data for debt overview calculation
   const monthlyStatements = [
@@ -462,7 +469,7 @@ export default function AccountsPage() {
       account: accountName,
       amount: '',
       frequency: 'monthly',
-      paymentSource: 'checking',
+      paymentSource: 'checking-account',
       startDate: new Date().toISOString().split('T')[0]
     });
     setIsPaymentDialogOpen(true);
@@ -498,7 +505,7 @@ export default function AccountsPage() {
     // Filter by sub-type
     if (debtFilterBy.length > 0) {
       debtAccounts = debtAccounts.filter(account => 
-        debtFilterBy.includes(account.subType || 'Other')
+        debtFilterBy.includes(account.accountType || 'Other')
       );
     }
 
@@ -541,7 +548,7 @@ export default function AccountsPage() {
   };
 
   const getUniqueDebtSubTypes = () => {
-    return Array.from(new Set(getDebtAccounts().map(account => account.subType || 'Other')));
+    return Array.from(new Set(getDebtAccounts().map(account => account.accountType || 'Other')));
   };
   
   const form = useForm<AccountFormData>({
@@ -608,10 +615,13 @@ export default function AccountsPage() {
   };
 
   return (
-    <AppShell>
+    <AppShell
+      accountsTabValue={activeTab}
+      onAccountsTabChange={setActiveTab}
+    >
       <div className="p-4 lg:p-8">
-        <Tabs defaultValue="accounts" className="space-y-6">
-          <div className="flex justify-center">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <div className="flex justify-center lg:block hidden">
             <TabsList className="grid grid-cols-3 max-w-2xl">
               <TabsTrigger value="accounts">My Accounts</TabsTrigger>
               <TabsTrigger value="statements">Statements</TabsTrigger>
@@ -683,9 +693,12 @@ export default function AccountsPage() {
                           name="balance"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Initial Balance</FormLabel>
+                              <FormLabel>Current Balance</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                  <Input type="number" step="0.01" placeholder="0.00" className="pl-8" {...field} />
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -733,8 +746,8 @@ export default function AccountsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-gray-900">Checking Account</h3>
-                        <p className="text-sm text-gray-600">Primary checking account</p>
+                        <h3 className="text-lg font-bold text-gray-900">Checking Account</h3>
+                        <p className="text-sm text-gray-500">Checking</p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
@@ -760,9 +773,8 @@ export default function AccountsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-gray-900">Savings Account</h3>
-                        <p className="text-sm text-gray-600">High-yield savings</p>
-                        <p className="text-sm text-gray-500">4.5% APY</p>
+                        <h3 className="text-lg font-bold text-gray-900">Savings Account</h3>
+                        <p className="text-sm text-gray-500">Savings • 4.5% APY</p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
@@ -853,7 +865,10 @@ export default function AccountsPage() {
                             <FormItem>
                               <FormLabel>Current Balance</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                  <Input type="number" step="0.01" placeholder="0.00" className="pl-8" {...field} />
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -914,9 +929,8 @@ export default function AccountsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-gray-900">Credit Card</h3>
-                        <p className="text-sm text-gray-600">Visa •••• 1234</p>
-                        <p className="text-sm text-gray-500">22.99% APR</p>
+                        <h3 className="text-lg font-bold text-gray-900">Credit Card</h3>
+                        <p className="text-sm text-gray-500">Credit Card • 22.99% APR</p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
@@ -961,21 +975,10 @@ export default function AccountsPage() {
                       {/* Month Selection */}
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
-                        <div className="space-y-3">
-                          <div className="grid grid-cols-6 gap-4">
-                            {availableMonths.slice(0, 6).map(month => (
-                              <label key={month.value} className="flex items-center space-x-2">
-                                <Checkbox
-                                  checked={selectedMonths.includes(month.value)}
-                                  onCheckedChange={() => toggleMonth(month.value)}
-                                />
-                                <span className="text-sm text-gray-700">{month.label}</span>
-                              </label>
-                            ))}
-                          </div>
-                          <div className="grid grid-cols-6 gap-4">
-                            {availableMonths.slice(6).map(month => (
-                              <label key={month.value} className="flex items-center space-x-2">
+                        <div className="overflow-x-auto scrollbar-hide">
+                          <div className="flex gap-4 pb-2 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible" style={{ width: 'max-content' }}>
+                            {availableMonths.map(month => (
+                              <label key={month.value} className="flex items-center space-x-2 whitespace-nowrap min-w-[120px] lg:min-w-0">
                                 <Checkbox
                                   checked={selectedMonths.includes(month.value)}
                                   onCheckedChange={() => toggleMonth(month.value)}
@@ -1323,12 +1326,13 @@ export default function AccountsPage() {
                               <p className="text-sm text-gray-600 font-medium">Total Debt</p>
                               <p className="text-xl font-bold text-gray-900">${summary.totalDebt.toLocaleString()}</p>
                               <p className="text-xs text-gray-500">
-                                ${(() => {
+                                {(() => {
                                   const debtAccounts = getDebtAccounts();
                                   let totalStartBalance = 0;
                                   
                                   debtAccounts.forEach(account => {
-                                    const statements = (monthlyStatements || []).filter(s => s.accountId === account.id);
+                                    const accountId = account.name.toLowerCase().replace(/\s+/g, '-');
+                                    const statements = (monthlyStatements || []).filter(s => s.accountId === accountId);
                                     if (statements.length > 0) {
                                       // Find January statement or earliest available
                                       const januaryStatement = statements.find(s => {
@@ -1351,12 +1355,18 @@ export default function AccountsPage() {
                                       }
                                     } else {
                                       // No statements, use current balance
-                                      totalStartBalance += Math.abs(account.balance);
+                                      const balance = getBalance(account.name);
+                                      if (!isNaN(balance)) {
+                                        totalStartBalance += Math.abs(balance);
+                                      }
                                     }
                                   });
                                   
-                                  return Math.round(totalStartBalance).toLocaleString();
-                                })()} Starting Bal
+                                  if (isNaN(totalStartBalance) || totalStartBalance === 0) {
+                                    return "No Starting Bal";
+                                  }
+                                  return `$${Math.round(totalStartBalance).toLocaleString()} Starting Bal`;
+                                })()}
                               </p>
                             </div>
                             <div className="text-center">
@@ -1392,7 +1402,7 @@ export default function AccountsPage() {
               {/* Enhanced Collapsible Debt Accounts Section */}
               {getDebtAccounts().length > 0 && (
                 <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
-                  <Collapsible defaultOpen={true}>
+                  <Collapsible open={isDebtAccountsExpanded} onOpenChange={setIsDebtAccountsExpanded}>
                     <CollapsibleTrigger className="w-full">
                       <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
                         <div className="flex items-center gap-3">
@@ -1402,7 +1412,7 @@ export default function AccountsPage() {
                             {getFilteredAndSortedDebtAccounts().length} accounts
                           </span>
                         </div>
-                        <ChevronDown className="h-5 w-5 text-gray-600" />
+                        <ChevronDown className={`h-5 w-5 text-gray-600 transition-transform duration-200 ${isDebtAccountsExpanded ? 'rotate-180' : ''}`} />
                       </div>
                     </CollapsibleTrigger>
                     
@@ -1437,7 +1447,7 @@ export default function AccountsPage() {
                                 <SelectItem value="all">All Types</SelectItem>
                                 {getUniqueDebtSubTypes().map(subType => (
                                   <SelectItem key={`filter-${subType}`} value={subType}>
-                                    {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                    {subType.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -1820,9 +1830,14 @@ export default function AccountsPage() {
                         <SelectValue placeholder="Select payment source" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="checking">Checking Account</SelectItem>
-                        <SelectItem value="business-checking">Business Checking</SelectItem>
-                        <SelectItem value="savings">Savings Account</SelectItem>
+                        {allAccounts
+                          .filter(account => account.type === 'Asset') // Only show asset accounts as payment sources
+                          .map(account => (
+                            <SelectItem key={account.name} value={account.name.toLowerCase().replace(/\s+/g, '-')}>
+                              {account.name}
+                            </SelectItem>
+                          ))
+                        }
                       </SelectContent>
                     </Select>
                   </div>
@@ -1857,7 +1872,7 @@ export default function AccountsPage() {
             {/* Debt by Type Monthly Summary - Enhanced with Chart Toggle */}
             {getDebtAccounts().length > 0 && (
               <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
-                <Collapsible defaultOpen={true}>
+                <Collapsible open={isDebtSummaryExpanded} onOpenChange={setIsDebtSummaryExpanded}>
                   <CollapsibleTrigger className="w-full">
                     <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
                       <div className="flex items-center gap-3">
@@ -1868,7 +1883,7 @@ export default function AccountsPage() {
                            summaryMonthOffset === -1 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
                         </span>
                       </div>
-                      <ChevronDown className="h-5 w-5 text-gray-600" />
+                      <ChevronDown className={`h-5 w-5 text-gray-600 transition-transform duration-200 ${isDebtSummaryExpanded ? 'rotate-180' : ''}`} />
                     </div>
                   </CollapsibleTrigger>
                   
@@ -1979,7 +1994,7 @@ export default function AccountsPage() {
                         <TableRow className="bg-gray-400 h-10 border-none">
                           <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">DEBT BY TYPE</TableHead>
                           {(() => {
-                            const months = [];
+                            const months: JSX.Element[] = [];
                             const monthLabels = summaryMonthOffset === 1 
                               ? ['JUL 2025', 'AUG 2025', 'SEP 2025', 'OCT 2025', 'NOV 2025', 'DEC 2025']
                               : summaryMonthOffset === 0
@@ -2084,7 +2099,7 @@ export default function AccountsPage() {
                       {(() => {
                         const debtAccounts = getDebtAccounts();
                         const debtTypes = Array.from(new Set(debtAccounts.map(account => account.accountType)));
-                        const chartData = [];
+                        const chartData: Array<{month: string; [key: string]: any}> = [];
                         
                         // Prepare data for chart using JAN-JUN and JUL-DEC periods
                         const monthLabels = summaryMonthOffset === 1 
@@ -2096,7 +2111,7 @@ export default function AccountsPage() {
                           : ['Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024'];
                         
                         monthLabels.forEach(monthLabel => {
-                          const monthData: any = { month: monthLabel };
+                          const monthData: {month: string; [key: string]: any} = { month: monthLabel };
                           
                           debtTypes.forEach(debtType => {
                             const typeAccounts = debtAccounts.filter(account => account.accountType === debtType);
@@ -2226,7 +2241,10 @@ export default function AccountsPage() {
                     <FormItem>
                       <FormLabel>New Balance</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                          <Input type="number" step="0.01" placeholder="0.00" className="pl-8" {...field} />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

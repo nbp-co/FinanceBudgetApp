@@ -22,14 +22,14 @@ export function DesktopSidebar() {
   const { user } = useAuth();
 
   return (
-    <nav className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-      <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-gray-200 px-6 pb-4">
+    <nav className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-52 lg:flex-col">
+      <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-gray-200 px-4 pb-4">
         <div className="flex h-16 shrink-0 items-center">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Wallet className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">BudgetApp</h1>
+            <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap pr-1">NBP Finance</h1>
           </div>
         </div>
         
@@ -67,7 +67,7 @@ export function DesktopSidebar() {
             </li>
             
             <li className="mt-auto">
-              <div className="flex items-center gap-x-4 p-2">
+              <div className="flex items-center gap-x-3 p-2">
                 <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
                   <span className="text-white text-sm font-medium">
                     {user?.name?.charAt(0) || user?.email?.charAt(0) || "U"}
@@ -75,7 +75,6 @@ export function DesktopSidebar() {
                 </div>
                 <div className="text-sm leading-6">
                   <p className="font-semibold text-gray-900">{user?.name || "User"}</p>
-                  <p className="text-gray-400">{user?.email}</p>
                 </div>
               </div>
             </li>

@@ -78,6 +78,24 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
   const [currentPage, setCurrentPage] = useState(0);
   const transactionsPerPage = 5;
 
+  // Define all individual accounts available for filtering
+  const allAccounts = [
+    { name: "Checking Account", type: "Asset", accountType: "Checking", id: "checking-account" },
+    { name: "Business Checking", type: "Asset", accountType: "Business Checking", id: "business-checking" },
+    { name: "Savings Account", type: "Asset", accountType: "Savings", id: "savings-account" },
+    { name: "Money Market", type: "Asset", accountType: "Money Market", id: "money-market" },
+    { name: "Investment Account", type: "Asset", accountType: "Investment", id: "investment-account" },
+    { name: "Emergency Fund", type: "Asset", accountType: "Savings", id: "emergency-fund" },
+    { name: "Retirement 401k", type: "Asset", accountType: "Investment", id: "retirement-401k" },
+    { name: "Credit Card", type: "Debt", accountType: "Credit Card", id: "credit-card" },
+    { name: "Business Credit Card", type: "Debt", accountType: "Credit Card", id: "business-credit-card" },
+    { name: "Mortgage", type: "Debt", accountType: "Mortgage", id: "mortgage" },
+    { name: "Auto Loan", type: "Debt", accountType: "Auto Loan", id: "auto-loan" },
+    { name: "Student Loan", type: "Debt", accountType: "Student Loan", id: "student-loan" },
+    { name: "Personal Loan", type: "Debt", accountType: "Line of Credit", id: "personal-loan" },
+    { name: "Taxes Owed", type: "Debt", accountType: "Taxes", id: "taxes-owed" },
+  ];
+
   const getPeriodDates = () => {
     if (viewType === "week") {
       return {
@@ -160,13 +178,29 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
             {/* Top row: Account dropdown and Week/Month toggle */}
             <div className="flex items-center justify-between">
               <Select value={accountFilter} onValueChange={onAccountFilterChange}>
-                <SelectTrigger className="w-32 h-8">
+                <SelectTrigger className="w-40 h-8">
                   <SelectValue placeholder="All Accounts" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">All Accounts</SelectItem>
                   <SelectItem value="assets">Assets Only</SelectItem>
                   <SelectItem value="debts">Debts Only</SelectItem>
+                  <hr className="my-1" />
+                  {allAccounts
+                    .filter(account => account.type === "Asset")
+                    .map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name}
+                      </SelectItem>
+                    ))}
+                  <hr className="my-1" />
+                  {allAccounts
+                    .filter(account => account.type === "Debt")
+                    .map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
               
@@ -212,13 +246,29 @@ export function TransactionPeriodView({ accountFilter = "all", onAccountFilterCh
           <div className="hidden sm:flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Select value={accountFilter} onValueChange={onAccountFilterChange}>
-                <SelectTrigger className="w-32 h-8">
+                <SelectTrigger className="w-40 h-8">
                   <SelectValue placeholder="All Accounts" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">All Accounts</SelectItem>
                   <SelectItem value="assets">Assets Only</SelectItem>
                   <SelectItem value="debts">Debts Only</SelectItem>
+                  <hr className="my-1" />
+                  {allAccounts
+                    .filter(account => account.type === "Asset")
+                    .map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name}
+                      </SelectItem>
+                    ))}
+                  <hr className="my-1" />
+                  {allAccounts
+                    .filter(account => account.type === "Debt")
+                    .map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>

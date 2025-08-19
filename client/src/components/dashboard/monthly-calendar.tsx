@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
@@ -8,6 +9,7 @@ import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 export function MonthlyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [accountFilter, setAccountFilter] = useState("checking");
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -108,36 +110,111 @@ export function MonthlyCalendar() {
     return balance;
   };
 
+  const getFilteredTransactions = (transactions: any[]) => {
+    if (accountFilter === "assets") {
+      return transactions.filter(t => 
+        ['Checking', 'Savings', 'Investment'].includes((t as any).fromAccount) ||
+        ['Checking', 'Savings', 'Investment'].includes((t as any).toAccount) ||
+        (t.type === 'income' || t.type === 'expense')
+      );
+    }
+    if (accountFilter === "debts") {
+      return transactions.filter(t => 
+        ['Credit Card', 'Business Credit Card'].includes((t as any).fromAccount) ||
+        ['Credit Card', 'Business Credit Card'].includes((t as any).toAccount)
+      );
+    }
+    // Individual account filters
+    if (accountFilter === "checking") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Checking' || 
+        (t as any).toAccount === 'Checking' ||
+        (t.type === 'income' || t.type === 'expense') // Income/expense typically go to checking
+      );
+    }
+    if (accountFilter === "savings") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Savings' || 
+        (t as any).toAccount === 'Savings'
+      );
+    }
+    if (accountFilter === "investment") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Investment' || 
+        (t as any).toAccount === 'Investment'
+      );
+    }
+    if (accountFilter === "credit") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Credit Card' || 
+        (t as any).toAccount === 'Credit Card'
+      );
+    }
+    if (accountFilter === "business") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Business' || 
+        (t as any).toAccount === 'Business'
+      );
+    }
+    if (accountFilter === "business-credit") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Business Credit Card' || 
+        (t as any).toAccount === 'Business Credit Card'
+      );
+    }
+    return transactions;
+  };
+
   const handleDayClick = (day: Date) => {
     if (isSameMonth(day, currentDate)) {
       setSelectedDate(day);
     }
   };
 
-  const selectedDayTransactions = selectedDate ? getTransactionsForDay(selectedDate) : [];
+  const selectedDayTransactions = selectedDate ? getFilteredTransactions(getTransactionsForDay(selectedDate)) : [];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Calendar */}
       <div className="lg:col-span-2">
         <Card>
-          <CardHeader>
+          {/* Account Selector and Month Navigation */}
+          <div className="px-4 py-2 border-b">
             <div className="flex items-center justify-between">
-              <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center space-x-3">
-                <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
-                <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
-                  <Calendar className="h-3 w-3" />
-                </Button>
+              <Select value={accountFilter} onValueChange={setAccountFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select Account" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="checking">Checking Account</SelectItem>
+                  <SelectItem value="savings">Savings Account</SelectItem>
+                  <SelectItem value="investment">Investment Account</SelectItem>
+                  <SelectItem value="business">Business Account</SelectItem>
+                  <SelectItem value="credit">Credit Card</SelectItem>
+                  <SelectItem value="business-credit">Business Credit Card</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <div className="flex items-center justify-center flex-1">
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center space-x-3">
+                    <CardTitle className="text-xl whitespace-nowrap">{format(currentDate, 'MMM yyyy').toUpperCase()}</CardTitle>
+                    <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
+                      <Calendar className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={goToNextMonth}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={goToNextMonth}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
             </div>
-          </CardHeader>
-      <CardContent>
+          </div>
+          
+          <CardContent>
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1">
           {/* Day Headers */}
@@ -149,7 +226,8 @@ export function MonthlyCalendar() {
           
           {/* Calendar Days */}
           {allDays.map((day, index) => {
-            const transactions = getTransactionsForDay(day);
+            const allTransactions = getTransactionsForDay(day);
+            const transactions = getFilteredTransactions(allTransactions);
             const isCurrentMonth = isSameMonth(day, currentDate);
             const isTodayDate = isToday(day);
             const isSelected = selectedDate && isSameDay(day, selectedDate);
@@ -232,7 +310,7 @@ export function MonthlyCalendar() {
           <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-sm font-bold text-gray-600">
                   Balance for {format(selectedDate, 'EEEE, MMM d')}
                 </p>
               </div>
@@ -280,7 +358,7 @@ export function MonthlyCalendar() {
                     <p className="text-xs text-gray-500">{transaction.category}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex-shrink-0 min-w-0">
                   <p className={`font-semibold text-sm ${
                     transaction.type === 'income' ? 'text-green-600' :
                     transaction.type === 'expense' ? 'text-red-600' : 'text-gray-800'
