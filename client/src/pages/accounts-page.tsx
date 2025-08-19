@@ -1262,7 +1262,7 @@ export default function AccountsPage() {
                           
                           <div className="space-y-1">
                             <div className="flex items-baseline space-x-2">
-                              <span className="text-xl font-bold text-red-600">{formatCurrency(debt.balance)}</span>
+                              <span className="text-sm font-bold text-red-600">{formatCurrency(debt.balance)}</span>
                               <span className="text-sm text-gray-600">{debt.rate} APR</span>
                             </div>
                           </div>
