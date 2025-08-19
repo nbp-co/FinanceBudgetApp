@@ -1160,18 +1160,22 @@ export default function AccountsPage() {
                   <div className="text-center">
                     <p className="text-sm text-gray-600 mb-1">Total Debt</p>
                     <p className="text-2xl font-bold text-red-600">{formatCurrency(340256.78)}</p>
+                    <p className="text-xs text-gray-500 mt-1">$NaN Starting Bal</p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-gray-600 mb-1">Est. Monthly Interest</p>
                     <p className="text-xl font-semibold text-orange-600">{formatCurrency(1802)}</p>
+                    <p className="text-xs text-gray-500 mt-1">6.4% Est. APR</p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-gray-600 mb-1">YTD Interest Paid</p>
                     <p className="text-xl font-semibold text-red-600">{formatCurrency(14419)}</p>
+                    <p className="text-xs text-gray-500 mt-1">$23,429 Est. Annual</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-1">End of Year Balance</p>
+                    <p className="text-sm text-gray-600 mb-1">End-of-Year Balance</p>
                     <p className="text-xl font-semibold text-gray-700">{formatCurrency(276512)}</p>
+                    <p className="text-xs text-gray-500 mt-1">-$63,645 Change</p>
                   </div>
                 </div>
               </CardContent>
