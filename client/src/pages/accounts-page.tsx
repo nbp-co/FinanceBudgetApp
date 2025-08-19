@@ -1121,17 +1121,21 @@ export default function AccountsPage() {
                                   <TableHead className="w-[200px] sticky left-0 bg-gray-200 z-20 border-r-2 border-gray-400 font-bold text-gray-800 py-2 px-4 rounded-tl-lg h-12">
                                     ACCOUNT
                                   </TableHead>
-                                  {selectedMonths.map((monthValue, index) => {
-                                    const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
-                                    const [month, year] = monthLabel.split(' ');
-                                    return (
-                                      <TableHead key={monthValue} className={`text-center min-w-[100px] py-2 px-3 bg-gray-400 text-white font-bold h-12 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
-                                        <div className="text-sm font-bold whitespace-nowrap">
-                                          {month.slice(0, 3).toUpperCase()} {year}
-                                        </div>
-                                      </TableHead>
-                                    );
-                                  })}
+                                  {(() => {
+                                    // Limit months based on screen size: 2 on mobile, 3 on desktop
+                                    const visibleMonths = window.innerWidth < 1024 ? selectedMonths.slice(0, 2) : selectedMonths.slice(0, 3);
+                                    return visibleMonths.map((monthValue, index) => {
+                                      const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                                      const [month, year] = monthLabel.split(' ');
+                                      return (
+                                        <TableHead key={monthValue} className={`text-center min-w-[100px] py-2 px-3 bg-gray-400 text-white font-bold h-12 ${index === visibleMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                                          <div className="text-sm font-bold whitespace-nowrap">
+                                            {month.slice(0, 3).toUpperCase()} {year}
+                                          </div>
+                                        </TableHead>
+                                      );
+                                    });
+                                  })()}
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -1168,7 +1172,10 @@ export default function AccountsPage() {
                                       </div>
                                     </TableCell>
 
-                                    {selectedMonths.map(monthValue => (
+                                    {(() => {
+                                      // Limit months based on screen size: 2 on mobile, 3 on desktop
+                                      const visibleMonths = window.innerWidth < 1024 ? selectedMonths.slice(0, 2) : selectedMonths.slice(0, 3);
+                                      return visibleMonths.map(monthValue => (
                                       <TableCell key={`${account.name}-${monthValue}`} className="text-center border-r border-gray-200 py-3">
                                         <div className="space-y-1">
                                           <div className="relative">
@@ -1255,7 +1262,8 @@ export default function AccountsPage() {
                                           </TooltipProvider>
                                         </div>
                                       </TableCell>
-                                    ))}
+                                      ));
+                                    })()}
                                   </TableRow>
                                 ))}
                               </TableBody>
