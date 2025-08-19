@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAuth } from "@/hooks/use-auth";
-import { LogOut, User, Bell, Shield, ChevronDown, ChevronRight } from "lucide-react";
+import { LogOut, User, Bell, Shield, ChevronUp, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 export default function SettingsPage() {
@@ -14,8 +14,7 @@ export default function SettingsPage() {
   const [openSections, setOpenSections] = useState({
     profile: false,
     security: false,
-    notifications: false,
-    account: false
+    notifications: false
   });
 
   const toggleSection = (section: keyof typeof openSections) => {
@@ -45,7 +44,7 @@ export default function SettingsPage() {
                       Profile Information
                     </div>
                     {openSections.profile ? 
-                      <ChevronDown className="h-4 w-4" /> : 
+                      <ChevronUp className="h-4 w-4" /> : 
                       <ChevronRight className="h-4 w-4" />
                     }
                   </CardTitle>
@@ -147,7 +146,7 @@ export default function SettingsPage() {
                       Security
                     </div>
                     {openSections.security ? 
-                      <ChevronDown className="h-4 w-4" /> : 
+                      <ChevronUp className="h-4 w-4" /> : 
                       <ChevronRight className="h-4 w-4" />
                     }
                   </CardTitle>
@@ -196,7 +195,7 @@ export default function SettingsPage() {
                       Notifications
                     </div>
                     {openSections.notifications ? 
-                      <ChevronDown className="h-4 w-4" /> : 
+                      <ChevronUp className="h-4 w-4" /> : 
                       <ChevronRight className="h-4 w-4" />
                     }
                   </CardTitle>
@@ -212,36 +211,25 @@ export default function SettingsPage() {
             </Collapsible>
           </Card>
 
-          {/* Account Actions */}
+          {/* Logout */}
           <Card>
-            <Collapsible open={openSections.account} onOpenChange={() => toggleSection('account')}>
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      Account Actions
-                    </div>
-                    {openSections.account ? 
-                      <ChevronDown className="h-4 w-4" /> : 
-                      <ChevronRight className="h-4 w-4" />
-                    }
-                  </CardTitle>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => logoutMutation.mutate()}
-                    disabled={logoutMutation.isPending}
-                    className="w-full"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    {logoutMutation.isPending ? "Signing out..." : "Sign Out"}
-                  </Button>
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <LogOut className="mr-2 h-5 w-5" />
+                Logout
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                variant="outline" 
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
+                className="w-full"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                {logoutMutation.isPending ? "Signing out..." : "Sign Out"}
+              </Button>
+            </CardContent>
           </Card>
         </div>
       </div>
