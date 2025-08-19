@@ -190,6 +190,14 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     return transactionsByDate[dateKey] || [];
   };
 
+  // Get category name by ID
+  const getCategoryName = (categoryId: string | null): string => {
+    if (!categoryId) return 'Uncategorized';
+    if (!Array.isArray(categories) || categories.length === 0) return 'Loading...';
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Unknown Category';
+  };
+
   // Group daily balances by date for efficient lookup
   const balancesByDate = useMemo(() => {
     const grouped: Record<string, DailyBalance> = {};
@@ -423,7 +431,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                   )}
                   <div>
                     <p className="font-medium text-sm text-gray-900">{transaction.description}</p>
-                    <p className="text-xs text-gray-500">{transaction.categoryId ? 'Categorized' : 'Uncategorized'}</p>
+                    <p className="text-xs text-gray-500">{getCategoryName(transaction.categoryId)}</p>
                   </div>
                 </div>
                 <div className="text-right">
