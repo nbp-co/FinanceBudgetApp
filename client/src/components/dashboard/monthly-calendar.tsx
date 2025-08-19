@@ -9,7 +9,7 @@ import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 export function MonthlyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [accountFilter, setAccountFilter] = useState("all");
+  const [accountFilter, setAccountFilter] = useState("assets");
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -111,7 +111,6 @@ export function MonthlyCalendar() {
   };
 
   const getFilteredTransactions = (transactions: any[]) => {
-    if (accountFilter === "all") return transactions;
     if (accountFilter === "assets") {
       return transactions.filter(t => 
         ['Checking', 'Savings', 'Investment'].includes((t as any).fromAccount) ||
@@ -123,6 +122,44 @@ export function MonthlyCalendar() {
       return transactions.filter(t => 
         ['Credit Card', 'Business Credit Card'].includes((t as any).fromAccount) ||
         ['Credit Card', 'Business Credit Card'].includes((t as any).toAccount)
+      );
+    }
+    // Individual account filters
+    if (accountFilter === "checking") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Checking' || 
+        (t as any).toAccount === 'Checking' ||
+        (t.type === 'income' || t.type === 'expense') // Income/expense typically go to checking
+      );
+    }
+    if (accountFilter === "savings") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Savings' || 
+        (t as any).toAccount === 'Savings'
+      );
+    }
+    if (accountFilter === "investment") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Investment' || 
+        (t as any).toAccount === 'Investment'
+      );
+    }
+    if (accountFilter === "credit") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Credit Card' || 
+        (t as any).toAccount === 'Credit Card'
+      );
+    }
+    if (accountFilter === "business") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Business' || 
+        (t as any).toAccount === 'Business'
+      );
+    }
+    if (accountFilter === "business-credit") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Business Credit Card' || 
+        (t as any).toAccount === 'Business Credit Card'
       );
     }
     return transactions;
@@ -147,13 +184,18 @@ export function MonthlyCalendar() {
               <div className="flex items-center space-x-3">
                 <label className="text-sm font-medium text-gray-700">Account:</label>
                 <Select value={accountFilter} onValueChange={setAccountFilter}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="All Accounts" />
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Select Account" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Accounts</SelectItem>
-                    <SelectItem value="assets">Assets Only</SelectItem>
-                    <SelectItem value="debts">Debts Only</SelectItem>
+                    <SelectItem value="assets">All Assets</SelectItem>
+                    <SelectItem value="debts">All Debts</SelectItem>
+                    <SelectItem value="checking">Checking Account</SelectItem>
+                    <SelectItem value="savings">Savings Account</SelectItem>
+                    <SelectItem value="investment">Investment Account</SelectItem>
+                    <SelectItem value="credit">Credit Card</SelectItem>
+                    <SelectItem value="business">Business Account</SelectItem>
+                    <SelectItem value="business-credit">Business Credit Card</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
