@@ -180,24 +180,22 @@ export function MonthlyCalendar() {
         <Card>
           {/* Account Selector */}
           <div className="p-4 border-b">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Select value={accountFilter} onValueChange={setAccountFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Select Account" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="assets">All Assets</SelectItem>
-                    <SelectItem value="checking" className="pl-6">Checking Account</SelectItem>
-                    <SelectItem value="savings" className="pl-6">Savings Account</SelectItem>
-                    <SelectItem value="investment" className="pl-6">Investment Account</SelectItem>
-                    <SelectItem value="business" className="pl-6">Business Account</SelectItem>
-                    <SelectItem value="debts">All Debts</SelectItem>
-                    <SelectItem value="credit" className="pl-6">Credit Card</SelectItem>
-                    <SelectItem value="business-credit" className="pl-6">Business Credit Card</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="flex items-center justify-end">
+              <Select value={accountFilter} onValueChange={setAccountFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select Account" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="assets">All Assets</SelectItem>
+                  <SelectItem value="checking" className="pl-6">Checking Account</SelectItem>
+                  <SelectItem value="savings" className="pl-6">Savings Account</SelectItem>
+                  <SelectItem value="investment" className="pl-6">Investment Account</SelectItem>
+                  <SelectItem value="business" className="pl-6">Business Account</SelectItem>
+                  <SelectItem value="debts">All Debts</SelectItem>
+                  <SelectItem value="credit" className="pl-6">Credit Card</SelectItem>
+                  <SelectItem value="business-credit" className="pl-6">Business Credit Card</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           
