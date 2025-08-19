@@ -112,15 +112,18 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
   const transactionsByDate = useMemo(() => {
     const grouped: Record<string, Transaction[]> = {};
     
-    transactions.forEach(transaction => {
-      const date = new Date(transaction.date);
-      const dateKey = format(date, 'yyyy-MM-dd');
-      
-      if (!grouped[dateKey]) {
-        grouped[dateKey] = [];
-      }
-      grouped[dateKey].push(transaction);
-    });
+    // Ensure transactions is an array
+    if (Array.isArray(transactions)) {
+      transactions.forEach(transaction => {
+        const date = new Date(transaction.date);
+        const dateKey = format(date, 'yyyy-MM-dd');
+        
+        if (!grouped[dateKey]) {
+          grouped[dateKey] = [];
+        }
+        grouped[dateKey].push(transaction);
+      });
+    }
     
     return grouped;
   }, [transactions]);

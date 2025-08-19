@@ -226,11 +226,11 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
                 <SelectValue placeholder="Select account..." />
               </SelectTrigger>
               <SelectContent>
-                {accounts.map((account) => (
+                {Array.isArray(accounts) ? accounts.map((account) => (
                   <SelectItem key={account.id} value={account.id}>
                     {account.name}
                   </SelectItem>
-                ))}
+                )) : null}
               </SelectContent>
             </Select>
           </div>
@@ -244,11 +244,11 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
                   <SelectValue placeholder="Select destination account..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {accounts.filter(account => account.id !== formData.accountId).map((account) => (
+                  {Array.isArray(accounts) ? accounts.filter(account => account.id !== formData.accountId).map((account) => (
                     <SelectItem key={account.id} value={account.id}>
                       {account.name}
                     </SelectItem>
-                  ))}
+                  )) : null}
                 </SelectContent>
               </Select>
             </div>
@@ -263,11 +263,11 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
                   <SelectValue placeholder="Select category..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
+                  {Array.isArray(categories) ? categories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>
-                  ))}
+                  )) : null}
                 </SelectContent>
               </Select>
             </div>

@@ -28,10 +28,13 @@ export function registerRoutes(app: Express): Server {
   // Accounts routes
   app.get("/api/accounts", requireAuth, async (req, res) => {
     try {
+      console.log("Fetching accounts for user:", getUserId(req));
       const accounts = await storage.getAccountsByUser(getUserId(req));
+      console.log("Found accounts:", accounts);
       res.json(accounts);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch accounts" });
+      console.error("Error fetching accounts:", error);
+      res.status(500).json({ message: "Failed to fetch accounts", error: error instanceof Error ? error.message : String(error) });
     }
   });
 
@@ -79,10 +82,13 @@ export function registerRoutes(app: Express): Server {
   // Categories routes
   app.get("/api/categories", requireAuth, async (req, res) => {
     try {
+      console.log("Fetching categories for user:", getUserId(req));
       const categories = await storage.getCategoriesByUser(getUserId(req));
+      console.log("Found categories:", categories);
       res.json(categories);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch categories" });
+      console.error("Error fetching categories:", error);
+      res.status(500).json({ message: "Failed to fetch categories", error: error instanceof Error ? error.message : String(error) });
     }
   });
 
@@ -152,9 +158,11 @@ export function registerRoutes(app: Express): Server {
       if (endDate) filters.endDate = new Date(endDate as string);
 
       const transactions = await storage.getTransactionsByUser(getUserId(req), filters);
+      console.log("Found transactions:", transactions);
       res.json(transactions);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch transactions" });
+      console.error("Error fetching transactions:", error);
+      res.status(500).json({ message: "Failed to fetch transactions", error: error instanceof Error ? error.message : String(error) });
     }
   });
 
