@@ -18,13 +18,17 @@ function requireAuth(req: any, res: any, next: any) {
   next();
 }
 
+function getUserId(req: any): string {
+  return getUserId(req);
+}
+
 export function registerRoutes(app: Express): Server {
   setupAuth(app);
 
   // Accounts routes
   app.get("/api/accounts", requireAuth, async (req, res) => {
     try {
-      const accounts = await storage.getAccountsByUser(req.user.id);
+      const accounts = await storage.getAccountsByUser(getUserId(req));
       res.json(accounts);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch accounts" });
@@ -35,7 +39,7 @@ export function registerRoutes(app: Express): Server {
     try {
       const accountData = insertAccountSchema.parse({
         ...req.body,
-        userId: req.user.id
+        userId: getUserId(req)
       });
       const account = await storage.createAccount(accountData);
       res.status(201).json(account);
@@ -47,7 +51,7 @@ export function registerRoutes(app: Express): Server {
   app.patch("/api/accounts/:id", requireAuth, async (req, res) => {
     try {
       const account = await storage.getAccount(req.params.id);
-      if (!account || account.userId !== req.user.id) {
+      if (!account || account.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -61,7 +65,7 @@ export function registerRoutes(app: Express): Server {
   app.delete("/api/accounts/:id", requireAuth, async (req, res) => {
     try {
       const account = await storage.getAccount(req.params.id);
-      if (!account || account.userId !== req.user.id) {
+      if (!account || account.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -75,7 +79,7 @@ export function registerRoutes(app: Express): Server {
   // Categories routes
   app.get("/api/categories", requireAuth, async (req, res) => {
     try {
-      const categories = await storage.getCategoriesByUser(req.user.id);
+      const categories = await storage.getCategoriesByUser(getUserId(req));
       res.json(categories);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch categories" });
@@ -86,7 +90,7 @@ export function registerRoutes(app: Express): Server {
     try {
       const categoryData = insertCategorySchema.parse({
         ...req.body,
-        userId: req.user.id
+        userId: getUserId(req)
       });
       const category = await storage.createCategory(categoryData);
       res.status(201).json(category);
@@ -98,7 +102,7 @@ export function registerRoutes(app: Express): Server {
   app.patch("/api/categories/:id", requireAuth, async (req, res) => {
     try {
       const category = await storage.getCategory(req.params.id);
-      if (!category || category.userId !== req.user.id) {
+      if (!category || category.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -112,7 +116,7 @@ export function registerRoutes(app: Express): Server {
   app.delete("/api/categories/:id", requireAuth, async (req, res) => {
     try {
       const category = await storage.getCategory(req.params.id);
-      if (!category || category.userId !== req.user.id) {
+      if (!category || category.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -147,7 +151,7 @@ export function registerRoutes(app: Express): Server {
       if (startDate) filters.startDate = new Date(startDate as string);
       if (endDate) filters.endDate = new Date(endDate as string);
 
-      const transactions = await storage.getTransactionsByUser(req.user.id, filters);
+      const transactions = await storage.getTransactionsByUser(getUserId(req), filters);
       res.json(transactions);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch transactions" });
@@ -156,22 +160,28 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/transactions", requireAuth, async (req, res) => {
     try {
+      console.log("Creating transaction with data:", req.body);
       const transactionData = insertTransactionSchema.parse({
         ...req.body,
-        userId: req.user.id,
+        userId: getUserId(req),
         date: new Date(req.body.date)
       });
+      console.log("Parsed transaction data:", transactionData);
       const transaction = await storage.createTransaction(transactionData);
       res.status(201).json(transaction);
     } catch (error) {
-      res.status(400).json({ message: "Invalid transaction data" });
+      console.error("Transaction creation error:", error);
+      res.status(400).json({ 
+        message: "Invalid transaction data",
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 
   app.patch("/api/transactions/:id", requireAuth, async (req, res) => {
     try {
       const transaction = await storage.getTransaction(req.params.id);
-      if (!transaction || transaction.userId !== req.user.id) {
+      if (!transaction || transaction.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -190,7 +200,7 @@ export function registerRoutes(app: Express): Server {
   app.delete("/api/transactions/:id", requireAuth, async (req, res) => {
     try {
       const transaction = await storage.getTransaction(req.params.id);
-      if (!transaction || transaction.userId !== req.user.id) {
+      if (!transaction || transaction.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -204,7 +214,7 @@ export function registerRoutes(app: Express): Server {
   // Recurring rules routes
   app.get("/api/recurring", requireAuth, async (req, res) => {
     try {
-      const rules = await storage.getRecurringRulesByUser(req.user.id);
+      const rules = await storage.getRecurringRulesByUser(getUserId(req));
       res.json(rules);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch recurring rules" });
@@ -215,7 +225,7 @@ export function registerRoutes(app: Express): Server {
     try {
       const ruleData = insertRecurringRuleSchema.parse({
         ...req.body,
-        userId: req.user.id,
+        userId: getUserId(req),
         startDate: new Date(req.body.startDate),
         endDate: req.body.endDate ? new Date(req.body.endDate) : undefined
       });
@@ -234,7 +244,7 @@ export function registerRoutes(app: Express): Server {
   app.patch("/api/recurring/:id", requireAuth, async (req, res) => {
     try {
       const rule = await storage.getRecurringRule(req.params.id);
-      if (!rule || rule.userId !== req.user.id) {
+      if (!rule || rule.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -252,7 +262,7 @@ export function registerRoutes(app: Express): Server {
   app.delete("/api/recurring/:id", requireAuth, async (req, res) => {
     try {
       const rule = await storage.getRecurringRule(req.params.id);
-      if (!rule || rule.userId !== req.user.id) {
+      if (!rule || rule.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -267,7 +277,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/statements/:accountId", requireAuth, async (req, res) => {
     try {
       const account = await storage.getAccount(req.params.accountId);
-      if (!account || account.userId !== req.user.id) {
+      if (!account || account.userId !== getUserId(req)) {
         return res.sendStatus(404);
       }
       
@@ -285,7 +295,7 @@ export function registerRoutes(app: Express): Server {
       
       for (const statementData of statements) {
         const account = await storage.getAccount(statementData.accountId);
-        if (account && account.userId === req.user.id) {
+        if (account && account.userId === getUserId(req)) {
           const validatedData = insertMonthlyStatementSchema.parse({
             ...statementData,
             periodStart: new Date(statementData.periodStart),
@@ -317,7 +327,7 @@ export function registerRoutes(app: Express): Server {
       const endDate = endOfMonth(startDate);
 
       // Get user accounts
-      const userAccounts = await storage.getAccountsByUser(req.user.id);
+      const userAccounts = await storage.getAccountsByUser(getUserId(req));
       let filteredAccounts = userAccounts.filter(acc => acc.type === accountType);
       
       if (accountIds) {
@@ -334,7 +344,7 @@ export function registerRoutes(app: Express): Server {
       // Get transactions for the period
       const allTransactions = [];
       for (const account of filteredAccounts) {
-        const transactions = await storage.getTransactionsByUser(req.user.id, {
+        const transactions = await storage.getTransactionsByUser(getUserId(req), {
           accountId: account.id,
           startDate,
           endDate
@@ -378,7 +388,7 @@ export function registerRoutes(app: Express): Server {
       }
 
       // Get user accounts
-      const userAccounts = await storage.getAccountsByUser(req.user.id);
+      const userAccounts = await storage.getAccountsByUser(getUserId(req));
       let filteredAccounts = userAccounts.filter(acc => acc.type === accountType);
       
       if (accountIds) {

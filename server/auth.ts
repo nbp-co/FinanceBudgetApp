@@ -94,6 +94,16 @@ export function setupAuth(app: Express) {
         tz: tz || "UTC"
       });
 
+      // Create default account
+      await storage.createAccount({
+        userId: user.id,
+        name: "Default Account",
+        type: "ASSET",
+        subtype: "checking",
+        currency: "USD",
+        openingBalance: "0.00"
+      });
+
       // Create default categories
       await storage.createCategory({
         userId: user.id,
@@ -121,8 +131,26 @@ export function setupAuth(app: Express) {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: "Invalid credentials" });
       
-      req.login(user, (err) => {
+      req.login(user, async (err) => {
         if (err) return next(err);
+        
+        // Check if user has any accounts, if not create default account
+        try {
+          const accounts = await storage.getAccountsByUser(user.id);
+          if (accounts.length === 0) {
+            await storage.createAccount({
+              userId: user.id,
+              name: "Default Account",
+              type: "ASSET",
+              subtype: "checking",
+              currency: "USD",
+              openingBalance: "0.00"
+            });
+          }
+        } catch (error) {
+          console.error("Failed to create default account during login:", error);
+        }
+        
         res.status(200).json(user);
       });
     })(req, res, next);

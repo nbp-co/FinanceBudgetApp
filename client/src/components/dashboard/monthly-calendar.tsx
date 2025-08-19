@@ -15,7 +15,7 @@ interface MonthlyCalendarProps {
 export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -35,7 +35,7 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
         endDate: monthEnd.toISOString(),
       });
       
-      if (selectedAccountId !== "all") {
+      if (selectedAccountId) {
         params.append("accountId", selectedAccountId);
       }
       
@@ -61,6 +61,14 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
     setSelectedDate(null);
     onDateSelect?.(null);
   }, [selectedAccountId, onDateSelect]);
+
+  // Auto-select default account when accounts load
+  useEffect(() => {
+    if (accounts.length > 0 && !selectedAccountId) {
+      const defaultAccount = accounts.find(account => account.name === "Default Account") || accounts[0];
+      setSelectedAccountId(defaultAccount.id);
+    }
+  }, [accounts, selectedAccountId]);
   
   // Get days from previous month to fill the grid
   const startPadding = getDay(monthStart);
@@ -189,7 +197,6 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
                   <SelectValue placeholder="Select account..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Accounts</SelectItem>
                   {accounts.map((account) => (
                     <SelectItem key={account.id} value={account.id}>
                       {account.name}
