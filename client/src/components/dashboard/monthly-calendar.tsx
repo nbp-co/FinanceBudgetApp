@@ -178,9 +178,9 @@ export function MonthlyCalendar() {
       {/* Calendar */}
       <div className="lg:col-span-2">
         <Card>
-          {/* Account Selector */}
+          {/* Account Selector and Month Navigation */}
           <div className="px-4 py-2 border-b">
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-between">
               <Select value={accountFilter} onValueChange={setAccountFilter}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Select Account" />
@@ -194,26 +194,25 @@ export function MonthlyCalendar() {
                   <SelectItem value="business-credit">Business Credit Card</SelectItem>
                 </SelectContent>
               </Select>
+              
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <div className="flex items-center space-x-3">
+                  <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
+                  <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
+                    <Calendar className="h-3 w-3" />
+                  </Button>
+                </div>
+                <Button variant="ghost" size="icon" onClick={goToNextMonth}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
           
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center space-x-3">
-                <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
-                <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
-                  <Calendar className="h-3 w-3" />
-                </Button>
-              </div>
-              <Button variant="ghost" size="icon" onClick={goToNextMonth}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-      <CardContent>
+          <CardContent>
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1">
           {/* Day Headers */}
