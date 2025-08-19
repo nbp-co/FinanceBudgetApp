@@ -188,14 +188,14 @@ export function MonthlyCalendar() {
                     <SelectValue placeholder="Select Account" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="assets">All Assets</SelectItem>
-                    <SelectItem value="debts">All Debts</SelectItem>
                     <SelectItem value="checking">Checking Account</SelectItem>
                     <SelectItem value="savings">Savings Account</SelectItem>
                     <SelectItem value="investment">Investment Account</SelectItem>
                     <SelectItem value="credit">Credit Card</SelectItem>
                     <SelectItem value="business">Business Account</SelectItem>
                     <SelectItem value="business-credit">Business Credit Card</SelectItem>
+                    <SelectItem value="assets">All Assets</SelectItem>
+                    <SelectItem value="debts">All Debts</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
