@@ -182,7 +182,6 @@ export function MonthlyCalendar() {
           <div className="p-4 border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <label className="text-sm font-medium text-gray-700">Account:</label>
                 <Select value={accountFilter} onValueChange={setAccountFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Select Account" />
