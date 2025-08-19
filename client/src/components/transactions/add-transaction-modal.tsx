@@ -221,14 +221,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
       return;
     }
     
-    if (transactionType !== "TRANSFER" && !formData.categoryId) {
-      toast({
-        title: "Validation Error",
-        description: "Please select a category",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Category is optional - no validation needed
     
     const transactionData = {
       type: transactionType,
@@ -237,7 +230,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
       date: formData.date,
       accountId: formData.accountId,
       toAccountId: transactionType === "TRANSFER" ? formData.toAccountId : undefined,
-      categoryId: transactionType !== "TRANSFER" ? formData.categoryId : undefined,
+      categoryId: transactionType !== "TRANSFER" ? (formData.categoryId || null) : undefined,
       // Only include recurring fields when creating new transactions
       ...(isEditMode ? {} : {
         isRecurring,
@@ -412,12 +405,13 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
           {/* Category (not for transfers) */}
           {transactionType !== "TRANSFER" && (
             <div>
-              <Label htmlFor="category">Category</Label>
-              <Select value={formData.categoryId} onValueChange={(value) => handleInputChange("categoryId", value)}>
+              <Label htmlFor="category">Category (Optional)</Label>
+              <Select value={formData.categoryId} onValueChange={(value) => handleInputChange("categoryId", value === "none" ? "" : value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select category..." />
+                  <SelectValue placeholder="Select category (optional)" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">None (Uncategorized)</SelectItem>
                   {Array.isArray(categories) ? categories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
