@@ -1260,27 +1260,25 @@ export default function AccountsPage() {
                             </div>
                           </div>
                           
-                          <div className="space-y-1">
-                            <div className="flex items-baseline space-x-2">
-                              <span className="text-sm font-bold text-red-600">{formatCurrency(debt.balance)}</span>
-                              <span className="text-sm text-gray-600">{debt.rate} APR</span>
-                            </div>
+                          <div className="flex items-baseline space-x-2 mb-2">
+                            <span className="text-sm font-bold text-red-600">{formatCurrency(debt.balance)}</span>
+                            <span className="text-sm text-gray-600">{debt.rate} APR</span>
                           </div>
                           
                           <div className="grid grid-cols-4 gap-2 text-xs">
-                            <div className="min-w-0">
+                            <div className="min-w-0 text-center">
                               <p className="text-gray-500 text-xs mb-0.5">Payment</p>
                               <p className="font-bold text-gray-900 text-xs">${Math.round(parseFloat(debt.paymentDue.replace('$', '').replace(',', ''))).toLocaleString()}</p>
                             </div>
-                            <div className="min-w-0">
+                            <div className="min-w-0 text-center">
                               <p className="text-gray-500 text-xs mb-0.5">Interest/mo</p>
                               <p className="font-bold text-red-600 text-xs">${Math.round(debt.balance * debt.apr / 100 / 12).toLocaleString()}</p>
                             </div>
-                            <div className="min-w-0">
+                            <div className="min-w-0 text-center">
                               <p className="text-gray-500 text-xs mb-0.5">Year-end</p>
                               <p className="font-bold text-blue-600 text-xs">${Math.round(debt.balance * 0.85).toLocaleString()}</p>
                             </div>
-                            <div className="min-w-0">
+                            <div className="min-w-0 text-center">
                               <p className="text-gray-500 text-xs mb-0.5">Expected</p>
                               <p className="font-bold text-green-600 text-xs whitespace-nowrap">{debt.dueDate.includes('2030') ? 'JUN 2030' : debt.dueDate.includes('2034') ? 'JUN 2034' : debt.dueDate.includes('2029') ? 'APR 2029' : debt.dueDate.includes('2027') ? 'DEC 2027' : debt.dueDate.includes('Never') ? 'Never' : 'JAN 2032'}</p>
                             </div>
