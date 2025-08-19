@@ -1153,125 +1153,241 @@ export default function AccountsPage() {
           </TabsContent>
 
           <TabsContent value="debt-payoff" className="space-y-6">
-            <Card>
+            {/* Debt Overview */}
+            <Card className="bg-pink-50">
               <CardHeader>
-                <CardTitle>Simple Debt Payoff Calculator</CardTitle>
+                <CardTitle className="text-xl font-semibold text-gray-900">Debt Overview</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Current Balance
-                      </label>
-                      <Input
-                        type="number"
-                        defaultValue="15000"
-                        placeholder="15000"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Interest Rate (%)
-                      </label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        defaultValue="18.5"
-                        placeholder="18.5"
-                      />
-                    </div>
+              <CardContent>
+                <div className="grid grid-cols-4 gap-6">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-1">Total Debt</p>
+                    <p className="text-2xl font-bold text-red-600">{formatCurrency(340256.78)}</p>
                   </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Minimum Payment
-                      </label>
-                      <Input
-                        type="number"
-                        defaultValue="300"
-                        placeholder="300"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Extra Payment
-                      </label>
-                      <Input
-                        type="number"
-                        defaultValue="100"
-                        placeholder="100"
-                      />
-                    </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-1">Est. Monthly Interest</p>
+                    <p className="text-xl font-semibold text-orange-600">{formatCurrency(1802)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-1">YTD Interest Paid</p>
+                    <p className="text-xl font-semibold text-red-600">{formatCurrency(14419)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-1">End of Year Balance</p>
+                    <p className="text-xl font-semibold text-gray-700">{formatCurrency(276512)}</p>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-6 pt-6 border-t">
-                  <Card className="bg-red-50">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg text-red-800">Minimum Payment Only</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div>
-                        <p className="text-sm text-gray-600">Time to payoff</p>
-                        <p className="text-xl font-semibold text-red-700">
-                          4 years, 7 months
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Total interest paid</p>
-                        <p className="text-lg font-semibold text-red-700">
-                          {formatCurrency(4260)}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-green-50">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg text-green-800">With Extra Payment</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div>
-                        <p className="text-sm text-gray-600">Time to payoff</p>
-                        <p className="text-xl font-semibold text-green-700">
-                          3 years, 2 months
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Total interest paid</p>
-                        <p className="text-lg font-semibold text-green-700">
-                          {formatCurrency(2890)}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Card className="bg-blue-50">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg text-blue-800">Savings Summary</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div>
-                      <p className="text-sm text-gray-600">Interest saved</p>
-                      <p className="text-xl font-semibold text-blue-700">
-                        {formatCurrency(1370)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Time saved</p>
-                      <p className="text-lg font-semibold text-blue-700">
-                        1 years, 5 months
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
               </CardContent>
             </Card>
+
+            {/* Debt Accounts & Management */}
+            <Collapsible open={isDebtAccountsExpanded} onOpenChange={setIsDebtAccountsExpanded}>
+              <Card>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-xl flex items-center">
+                        <CreditCard className="mr-2 h-5 w-5 text-red-600" />
+                        Debt Accounts & Management
+                        <span className="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">6 accounts</span>
+                      </CardTitle>
+                      <Button variant="ghost" size="sm">
+                        {isDebtAccountsExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent>
+                    <div className="mb-4 flex items-center justify-between">
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                        <Plus className="mr-1 h-3 w-3" />
+                        Schedule Payment
+                      </Button>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-sm">Filter:</Label>
+                          <Select value="all">
+                            <SelectTrigger className="w-32">
+                              <SelectValue placeholder="All Types" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Types</SelectItem>
+                              <SelectItem value="credit">Credit Cards</SelectItem>
+                              <SelectItem value="loans">Loans</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-sm">Sort:</Label>
+                          <Select value="balance">
+                            <SelectTrigger className="w-32">
+                              <SelectValue placeholder="Balance (High)" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="balance">Balance (High)</SelectItem>
+                              <SelectItem value="interest">Interest Rate</SelectItem>
+                              <SelectItem value="payoff">Payoff Date</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Debt Accounts Table */}
+                    <div className="space-y-3">
+                      {[
+                        { name: "Mortgage", balance: 285000, apr: 6.5, minPayment: 1844, payoffMonths: 360, dueDate: "Jan 2054" },
+                        { name: "Student Loan", balance: 23800, apr: 4.8, minPayment: 268, payoffMonths: 120, dueDate: "May 2034" },
+                        { name: "Auto Loan", balance: 18450, apr: 5.2, minPayment: 349, payoffMonths: 60, dueDate: "Apr 2029" },
+                        { name: "Personal Loan", balance: 5200, apr: 12.5, minPayment: 168, payoffMonths: 36, dueDate: "Dec 2027" },
+                        { name: "Credit Card", balance: 2456, apr: 24.99, minPayment: 49, payoffMonths: 120, dueDate: "Never at minimum" },
+                        { name: "Business Credit Card", balance: 1850, apr: 18.9, minPayment: 37, payoffMonths: 84, dueDate: "Jan 2032" }
+                      ].map((debt, index) => (
+                        <div key={debt.name} className="border rounded-lg p-4 bg-white hover:bg-gray-50">
+                          <div className="grid grid-cols-7 gap-4 items-center">
+                            <div>
+                              <h3 className="font-semibold text-gray-900">{debt.name}</h3>
+                              <p className="text-sm text-gray-500">{debt.apr}% APR</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-red-600">{formatCurrency(debt.balance)}</p>
+                              <p className="text-xs text-gray-500">Balance</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-sm font-semibold text-gray-700">{formatCurrency(debt.minPayment)}</p>
+                              <p className="text-xs text-gray-500">Min Payment</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-sm font-semibold text-orange-600">{formatCurrency(Math.round(debt.balance * debt.apr / 100 / 12))}</p>
+                              <p className="text-xs text-gray-500">Monthly Interest</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-sm font-semibold text-blue-600">{debt.dueDate}</p>
+                              <p className="text-xs text-gray-500">Payoff Date</p>
+                            </div>
+                            <div className="text-center">
+                              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">Auto Pay</p>
+                            </div>
+                            <div className="flex space-x-1">
+                              <Button variant="ghost" size="sm" className="p-1">
+                                <TrendingUp className="h-4 w-4 text-blue-600" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="p-1">
+                                <Calendar className="h-4 w-4 text-gray-600" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="p-1">
+                                <Settings className="h-4 w-4 text-gray-600" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
+
+            {/* Debt by Type - Monthly Summary */}
+            <Collapsible open={isDebtSummaryExpanded} onOpenChange={setIsDebtSummaryExpanded}>
+              <Card>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-xl">
+                        Debt by Type - Monthly Summary
+                        <span className="ml-2 text-sm text-gray-500">JAN - DEC 2025</span>
+                      </CardTitle>
+                      <Button variant="ghost" size="sm">
+                        {isDebtSummaryExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent>
+                    <div className="mb-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Label className="text-sm">Period:</Label>
+                        <Button variant="outline" size="sm" className="text-xs">
+                          <ChevronLeft className="h-3 w-3" />
+                        </Button>
+                        <span className="text-sm font-medium">JAN - DEC 2025</span>
+                        <Button variant="outline" size="sm" className="text-xs">
+                          <ChevronRight className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Label className="text-sm">View:</Label>
+                        <div className="flex border rounded-md">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className={`px-3 py-1 text-xs ${summaryViewMode === 'table' ? 'bg-gray-200' : ''}`}
+                            onClick={() => setSummaryViewMode('table')}
+                          >
+                            Table
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className={`px-3 py-1 text-xs ${summaryViewMode === 'chart' ? 'bg-gray-200' : ''}`}
+                            onClick={() => setSummaryViewMode('chart')}
+                          >
+                            Chart
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Monthly Summary Table */}
+                    <div className="overflow-x-auto rounded-lg border border-gray-200">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-gray-400">
+                            <TableHead className="font-bold text-white py-3 px-4 border-r border-gray-300">DEBT BY TYPE</TableHead>
+                            {['JAN 2025', 'FEB 2025', 'MAR 2025', 'APR 2025', 'MAY 2025', 'JUN 2025'].map((month, index) => (
+                              <TableHead key={month} className={`text-center font-bold text-white py-3 px-3 ${index < 5 ? 'border-r border-gray-300' : ''}`}>
+                                {month}
+                              </TableHead>
+                            ))}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {[
+                            { type: "Auto Loan", values: [18450, 18450, 18450, 18450, 18450, 18450], interest: [80, 80, 80, 80, 80, 80] },
+                            { type: "Credit Card", values: [4307, 4307, 4307, 4307, 4307, 4307], interest: [90, 90, 90, 90, 90, 90] },
+                            { type: "Line Of Credit", values: [5200, 3100, 2500, 1900, 1300, 700], interest: [54, 32, 26, 20, 14, 7] }
+                          ].map((row, index) => (
+                            <TableRow key={row.type} className={`border-b border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                              <TableCell className="font-semibold text-gray-800 bg-gray-100 py-3 px-4 border-r border-gray-300">
+                                {row.type}
+                              </TableCell>
+                              {row.values.map((value, monthIndex) => (
+                                <TableCell key={monthIndex} className="text-center py-3 px-3 border-r border-gray-200">
+                                  <div className="space-y-1">
+                                    <div className="text-sm font-bold text-gray-900">
+                                      {formatCurrency(value)}
+                                    </div>
+                                    <div className="text-xs text-red-600 italic">
+                                      ${row.interest[monthIndex]}
+                                    </div>
+                                  </div>
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
           </TabsContent>
         </Tabs>
 
