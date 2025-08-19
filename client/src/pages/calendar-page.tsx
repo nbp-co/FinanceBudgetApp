@@ -8,11 +8,12 @@ import { Plus } from "lucide-react";
 export default function CalendarPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [editTransaction, setEditTransaction] = useState<any>(null);
 
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        <MonthlyCalendar onDateSelect={setSelectedDate} />
+        <MonthlyCalendar onDateSelect={setSelectedDate} onEditTransaction={setEditTransaction} />
       </div>
 
       {/* Floating Add Transaction Button */}
@@ -25,9 +26,13 @@ export default function CalendarPage() {
       </Button>
 
       <AddTransactionModal 
-        isOpen={isAddModalOpen} 
-        onClose={() => setIsAddModalOpen(false)}
+        isOpen={isAddModalOpen || !!editTransaction} 
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditTransaction(null);
+        }}
         defaultDate={selectedDate ? selectedDate.toISOString().split('T')[0] : undefined}
+        editTransaction={editTransaction}
       />
     </AppShell>
   );

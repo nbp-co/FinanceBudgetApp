@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,23 +15,57 @@ interface AddTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultDate?: string;
+  editTransaction?: any; // Transaction to edit (if in edit mode)
 }
 
-export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransactionModalProps) {
-  const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE" | "TRANSFER">("EXPENSE");
+export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransaction }: AddTransactionModalProps) {
+  const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE" | "TRANSFER">(editTransaction?.type || "EXPENSE");
   const [isRecurring, setIsRecurring] = useState(false);
   const [formData, setFormData] = useState({
-    description: "",
-    amount: "",
-    date: defaultDate || new Date().toISOString().split('T')[0],
-    accountId: "",
-    toAccountId: "",
-    categoryId: "",
+    description: editTransaction?.description || "",
+    amount: editTransaction?.amount || "",
+    date: editTransaction ? new Date(editTransaction.date).toISOString().split('T')[0] : (defaultDate || new Date().toISOString().split('T')[0]),
+    accountId: editTransaction?.accountId || "",
+    toAccountId: editTransaction?.toAccountId || "",
+    categoryId: editTransaction?.categoryId || "",
     frequency: "monthly",
     interval: "1"
   });
 
+  const isEditMode = !!editTransaction;
+
   const { toast } = useToast();
+
+  // Reset form when edit transaction changes
+  useEffect(() => {
+    if (editTransaction) {
+      setTransactionType(editTransaction.type);
+      setFormData({
+        description: editTransaction.description || "",
+        amount: editTransaction.amount || "",
+        date: new Date(editTransaction.date).toISOString().split('T')[0],
+        accountId: editTransaction.accountId || "",
+        toAccountId: editTransaction.toAccountId || "",
+        categoryId: editTransaction.categoryId || "",
+        frequency: "monthly",
+        interval: "1"
+      });
+    } else if (!isEditMode) {
+      // Reset form for new transactions
+      setTransactionType("EXPENSE");
+      setIsRecurring(false);
+      setFormData({
+        description: "",
+        amount: "",
+        date: defaultDate || new Date().toISOString().split('T')[0],
+        accountId: "",
+        toAccountId: "",
+        categoryId: "",
+        frequency: "monthly",
+        interval: "1"
+      });
+    }
+  }, [editTransaction, defaultDate, isEditMode]);
 
   // Fetch accounts
   const { data: accounts = [] } = useQuery<Account[]>({
@@ -52,8 +86,11 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
 
   const createTransactionMutation = useMutation({
     mutationFn: async (transactionData: any) => {
-      const response = await fetch("/api/transactions", {
-        method: "POST",
+      const url = isEditMode ? `/api/transactions/${editTransaction.id}` : "/api/transactions";
+      const method = isEditMode ? "PATCH" : "POST";
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -63,7 +100,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
       
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || "Failed to create transaction");
+        throw new Error(error.message || `Failed to ${isEditMode ? 'update' : 'create'} transaction`);
       }
       
       return response.json();
@@ -71,10 +108,14 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
       toast({
-        title: isRecurring ? "Recurring transaction created" : "Transaction created",
-        description: isRecurring 
-          ? "Your recurring transaction and future occurrences have been added successfully." 
-          : "Your transaction has been added successfully.",
+        title: isEditMode 
+          ? "Transaction updated" 
+          : (isRecurring ? "Recurring transaction created" : "Transaction created"),
+        description: isEditMode
+          ? "Your transaction has been updated successfully."
+          : (isRecurring 
+            ? "Your recurring transaction and future occurrences have been added successfully." 
+            : "Your transaction has been added successfully."),
       });
       onClose();
       // Reset form
@@ -91,8 +132,8 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
     },
     onError: (error: any) => {
       toast({
-        title: "Error creating transaction",
-        description: error.message || "Failed to create transaction",
+        title: `Error ${isEditMode ? 'updating' : 'creating'} transaction`,
+        description: error.message || `Failed to ${isEditMode ? 'update' : 'create'} transaction`,
         variant: "destructive",
       });
     },
@@ -155,9 +196,12 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
       accountId: formData.accountId,
       toAccountId: transactionType === "TRANSFER" ? formData.toAccountId : undefined,
       categoryId: transactionType !== "TRANSFER" ? formData.categoryId : undefined,
-      isRecurring,
-      frequency: formData.frequency,
-      interval: formData.interval,
+      // Only include recurring fields when creating new transactions
+      ...(isEditMode ? {} : {
+        isRecurring,
+        frequency: formData.frequency,
+        interval: formData.interval,
+      }),
     };
 
     console.log("Submitting transaction data:", transactionData);
@@ -172,7 +216,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add Transaction</DialogTitle>
+          <DialogTitle>{isEditMode ? "Edit Transaction" : "Add Transaction"}</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -234,51 +278,55 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
             </Tabs>
           </div>
           
-          {/* Recurring Option - moved below date with new label */}
-          <div className="flex items-center justify-between">
-            <Label htmlFor="recurring" className="text-sm font-medium text-gray-700">
-              Recurring?
-            </Label>
-            <Switch
-              id="recurring"
-              checked={isRecurring}
-              onCheckedChange={setIsRecurring}
-            />
-          </div>
-          
-          {/* Recurring Options - moved directly under recurring toggle */}
-          {isRecurring && (
-            <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
-              <div>
-                <Label htmlFor="frequency">Frequency</Label>
-                <Select value={formData.frequency} onValueChange={(value) => handleInputChange("frequency", value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="custom">Custom</SelectItem>
-                  </SelectContent>
-                </Select>
+          {/* Recurring Option - only show for new transactions */}
+          {!isEditMode && (
+            <>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="recurring" className="text-sm font-medium text-gray-700">
+                  Recurring?
+                </Label>
+                <Switch
+                  id="recurring"
+                  checked={isRecurring}
+                  onCheckedChange={setIsRecurring}
+                />
               </div>
               
-              {formData.frequency === "custom" && (
-                <div>
-                  <Label htmlFor="interval">Interval (days)</Label>
-                  <Input
-                    id="interval"
-                    type="number"
-                    min="1"
-                    value={formData.interval}
-                    onChange={(e) => handleInputChange("interval", e.target.value)}
-                    placeholder="Enter number of days"
-                  />
+              {/* Recurring Options - moved directly under recurring toggle */}
+              {isRecurring && (
+                <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
+                  <div>
+                    <Label htmlFor="frequency">Frequency</Label>
+                    <Select value={formData.frequency} onValueChange={(value) => handleInputChange("frequency", value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="custom">Custom</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {formData.frequency === "custom" && (
+                    <div>
+                      <Label htmlFor="interval">Interval (days)</Label>
+                      <Input
+                        id="interval"
+                        type="number"
+                        min="1"
+                        value={formData.interval}
+                        onChange={(e) => handleInputChange("interval", e.target.value)}
+                        placeholder="Enter number of days"
+                      />
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            </>
           )}
           
           {/* Account Selection */}
@@ -344,7 +392,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
               Cancel
             </Button>
             <Button type="submit" className="flex-1" disabled={createTransactionMutation.isPending}>
-              {createTransactionMutation.isPending ? "Saving..." : "Save Transaction"}
+              {createTransactionMutation.isPending ? "Saving..." : (isEditMode ? "Update Transaction" : "Save Transaction")}
             </Button>
           </div>
         </form>

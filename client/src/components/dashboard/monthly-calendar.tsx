@@ -6,19 +6,19 @@ import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { TransactionDetailsModal } from "@/components/transactions/transaction-details-modal";
+
 import type { Account, Transaction, Category } from "@shared/schema";
 
 interface MonthlyCalendarProps {
   onDateSelect?: (date: Date | null) => void;
+  onEditTransaction?: (transaction: any) => void;
 }
 
-export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
+export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCalendarProps = {}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -175,19 +175,10 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
 
   const handleTransactionClick = (transaction: Transaction, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent day selection when clicking transaction
-    setSelectedTransaction(transaction);
-    setIsDetailsModalOpen(true);
+    onEditTransaction?.(transaction);
   };
 
-  const getSelectedTransactionAccount = () => {
-    if (!selectedTransaction) return undefined;
-    return accounts.find(account => account.id === selectedTransaction.accountId);
-  };
 
-  const getSelectedTransactionCategory = () => {
-    if (!selectedTransaction || !selectedTransaction.categoryId) return undefined;
-    return categories.find(category => category.id === selectedTransaction.categoryId);
-  };
 
   const selectedDayTransactions = selectedDate ? getTransactionsForDay(selectedDate) : [];
 
@@ -408,17 +399,7 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
     </Card>
   </div>
 
-  {/* Transaction Details Modal */}
-  <TransactionDetailsModal
-    isOpen={isDetailsModalOpen}
-    onClose={() => {
-      setIsDetailsModalOpen(false);
-      setSelectedTransaction(null);
-    }}
-    transaction={selectedTransaction}
-    account={getSelectedTransactionAccount()}
-    category={getSelectedTransactionCategory()}
-  />
+
 </div>
   );
 }
