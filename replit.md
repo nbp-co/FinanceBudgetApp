@@ -15,6 +15,12 @@ Preferred communication style: Simple, everyday language.
 - Applied consistently across desktop sidebar and mobile bottom navigation
 - User preference for logical flow from calendar view to account management to summary analysis
 
+**Calendar Route Implementation (August 19, 2025)**
+- Created dedicated `/calendar` route as the main landing page for the financial calendar
+- Updated all navigation links to point to `/calendar` instead of root `/`
+- Implemented automatic redirect from root to `/calendar` to avoid confusion
+- Fixed all internal routing to use proper calendar path structure
+
 **Budget Page Removal (August 12, 2025)**
 - Completely removed standalone Budget page and all associated functionality
 - Cleaned up navigation menus (desktop sidebar and mobile bottom nav)

@@ -9,9 +9,9 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Calendar", href: "/", icon: Home },
+  { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Accounts", href: "/accounts", icon: Building },
-  { name: "Summary", href: "/summary", icon: Calendar },
+  { name: "Summary", href: "/summary", icon: FileText },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
