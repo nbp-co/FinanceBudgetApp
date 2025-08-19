@@ -21,6 +21,13 @@ Preferred communication style: Simple, everyday language.
 - Implemented automatic redirect from root to `/calendar` to avoid confusion
 - Fixed all internal routing to use proper calendar path structure
 
+**Transaction Interaction Features (August 19, 2025)**
+- Implemented clickable transaction details modal with comprehensive information display
+- Added editable transaction functionality - clicking transactions opens "Edit Transaction" modal
+- Transaction details modal now supports both view and edit modes with form validation
+- Added recurring transaction functionality with future transaction generation (12 months)
+- Support for multiple recurring frequencies: Daily, Weekly, Bi-weekly, Monthly, and Custom intervals
+
 **Budget Page Removal (August 12, 2025)**
 - Completely removed standalone Budget page and all associated functionality
 - Cleaned up navigation menus (desktop sidebar and mobile bottom nav)
