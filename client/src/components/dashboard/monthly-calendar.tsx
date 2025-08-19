@@ -437,7 +437,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                       <div className={`text-[10px] text-center font-medium px-1 leading-3 ${
                         (getDailyBalance(day) || 0) < 0 ? 'text-red-600' : 'text-green-600'
                       }`}>
-                        {Math.abs(getDailyBalance(day) || 0).toFixed(0)}
+                        {(getDailyBalance(day) || 0) < 0 ? '-' : ''}{Math.abs(getDailyBalance(day) || 0).toFixed(0)}
                       </div>
                     </div>
                   )}
@@ -457,7 +457,9 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-bold text-primary">
+                <p className={`text-lg font-bold ${
+                  (getDailyBalance(selectedDate) || 0) < 0 ? 'text-red-600' : 'text-primary'
+                }`}>
                   {transactionsLoading ? "Loading..." : (getDailyBalance(selectedDate) !== null ? formatCurrency(getDailyBalance(selectedDate)!) : "$0.00")}
                 </p>
               </div>
