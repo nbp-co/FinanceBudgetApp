@@ -311,7 +311,7 @@ export function MonthlyCalendar() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Balance for {format(selectedDate, 'EEEE, MMM d')}
+                  <span className="font-bold">Balance</span> for {format(selectedDate, 'EEEE, MMM d')}
                 </p>
               </div>
               <div className="text-right">
