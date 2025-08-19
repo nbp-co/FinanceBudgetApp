@@ -20,7 +20,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
 
-  
+
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -48,11 +48,11 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
         startDate: monthStart.toISOString(),
         endDate: monthEnd.toISOString(),
       });
-      
+
       if (selectedAccountId) {
         params.append("accountId", selectedAccountId);
       }
-      
+
       return fetch(`/api/transactions?${params.toString()}`, {
         credentials: "include",
       }).then(res => res.json());
@@ -89,12 +89,12 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     queryKey: ["/api/daily-balances", selectedAccountId, monthStart.toISOString(), monthEnd.toISOString()],
     queryFn: () => {
       if (!selectedAccountId) return [];
-      
+
       const params = new URLSearchParams({
         startDate: monthStart.toISOString(),
         endDate: monthEnd.toISOString(),
       });
-      
+
       return fetch(`/api/daily-balances/${selectedAccountId}?${params.toString()}`, {
         credentials: "include",
       }).then(res => res.json());
@@ -130,39 +130,39 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
       });
     }
   }, [selectedAccountId, currentDate]);
-  
+
   // Get days from previous month to fill the grid
   const startPadding = getDay(monthStart);
   const previousMonthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth(), 0);
   const paddingDays = Array.from({ length: startPadding }, (_, i) => 
     new Date(previousMonthEnd.getFullYear(), previousMonthEnd.getMonth(), previousMonthEnd.getDate() - startPadding + i + 1)
   );
-  
+
   // Create initial grid with current month days and minimal padding
   const initialDays = [...paddingDays, ...daysInMonth];
-  
+
   // Calculate how many complete weeks we need
   const weeksNeeded = Math.ceil(initialDays.length / 7);
   const totalCells = weeksNeeded * 7;
   const remainingCells = totalCells - initialDays.length;
-  
+
   // Only add next month days if needed to complete the current weeks
   const nextMonthDays = remainingCells > 0 
     ? Array.from({ length: remainingCells }, (_, i) => 
         new Date(monthEnd.getFullYear(), monthEnd.getMonth() + 1, i + 1)
       )
     : [];
-  
+
   const allDays = [...initialDays, ...nextMonthDays];
-  
+
   const goToPrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   };
-  
+
   const goToNextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
-  
+
   const goToToday = () => {
     const today = new Date();
     setCurrentDate(today);
@@ -172,7 +172,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
   // Group transactions by date for efficient lookup
   const transactionsByDate = useMemo(() => {
     const grouped: Record<string, Transaction[]> = {};
-    
+
     // Ensure transactions is an array
     if (Array.isArray(transactions)) {
       transactions.forEach(transaction => {
@@ -182,21 +182,21 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
           : transaction.date instanceof Date ? transaction.date.toISOString().split('T')[0] : String(transaction.date).split('T')[0];
         const date = new Date(dateStr + 'T00:00:00');
         const dateKey = format(date, 'yyyy-MM-dd');
-        
+
         if (!grouped[dateKey]) {
           grouped[dateKey] = [];
         }
         grouped[dateKey].push(transaction);
       });
     }
-    
+
     return grouped;
   }, [transactions]);
 
   // Get transactions for a specific day
   const getTransactionsForDay = (date: Date): Transaction[] => {
     if (!isSameMonth(date, currentDate)) return [];
-    
+
     const dateKey = format(date, 'yyyy-MM-dd');
     return transactionsByDate[dateKey] || [];
   };
@@ -212,10 +212,10 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
   // Get recurring frequency display
   const getRecurringFrequency = (transaction: Transaction): string | null => {
     if (!transaction.recurringId) return null;
-    
+
     const recurringRule = recurringRules.find(rule => rule.id === transaction.recurringId);
     if (!recurringRule) return 'Recurring';
-    
+
     // Map frequency values to display strings
     const frequencyMap: { [key: string]: string } = {
       'daily': 'Daily',
@@ -224,14 +224,14 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
       'monthly': 'Monthly',
       'custom': `Every ${recurringRule.interval} days`
     };
-    
+
     return frequencyMap[recurringRule.freq] || 'Recurring';
   };
 
   // Group daily balances by date for efficient lookup
   const balancesByDate = useMemo(() => {
     const grouped: Record<string, DailyBalance> = {};
-    
+
     if (Array.isArray(dailyBalances)) {
       dailyBalances.forEach(balance => {
         const date = new Date(balance.date);
@@ -239,14 +239,14 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
         grouped[dateKey] = balance;
       });
     }
-    
+
     return grouped;
   }, [dailyBalances]);
 
   // Get balance for a specific day
   const getBalanceForDay = (date: Date): string | null => {
     if (!isSameMonth(date, currentDate)) return null;
-    
+
     const dateKey = format(date, 'yyyy-MM-dd');
     const balance = balancesByDate[dateKey];
     return balance ? balance.balance : null;
@@ -258,13 +258,13 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     if (balance !== null) {
       return parseFloat(balance);
     }
-    
+
     // If no daily balance exists, calculate it on the fly using transactions
     if (!selectedAccountId || !Array.isArray(transactions)) return null;
-    
+
     const account = accounts.find(acc => acc.id === selectedAccountId);
     if (!account) return null;
-    
+
     // Get all transactions up to and including this date for this account
     const transactionsUpToDate = transactions.filter(tx => {
       // Parse date safely to avoid timezone issues
@@ -272,13 +272,13 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
         ? tx.date.split('T')[0] 
         : tx.date instanceof Date ? tx.date.toISOString().split('T')[0] : String(tx.date).split('T')[0];
       const targetDateStr = format(date, 'yyyy-MM-dd');
-      
+
       return txDateStr <= targetDateStr && (tx.accountId === selectedAccountId || tx.toAccountId === selectedAccountId);
     });
-    
+
     // Start with opening balance
     let calculatedBalance = parseFloat(account.openingBalance || "0");
-    
+
     // Apply transactions
     transactionsUpToDate.forEach(tx => {
       const amount = parseFloat(tx.amount);
@@ -303,7 +303,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
         }
       }
     });
-    
+
     return calculatedBalance;
   };
 
@@ -342,7 +342,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
-            
+
             {/* Account Selection */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Account:</span>
@@ -373,14 +373,14 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
               {day}
             </div>
           ))}
-          
+
           {/* Calendar Days */}
           {allDays.map((day, index) => {
             const transactions = getTransactionsForDay(day);
             const isCurrentMonth = isSameMonth(day, currentDate);
             const isTodayDate = isToday(day);
             const isSelected = selectedDate && isSameDay(day, selectedDate);
-            
+
             return (
               <div
                 key={index}
@@ -447,7 +447,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
             );
           })}
         </div>
-        
+
         {/* Balance Bar for Selected Day */}
         {selectedDate && (
           <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
@@ -467,7 +467,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
             </div>
           </div>
         )}
-        
+
         {transactionsLoading && (
           <div className="mt-4 text-center text-sm text-gray-500">
             Loading transactions...
