@@ -1246,51 +1246,47 @@ export default function AccountsPage() {
                       ].map((debt, index) => (
                         <div key={debt.name} className="bg-white border rounded-lg p-4 space-y-3">
                           <div className="flex items-center justify-between">
-                            <h3 className="font-semibold text-gray-900 text-sm">{debt.name}</h3>
-                            <div className="flex space-x-1">
-                              <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
-                                <TrendingUp className="h-3 w-3 text-blue-600" />
-                              </Button>
+                            <h3 className="font-semibold text-gray-900 text-lg">{debt.name}</h3>
+                            <div className="flex items-center space-x-1">
+                              <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                                8/1
+                              </div>
                               <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
                                 <Settings className="h-3 w-3 text-gray-400" />
                               </Button>
+                              <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
+                                <FileText className="h-3 w-3 text-gray-400" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
+                                <Edit className="h-3 w-3 text-gray-400" />
+                              </Button>
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-2 gap-4 text-xs">
-                            <div>
-                              <p className="text-gray-500 mb-1">Balance</p>
-                              <p className="font-bold text-gray-900">{formatCurrency(debt.balance)}</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500 mb-1">Rate</p>
-                              <p className="font-semibold text-gray-700">{debt.rate}</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500 mb-1">Payment Due</p>
-                              <p className="font-semibold text-red-600">{debt.paymentDue}</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500 mb-1">Next Payment</p>
-                              <p className="font-semibold text-gray-700">{debt.nextPayment}</p>
+                          <div className="space-y-1">
+                            <div className="flex items-baseline space-x-2">
+                              <span className="text-xl font-bold text-red-600">{formatCurrency(debt.balance)}</span>
+                              <span className="text-sm text-gray-600">{debt.rate} APR</span>
                             </div>
                           </div>
                           
-                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div className="flex items-center space-x-2">
-                              <div className={`w-2 h-2 rounded-full ${
-                                debt.color === 'blue' ? 'bg-blue-500' :
-                                debt.color === 'green' ? 'bg-green-500' :
-                                debt.color === 'purple' ? 'bg-purple-500' :
-                                debt.color === 'orange' ? 'bg-orange-500' :
-                                debt.color === 'red' ? 'bg-red-500' :
-                                debt.color === 'teal' ? 'bg-teal-500' : 'bg-gray-500'
-                              }`}></div>
-                              <span className="text-xs text-gray-600">Payoff: {debt.dueDate}</span>
+                          <div className="grid grid-cols-4 gap-4 text-xs">
+                            <div>
+                              <p className="text-gray-500 mb-1">Payment</p>
+                              <p className="font-bold text-gray-900">{debt.paymentDue}</p>
                             </div>
-                            <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6 text-blue-600 hover:bg-blue-50">
-                              Details
-                            </Button>
+                            <div>
+                              <p className="text-gray-500 mb-1">Interest/mo</p>
+                              <p className="font-bold text-red-600">{formatCurrency(Math.round(debt.balance * debt.apr / 100 / 12))}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 mb-1">Year-end</p>
+                              <p className="font-bold text-blue-600">{formatCurrency(Math.round(debt.balance * 0.85))}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 mb-1">Expected</p>
+                              <p className="font-bold text-green-600">{debt.dueDate.includes('2030') ? 'Jun 2030' : debt.dueDate.includes('2034') ? 'May 2034' : debt.dueDate.includes('2029') ? 'Apr 2029' : debt.dueDate.includes('2027') ? 'Dec 2027' : debt.dueDate.includes('Never') ? 'Never' : 'Jan 2032'}</p>
+                            </div>
                           </div>
                         </div>
                       ))}
