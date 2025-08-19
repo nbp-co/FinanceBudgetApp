@@ -480,11 +480,16 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Account not found");
     }
 
-    // Get all transactions up to and including this date
-    const transactions = await this.getTransactionsByUser(account.userId, {
-      accountId,
+    // Get all transactions up to and including this date that affect this account
+    // This includes transactions where this account is the source OR target
+    const allTransactions = await this.getTransactionsByUser(account.userId, {
       endDate: date
     });
+    
+    // Filter to only transactions that affect this account
+    const transactions = allTransactions.filter(tx => 
+      tx.accountId === accountId || tx.toAccountId === accountId
+    );
 
     // Start with opening balance
     let balance = parseFloat(account.openingBalance);

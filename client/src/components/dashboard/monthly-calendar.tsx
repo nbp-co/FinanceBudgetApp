@@ -179,7 +179,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
         // Parse date safely to avoid timezone issues
         const dateStr = typeof transaction.date === 'string' 
           ? transaction.date.split('T')[0] 
-          : new Date(transaction.date).toISOString().split('T')[0];
+          : transaction.date instanceof Date ? transaction.date.toISOString().split('T')[0] : String(transaction.date).split('T')[0];
         const date = new Date(dateStr + 'T00:00:00');
         const dateKey = format(date, 'yyyy-MM-dd');
         
@@ -270,7 +270,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
       // Parse date safely to avoid timezone issues
       const txDateStr = typeof tx.date === 'string' 
         ? tx.date.split('T')[0] 
-        : new Date(tx.date).toISOString().split('T')[0];
+        : tx.date instanceof Date ? tx.date.toISOString().split('T')[0] : String(tx.date).split('T')[0];
       const targetDateStr = format(date, 'yyyy-MM-dd');
       
       return txDateStr <= targetDateStr && (tx.accountId === selectedAccountId || tx.toAccountId === selectedAccountId);
