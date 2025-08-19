@@ -611,7 +611,7 @@ export default function AccountsPage() {
     <AppShell>
       <div className="p-4 lg:p-8">
         <Tabs defaultValue="accounts" className="space-y-6">
-          <div className="flex justify-center">
+          <div className="flex justify-center lg:block hidden">
             <TabsList className="grid grid-cols-3 max-w-2xl">
               <TabsTrigger value="accounts">My Accounts</TabsTrigger>
               <TabsTrigger value="statements">Statements</TabsTrigger>
