@@ -261,10 +261,14 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     const account = accounts.find(acc => acc.id === selectedAccountId);
     if (!account) return null;
     
-    // Get all transactions up to this date for this account
+    // Get all transactions up to and including this date for this account
     const transactionsUpToDate = transactions.filter(tx => {
       const txDate = new Date(tx.date);
-      return txDate <= date && tx.accountId === selectedAccountId;
+      const targetDate = new Date(date);
+      // Set both dates to start of day for accurate comparison
+      txDate.setHours(0, 0, 0, 0);
+      targetDate.setHours(0, 0, 0, 0);
+      return txDate <= targetDate && tx.accountId === selectedAccountId;
     });
     
     // Start with opening balance
@@ -280,6 +284,17 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
           calculatedBalance -= amount;
         } else {
           calculatedBalance += amount; // For debt accounts
+        }
+      }
+      // Handle transfers
+      else if (tx.type === 'TRANSFER') {
+        if (tx.accountId === selectedAccountId) {
+          // Money leaving this account
+          calculatedBalance -= amount;
+        }
+        if (tx.toAccountId === selectedAccountId) {
+          // Money coming into this account
+          calculatedBalance += amount;
         }
       }
     });
@@ -413,12 +428,12 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                     )}
                   </div>
                   {/* Show daily balance only for days with transactions */}
-                  {isCurrentMonth && getTransactionsForDay(day).length > 0 && getDailyBalance(day) !== null && (
+                  {isCurrentMonth && getTransactionsForDay(day).length > 0 && (
                     <div className="mt-auto">
                       <div className={`text-[10px] text-center font-medium px-1 leading-3 ${
-                        getDailyBalance(day)! < 0 ? 'text-red-600' : 'text-green-600'
+                        (getDailyBalance(day) || 0) < 0 ? 'text-red-600' : 'text-green-600'
                       }`}>
-                        {Math.abs(getDailyBalance(day)!).toFixed(0)}
+                        {Math.abs(getDailyBalance(day) || 0).toFixed(0)}
                       </div>
                     </div>
                   )}
