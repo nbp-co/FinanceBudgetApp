@@ -99,6 +99,10 @@ export default function AccountsPage() {
   const [summaryChartMode, setSummaryChartMode] = useState<'balance' | 'interest'>('balance');
   const [summaryMonthOffset, setSummaryMonthOffset] = useState(1); // 1 = JUL-DEC 2025, 0 = JAN-JUN 2025, -1 = JUL-DEC 2024, -2 = JAN-JUN 2024
 
+  // Collapsible section states
+  const [isDebtAccountsExpanded, setIsDebtAccountsExpanded] = useState(true);
+  const [isDebtSummaryExpanded, setIsDebtSummaryExpanded] = useState(true);
+
   // Mock monthly statements data for debt overview calculation
   const monthlyStatements = [
     { id: 1, accountId: "credit-card", year: 2024, month: 1, startingBalance: 2500.0 },
@@ -1398,7 +1402,7 @@ export default function AccountsPage() {
               {/* Enhanced Collapsible Debt Accounts Section */}
               {getDebtAccounts().length > 0 && (
                 <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
-                  <Collapsible defaultOpen={true}>
+                  <Collapsible open={isDebtAccountsExpanded} onOpenChange={setIsDebtAccountsExpanded}>
                     <CollapsibleTrigger className="w-full">
                       <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
                         <div className="flex items-center gap-3">
@@ -1408,7 +1412,7 @@ export default function AccountsPage() {
                             {getFilteredAndSortedDebtAccounts().length} accounts
                           </span>
                         </div>
-                        <ChevronDown className="h-5 w-5 text-gray-600" />
+                        <ChevronDown className={`h-5 w-5 text-gray-600 transition-transform duration-200 ${isDebtAccountsExpanded ? 'rotate-180' : ''}`} />
                       </div>
                     </CollapsibleTrigger>
                     
@@ -1868,7 +1872,7 @@ export default function AccountsPage() {
             {/* Debt by Type Monthly Summary - Enhanced with Chart Toggle */}
             {getDebtAccounts().length > 0 && (
               <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-slate-200 shadow-lg">
-                <Collapsible defaultOpen={true}>
+                <Collapsible open={isDebtSummaryExpanded} onOpenChange={setIsDebtSummaryExpanded}>
                   <CollapsibleTrigger className="w-full">
                     <div className="flex items-center justify-between p-4 hover:bg-slate-100 transition-colors rounded-t-lg">
                       <div className="flex items-center gap-3">
@@ -1879,7 +1883,7 @@ export default function AccountsPage() {
                            summaryMonthOffset === -1 ? 'JUL-DEC 2024' : 'JAN-JUN 2024'}
                         </span>
                       </div>
-                      <ChevronDown className="h-5 w-5 text-gray-600" />
+                      <ChevronDown className={`h-5 w-5 text-gray-600 transition-transform duration-200 ${isDebtSummaryExpanded ? 'rotate-180' : ''}`} />
                     </div>
                   </CollapsibleTrigger>
                   
