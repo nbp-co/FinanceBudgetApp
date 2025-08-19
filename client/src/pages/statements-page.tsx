@@ -125,8 +125,42 @@ export default function StatementsPage() {
                 <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm mb-4">
                   <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
                   <div className="space-y-3">
-                    <div className="grid grid-cols-6 gap-3">
-                      {availableMonths.slice(0, 6).map((month) => (
+                    {/* Desktop: 2 rows x 6 months, Mobile: 4 rows x 3 months */}
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                      {availableMonths.slice(0, 3).map((month) => (
+                        <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
+                          <Checkbox
+                            id={`month-${month.value}`}
+                            checked={selectedMonths.includes(month.value)}
+                            onCheckedChange={() => toggleMonth(month.value)}
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                            {month.label}
+                          </Label>
+                        </div>
+                      ))}
+                      {/* Desktop: Show remaining first 6 months in same row */}
+                      <div className="hidden sm:contents">
+                        {availableMonths.slice(3, 6).map((month) => (
+                          <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
+                            <Checkbox
+                              id={`month-${month.value}`}
+                              checked={selectedMonths.includes(month.value)}
+                              onCheckedChange={() => toggleMonth(month.value)}
+                              className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                            />
+                            <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                              {month.label}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Mobile: Second row (APR-JUN) */}
+                    <div className="grid grid-cols-3 sm:hidden gap-3">
+                      {availableMonths.slice(3, 6).map((month) => (
                         <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
                           <Checkbox
                             id={`month-${month.value}`}
@@ -140,8 +174,43 @@ export default function StatementsPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="grid grid-cols-6 gap-3">
-                      {availableMonths.slice(6).map((month) => (
+                    
+                    {/* Mobile: Third row (JUL-SEP) / Desktop: Second row start */}
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                      {availableMonths.slice(6, 9).map((month) => (
+                        <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
+                          <Checkbox
+                            id={`month-${month.value}`}
+                            checked={selectedMonths.includes(month.value)}
+                            onCheckedChange={() => toggleMonth(month.value)}
+                            className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                          />
+                          <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                            {month.label}
+                          </Label>
+                        </div>
+                      ))}
+                      {/* Desktop: Show remaining months in same row */}
+                      <div className="hidden sm:contents">
+                        {availableMonths.slice(9, 12).map((month) => (
+                          <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
+                            <Checkbox
+                              id={`month-${month.value}`}
+                              checked={selectedMonths.includes(month.value)}
+                              onCheckedChange={() => toggleMonth(month.value)}
+                              className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                            />
+                            <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
+                              {month.label}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Mobile: Fourth row (OCT-DEC) */}
+                    <div className="grid grid-cols-3 sm:hidden gap-3">
+                      {availableMonths.slice(9, 12).map((month) => (
                         <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
                           <Checkbox
                             id={`month-${month.value}`}
@@ -230,7 +299,7 @@ export default function StatementsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56 p-2" align="start">
-                          <RadioGroup value={sortBy} onValueChange={setSortBy} className="space-y-2">
+                          <RadioGroup value={sortBy} onValueChange={(value) => setSortBy(value as 'name' | 'type' | 'name-reverse' | 'type-reverse')} className="space-y-2">
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="type" id="sort-type" className="border-teal-600 text-teal-600" />
                               <Label htmlFor="sort-type" className="text-sm cursor-pointer">
