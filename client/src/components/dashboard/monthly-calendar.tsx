@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
@@ -8,6 +9,7 @@ import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 export function MonthlyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [accountFilter, setAccountFilter] = useState("all");
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -108,19 +110,56 @@ export function MonthlyCalendar() {
     return balance;
   };
 
+  const getFilteredTransactions = (transactions: any[]) => {
+    if (accountFilter === "all") return transactions;
+    if (accountFilter === "assets") {
+      return transactions.filter(t => 
+        ['Checking', 'Savings', 'Investment'].includes((t as any).fromAccount) ||
+        ['Checking', 'Savings', 'Investment'].includes((t as any).toAccount) ||
+        (t.type === 'income' || t.type === 'expense')
+      );
+    }
+    if (accountFilter === "debts") {
+      return transactions.filter(t => 
+        ['Credit Card', 'Business Credit Card'].includes((t as any).fromAccount) ||
+        ['Credit Card', 'Business Credit Card'].includes((t as any).toAccount)
+      );
+    }
+    return transactions;
+  };
+
   const handleDayClick = (day: Date) => {
     if (isSameMonth(day, currentDate)) {
       setSelectedDate(day);
     }
   };
 
-  const selectedDayTransactions = selectedDate ? getTransactionsForDay(selectedDate) : [];
+  const selectedDayTransactions = selectedDate ? getFilteredTransactions(getTransactionsForDay(selectedDate)) : [];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Calendar */}
       <div className="lg:col-span-2">
         <Card>
+          {/* Account Selector */}
+          <div className="p-4 border-b">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <label className="text-sm font-medium text-gray-700">Account:</label>
+                <Select value={accountFilter} onValueChange={setAccountFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="All Accounts" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Accounts</SelectItem>
+                    <SelectItem value="assets">Assets Only</SelectItem>
+                    <SelectItem value="debts">Debts Only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          
           <CardHeader>
             <div className="flex items-center justify-between">
               <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
@@ -149,7 +188,8 @@ export function MonthlyCalendar() {
           
           {/* Calendar Days */}
           {allDays.map((day, index) => {
-            const transactions = getTransactionsForDay(day);
+            const allTransactions = getTransactionsForDay(day);
+            const transactions = getFilteredTransactions(allTransactions);
             const isCurrentMonth = isSameMonth(day, currentDate);
             const isTodayDate = isToday(day);
             const isSelected = selectedDate && isSameDay(day, selectedDate);
