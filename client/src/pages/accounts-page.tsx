@@ -2,26 +2,30 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, TrendingDown, TrendingUp, DollarSign, Calculator, Calendar, Target, Zap, CalendarDays, CheckCircle2, FileText, X } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useQuery } from "@tanstack/react-query";
-import type { Account } from "@shared/schema";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const accountFormSchema = z.object({
   name: z.string().min(1, "Account name is required"),
-  type: z.enum(["checking", "savings", "money_market", "investment", "credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit"]),
+  type: z.enum(["checking", "savings", "money_market", "investment", "other_asset", "credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit", "other_debt"]),
   balance: z.string().min(1, "Balance is required"),
   description: z.string().optional(),
   interestRate: z.string().optional(),
@@ -45,57 +49,181 @@ export default function AccountsPage() {
   const [selectedAccount, setSelectedAccount] = useState<{ name: string; balance: number } | null>(null);
   const [editingAccount, setEditingAccount] = useState<AccountFormData | null>(null);
   
+  // Notes state
+  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+  const [selectedAccountForNotes, setSelectedAccountForNotes] = useState<string | null>(null);
+  const [accountNotes, setAccountNotes] = useState<{ [accountName: string]: string[] }>({
+    "Checking Account": ["Primary account for monthly expenses", "Direct deposit setup"],
+    "Credit Card": ["Pay off before statement date", "Rewards card for groceries"],
+    "Savings Account": ["Emergency fund target: $10,000", "High-yield account"]
+  });
+  const [newNote, setNewNote] = useState("");
+  
   // Statements tab state
-  const [selectedMonths, setSelectedMonths] = useState<string[]>(["2024-11", "2024-10", "2024-09"]);
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(["2025-01", "2025-02", "2025-03"]);
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
+  const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<'name' | 'type' | 'name-reverse' | 'type-reverse'>('type');
   const [isStatementsOpen, setIsStatementsOpen] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const accountsPerPage = 5;
 
-  // Debt payoff calculator state
-  const [debtBalance, setDebtBalance] = useState('15000');
-  const [interestRate, setInterestRate] = useState('18.5');
-  const [minimumPayment, setMinimumPayment] = useState('300');
-  const [extraPayment, setExtraPayment] = useState('100');
+  // Debt payoff tab state
+  const [paymentSchedules, setPaymentSchedules] = useState<{ [accountName: string]: { frequency: string; amount: number; paymentAccount: string; nextDueDate: string } }>({});
+  const [expandedCharts, setExpandedCharts] = useState<{ [accountName: string]: boolean }>({});
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [selectedDebtAccount, setSelectedDebtAccount] = useState<string | null>(null);
+  
+  // Debt sort/filter state
+  const [debtSortBy, setDebtSortBy] = useState<'name' | 'nameDesc' | 'balance' | 'balanceAsc' | 'interest' | 'payoff' | 'apr' | 'aprAsc'>('balance');
+  const [debtFilterBy, setDebtFilterBy] = useState<string[]>([]);
+  
+  // Debt payoff info popup state
+  const [showDebtPayoffInfo, setShowDebtPayoffInfo] = useState(false);
+  const [hideDebtPayoffInfo, setHideDebtPayoffInfo] = useState(localStorage.getItem('hideDebtPayoffInfo') === 'true');
+  
+  // Payment form state
+  const [currentPaymentForm, setCurrentPaymentForm] = useState({
+    account: '',
+    amount: '',
+    frequency: '',
+    paymentSource: '',
+    startDate: new Date().toISOString().split('T')[0]
+  });
+
+  // Mobile tab navigation state
+  const [activeTab, setActiveTab] = useState("accounts");
+
+  // Debt summary view mode state
+  const [summaryViewMode, setSummaryViewMode] = useState<'table' | 'chart'>('table');
+  const [summaryChartMode, setSummaryChartMode] = useState<'balance' | 'interest'>('balance');
+  const [summaryMonthOffset, setSummaryMonthOffset] = useState(1); // 1 = JUL-DEC 2025, 0 = JAN-JUN 2025, -1 = JUL-DEC 2024, -2 = JAN-JUN 2024
+
+  // Collapsible section states
+  const [isDebtAccountsExpanded, setIsDebtAccountsExpanded] = useState(true);
+  const [isDebtSummaryExpanded, setIsDebtSummaryExpanded] = useState(true);
 
   // Statements data
   const availableMonths = [
-    { value: "2024-12", label: "Dec 2024" },
-    { value: "2024-11", label: "Nov 2024" },
-    { value: "2024-10", label: "Oct 2024" },
-    { value: "2024-09", label: "Sep 2024" },
-    { value: "2024-08", label: "Aug 2024" },
-    { value: "2024-07", label: "Jul 2024" },
+    { value: "2025-01", label: "JAN 2025" },
+    { value: "2025-02", label: "FEB 2025" },
+    { value: "2025-03", label: "MAR 2025" },
+    { value: "2025-04", label: "APR 2025" },
+    { value: "2025-05", label: "MAY 2025" },
+    { value: "2025-06", label: "JUN 2025" },
+    { value: "2025-07", label: "JUL 2025" },
+    { value: "2025-08", label: "AUG 2025" },
+    { value: "2025-09", label: "SEP 2025" },
+    { value: "2025-10", label: "OCT 2025" },
+    { value: "2025-11", label: "NOV 2025" },
+    { value: "2025-12", label: "DEC 2025" },
   ];
 
   const allAccounts = [
     { name: "Checking Account", type: "Asset", accountType: "Checking", apr: null, dueDate: null },
+    { name: "Business Checking", type: "Asset", accountType: "Business Checking", apr: null, dueDate: null },
     { name: "Savings Account", type: "Asset", accountType: "Savings", apr: 4.25, dueDate: null },
     { name: "Money Market", type: "Asset", accountType: "Money Market", apr: 3.5, dueDate: null },
+    { name: "Investment Account", type: "Asset", accountType: "Investment", apr: 7.8, dueDate: null },
+    { name: "Emergency Fund", type: "Asset", accountType: "Savings", apr: 4.0, dueDate: null },
+    { name: "Retirement 401k", type: "Asset", accountType: "Investment", apr: 8.2, dueDate: null },
     { name: "Credit Card", type: "Debt", accountType: "Credit Card", apr: 24.99, dueDate: 15 },
     { name: "Mortgage", type: "Debt", accountType: "Mortgage", apr: 6.5, dueDate: 1 },
     { name: "Auto Loan", type: "Debt", accountType: "Auto Loan", apr: 5.2, dueDate: 10 },
+    { name: "Student Loan", type: "Debt", accountType: "Student Loan", apr: 4.8, dueDate: 5 },
+    { name: "Personal Loan", type: "Debt", accountType: "Line of Credit", apr: 12.5, dueDate: 20 },
+    { name: "Business Credit Card", type: "Debt", accountType: "Credit Card", apr: 18.9, dueDate: 25 },
+    { name: "Taxes Owed", type: "Debt", accountType: "Taxes", apr: null, dueDate: null },
   ];
 
-  // Filter accounts based on selected types
-  const accounts = allAccounts.filter(account => 
-    selectedAccountTypes.includes(account.type)
-  );
-
-  const toggleMonth = (monthValue: string) => {
-    setSelectedMonths(prev => 
-      prev.includes(monthValue) 
-        ? prev.filter(m => m !== monthValue)
-        : [...prev, monthValue].sort().reverse()
-    );
+  // Helper function to get balance value from input default value
+  const getBalance = (accountName: string): number => {
+    const balanceMap: { [key: string]: number } = {
+      "Checking Account": 12345.67,
+      "Business Checking": 8750.00,
+      "Savings Account": 25890.12,
+      "Money Market": 8500.00,
+      "Investment Account": 45230.00,
+      "Emergency Fund": 12000.00,
+      "Retirement 401k": 125500.00,
+      "Credit Card": 2456.78,
+      "Mortgage": 285000.00,
+      "Auto Loan": 18450.00,
+      "Student Loan": 23800.00,
+      "Personal Loan": 5200.00,
+      "Business Credit Card": 1850.00,
+      "Taxes Owed": 3500.00,
+    };
+    return balanceMap[accountName] || 15250.00;
   };
 
-  const toggleAccountType = (accountType: string) => {
-    setSelectedAccountTypes(prev => 
-      prev.includes(accountType) 
-        ? prev.filter(t => t !== accountType)
-        : [...prev, accountType]
-    );
+  // Helper function to get interest value from input default value
+  const getInterest = (accountName: string): number => {
+    const interestMap: { [key: string]: number } = {
+      "Checking Account": 0.00,
+      "Business Checking": 0.00,
+      "Savings Account": 95.43,
+      "Money Market": 25.18,
+      "Investment Account": 295.83,
+      "Emergency Fund": 40.00,
+      "Retirement 401k": 857.50,
+      "Credit Card": 47.23,
+      "Mortgage": 1542.88,
+      "Auto Loan": 78.95,
+      "Student Loan": 95.20,
+      "Personal Loan": 54.17,
+      "Business Credit Card": 29.12,
+      "Taxes Owed": 0.00,
+    };
+    return interestMap[accountName] || 25.50;
   };
-  
+
+  // Get unique sub-types for filtering based on selected account types
+  const availableSubTypes = Array.from(new Set(
+    allAccounts
+      .filter(account => selectedAccountTypes.includes(account.type))
+      .map(account => account.accountType)
+  ));
+
+  // Sort accounts based on sortBy preference
+  const sortedAccounts = allAccounts.sort((a, b) => {
+    if (sortBy === 'name') {
+      return a.name.localeCompare(b.name);
+    } else if (sortBy === 'name-reverse') {
+      return b.name.localeCompare(a.name);
+    } else if (sortBy === 'type-reverse') {
+      // First by type (Asset first, then Debt)
+      if (a.type !== b.type) {
+        return a.type === 'Asset' ? -1 : 1;
+      }
+      // Then by account sub-type within same type
+      return a.accountType.localeCompare(b.accountType);
+    } else { // sortBy === 'type'
+      // First by type (Debt first, then Asset)
+      if (a.type !== b.type) {
+        return a.type === 'Debt' ? -1 : 1;
+      }
+      // Then by account sub-type within same type
+      return a.accountType.localeCompare(b.accountType);
+    }
+  });
+
+  // Filter accounts based on selected types and sub-types
+  const filteredAccounts = sortedAccounts.filter(account => {
+    const typeMatch = selectedAccountTypes.includes(account.type);
+    const subTypeMatch = selectedSubTypes.length === 0 || selectedSubTypes.includes(account.accountType);
+    return typeMatch && subTypeMatch;
+  });
+
+  // Pagination logic for statements
+  const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
+  const startIndex = currentPage * accountsPerPage;
+  const endIndex = startIndex + accountsPerPage;
+  const paginatedAccounts = filteredAccounts.slice(startIndex, endIndex);
+
+  // For non-statements tabs, show all accounts
+  const accounts = filteredAccounts;
+
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
@@ -155,6 +283,61 @@ export default function AccountsPage() {
     form.reset();
   };
 
+  const toggleMonth = (monthValue: string) => {
+    setSelectedMonths(prev => 
+      prev.includes(monthValue) 
+        ? prev.filter(m => m !== monthValue)
+        : [...prev, monthValue].sort()
+    );
+  };
+
+  const toggleAccountType = (accountType: string) => {
+    setSelectedAccountTypes(prev => 
+      prev.includes(accountType) 
+        ? prev.filter(t => t !== accountType)
+        : [...prev, accountType]
+    );
+  };
+
+  const toggleSubType = (subType: string) => {
+    setSelectedSubTypes(prev => 
+      prev.includes(subType) 
+        ? prev.filter(s => s !== subType)
+        : [...prev, subType]
+    );
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value as 'name' | 'type' | 'name-reverse' | 'type-reverse');
+  };
+
+  const openNotesDialog = (accountName: string) => {
+    setSelectedAccountForNotes(accountName);
+    setIsNotesDialogOpen(true);
+  };
+
+  const addNote = () => {
+    if (newNote.trim() && selectedAccountForNotes) {
+      setAccountNotes(prev => ({
+        ...prev,
+        [selectedAccountForNotes]: [...(prev[selectedAccountForNotes] || []), newNote.trim()]
+      }));
+      setNewNote("");
+    }
+  };
+
+  const removeNote = (accountName: string, noteIndex: number) => {
+    setAccountNotes(prev => ({
+      ...prev,
+      [accountName]: prev[accountName]?.filter((_, index) => index !== noteIndex) || []
+    }));
+  };
+
+  // Get debt accounts for debt payoff tab
+  const getDebtAccounts = () => {
+    return allAccounts.filter(account => account.type === 'Debt');
+  };
+
   // Calculate debt payoff scenarios
   const calculatePayoff = (balance: number, rate: number, payment: number) => {
     const monthlyRate = rate / 100 / 12;
@@ -166,17 +349,6 @@ export default function AccountsPage() {
     
     return { months, totalInterest };
   };
-
-  const debtBalanceNum = parseFloat(debtBalance) || 0;
-  const interestRateNum = parseFloat(interestRate) || 0;
-  const minimumPaymentNum = parseFloat(minimumPayment) || 0;
-  const extraPaymentNum = parseFloat(extraPayment) || 0;
-
-  const minOnlyScenario = calculatePayoff(debtBalanceNum, interestRateNum, minimumPaymentNum);
-  const withExtraScenario = calculatePayoff(debtBalanceNum, interestRateNum, minimumPaymentNum + extraPaymentNum);
-
-  const monthsSaved = minOnlyScenario.months - withExtraScenario.months;
-  const interestSaved = minOnlyScenario.totalInterest - withExtraScenario.totalInterest;
 
   const AddAssetAccountDialog = () => (
     <Dialog open={isAssetDialogOpen} onOpenChange={setIsAssetDialogOpen}>
@@ -223,6 +395,7 @@ export default function AccountsPage() {
                       <SelectItem value="savings">Savings</SelectItem>
                       <SelectItem value="money_market">Money Market</SelectItem>
                       <SelectItem value="investment">Investment</SelectItem>
+                      <SelectItem value="other_asset">Other Asset</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -305,7 +478,7 @@ export default function AccountsPage() {
                 <FormItem>
                   <FormLabel>Account Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Main Checking" {...field} />
+                    <Input placeholder="e.g., Credit Card" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -330,6 +503,7 @@ export default function AccountsPage() {
                       <SelectItem value="student_loan">Student Loan</SelectItem>
                       <SelectItem value="auto_loan">Auto Loan</SelectItem>
                       <SelectItem value="line_of_credit">Line of Credit</SelectItem>
+                      <SelectItem value="other_debt">Other Debt</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -420,8 +594,8 @@ export default function AccountsPage() {
   );
 
   const EditAccountDialog = () => {
-    const isAssetAccount = editingAccount?.type && ["checking", "savings", "money_market", "investment"].includes(editingAccount.type);
-    const isDebtAccount = editingAccount?.type && ["credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit"].includes(editingAccount.type);
+    const isAssetAccount = editingAccount?.type && ["checking", "savings", "money_market", "investment", "other_asset"].includes(editingAccount.type);
+    const isDebtAccount = editingAccount?.type && ["credit_card", "mortgage", "student_loan", "auto_loan", "line_of_credit", "other_debt"].includes(editingAccount.type);
 
     return (
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -440,42 +614,6 @@ export default function AccountsPage() {
                     <FormControl>
                       <Input placeholder="e.g., Main Checking" {...field} />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select account type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {isAssetAccount ? (
-                          <>
-                            <SelectItem value="checking">Checking</SelectItem>
-                            <SelectItem value="savings">Savings</SelectItem>
-                            <SelectItem value="money_market">Money Market</SelectItem>
-                            <SelectItem value="investment">Investment</SelectItem>
-                          </>
-                        ) : (
-                          <>
-                            <SelectItem value="credit_card">Credit Card</SelectItem>
-                            <SelectItem value="mortgage">Mortgage</SelectItem>
-                            <SelectItem value="student_loan">Student Loan</SelectItem>
-                            <SelectItem value="auto_loan">Auto Loan</SelectItem>
-                            <SelectItem value="line_of_credit">Line of Credit</SelectItem>
-                          </>
-                        )}
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -570,48 +708,10 @@ export default function AccountsPage() {
     );
   };
 
-  const BalanceAdjustmentDialog = () => (
-    <Dialog open={isBalanceDialogOpen} onOpenChange={setIsBalanceDialogOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Adjust Balance - {selectedAccount?.name}</DialogTitle>
-        </DialogHeader>
-        <Form {...balanceForm}>
-          <form onSubmit={balanceForm.handleSubmit(handleBalanceAdjustment)} className="space-y-4">
-            <div className="text-sm text-gray-600">
-              Current Balance: {selectedAccount && formatCurrency(selectedAccount.balance)}
-            </div>
-            
-            <FormField
-              control={balanceForm.control}
-              name="newBalance"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New Balance</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsBalanceDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Update Balance</Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-
   return (
     <AppShell>
       <div className="p-4 lg:p-8">
-        <Tabs defaultValue="accounts" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 max-w-lg">
             <TabsTrigger value="accounts">My Accounts</TabsTrigger>
             <TabsTrigger value="statements">Statements</TabsTrigger>
@@ -629,80 +729,56 @@ export default function AccountsPage() {
                 <AddAssetAccountDialog />
               </div>
               <div className="grid gap-4">
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">Checking Account</h3>
-                        <p className="text-sm text-gray-600">Primary checking account</p>
+                {allAccounts.filter(account => account.type === 'Asset').map((account) => (
+                  <Card key={account.name}>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{account.name}</h3>
+                          <p className="text-sm text-gray-600">{account.accountType}</p>
+                          {account.apr && (
+                            <p className="text-sm text-gray-500">{account.apr}% APY</p>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <p className="text-lg font-semibold text-green-600">
+                            {formatCurrency(getBalance(account.name))}
+                          </p>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => openBalanceAdjustment(account.name, getBalance(account.name))}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => openEditAccount({
+                              name: account.name,
+                              type: account.accountType.toLowerCase().replace(' ', '_') as any,
+                              balance: getBalance(account.name).toString(),
+                              description: account.accountType,
+                              interestRate: account.apr?.toString() || "",
+                              creditLimit: "",
+                              apr: "",
+                              dueDate: "",
+                            })}
+                          >
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => openNotesDialog(account.name)}
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <p className="text-lg font-semibold text-green-600">{formatCurrency(12345.67)}</p>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => openBalanceAdjustment("Checking Account", 12345.67)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => openEditAccount({
-                            name: "Checking Account",
-                            type: "checking",
-                            balance: "12345.67",
-                            description: "Primary checking account",
-                            interestRate: "",
-                            creditLimit: "",
-                            apr: "",
-                            dueDate: "",
-                          })}
-                        >
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">Savings Account</h3>
-                        <p className="text-sm text-gray-600">High-yield savings</p>
-                        <p className="text-sm text-gray-500">4.5% APY</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <p className="text-lg font-semibold text-green-600">{formatCurrency(25890.12)}</p>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => openBalanceAdjustment("Savings Account", 25890.12)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => openEditAccount({
-                            name: "Savings Account",
-                            type: "savings",
-                            balance: "25890.12",
-                            description: "High-yield savings • 4.5% APY",
-                            interestRate: "4.5",
-                            creditLimit: "",
-                            apr: "",
-                            dueDate: "",
-                          })}
-                        >
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
 
@@ -716,48 +792,63 @@ export default function AccountsPage() {
                 <AddDebtAccountDialog />
               </div>
               <div className="grid gap-4">
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">Credit Card</h3>
-                        <p className="text-sm text-gray-600">Visa •••• 1234</p>
-                        <p className="text-sm text-gray-500">22.99% APR</p>
+                {allAccounts.filter(account => account.type === 'Debt').map((account) => (
+                  <Card key={account.name}>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{account.name}</h3>
+                          <p className="text-sm text-gray-600">{account.accountType}</p>
+                          {account.apr && (
+                            <p className="text-sm text-gray-500">{account.apr}% APR</p>
+                          )}
+                          {account.dueDate && (
+                            <p className="text-sm text-gray-500">Due: {account.dueDate}th</p>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <p className="text-lg font-semibold text-red-600">
+                            {formatCurrency(getBalance(account.name))}
+                          </p>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => openBalanceAdjustment(account.name, getBalance(account.name))}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => openEditAccount({
+                              name: account.name,
+                              type: account.accountType.toLowerCase().replace(' ', '_') as any,
+                              balance: getBalance(account.name).toString(),
+                              description: account.accountType,
+                              interestRate: "",
+                              creditLimit: "5000",
+                              apr: account.apr?.toString() || "",
+                              dueDate: account.dueDate?.toString() || "",
+                            })}
+                          >
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => openNotesDialog(account.name)}
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <p className="text-lg font-semibold text-red-600">{formatCurrency(2456.78)}</p>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => openBalanceAdjustment("Credit Card", 2456.78)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => openEditAccount({
-                            name: "Credit Card",
-                            type: "credit_card",
-                            balance: "2456.78",
-                            description: "Visa •••• 1234 • 22.99% APR",
-                            interestRate: "",
-                            creditLimit: "5000",
-                            apr: "22.99",
-                            dueDate: "15",
-                          })}
-                        >
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
         
             <EditAccountDialog />
-            <BalanceAdjustmentDialog />
           </TabsContent>
 
           <TabsContent value="statements" className="space-y-6">
@@ -776,6 +867,7 @@ export default function AccountsPage() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <div className="space-y-4 px-6 pb-2">
+                      {/* Account Type Filter */}
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Account Types:</p>
                         <div className="flex gap-4">
@@ -791,54 +883,168 @@ export default function AccountsPage() {
                         </div>
                       </div>
 
+                      {/* Month Selection */}
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
-                        <div className="flex flex-wrap gap-4">
-                          {availableMonths.map(month => (
-                            <label key={month.value} className="flex items-center space-x-2">
-                              <Checkbox
-                                checked={selectedMonths.includes(month.value)}
-                                onCheckedChange={() => toggleMonth(month.value)}
-                              />
-                              <span className="text-sm text-gray-700">{month.label}</span>
-                            </label>
-                          ))}
+                        <div className="overflow-x-auto scrollbar-hide">
+                          <div className="flex gap-4 pb-2 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible" style={{ width: 'max-content' }}>
+                            {availableMonths.map(month => (
+                              <label key={month.value} className="flex items-center space-x-2 whitespace-nowrap min-w-[120px] lg:min-w-0">
+                                <Checkbox
+                                  checked={selectedMonths.includes(month.value)}
+                                  onCheckedChange={() => toggleMonth(month.value)}
+                                />
+                                <span className="text-sm text-gray-700">{month.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Controls */}
+                      <div className="flex items-center gap-4 pt-2">
+                        {/* Filter Dropdown */}
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm font-medium text-gray-600">Filter:</Label>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="min-w-[120px] justify-between">
+                                {selectedAccountTypes.length === 2 ? 'All Types' : 
+                                 selectedAccountTypes.length === 1 ? selectedAccountTypes[0] + ' Only' : 
+                                 'No Types'}
+                                <ChevronDown className="h-4 w-4 ml-2" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56 p-3" align="start">
+                              <div className="space-y-3">
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Account Types:</Label>
+                                  <div className="space-y-2">
+                                    {['Asset', 'Debt'].map((type) => (
+                                      <div key={type} className="flex items-center space-x-2">
+                                        <Checkbox
+                                          id={`acc-filter-type-${type}`}
+                                          checked={selectedAccountTypes.includes(type)}
+                                          onCheckedChange={() => toggleAccountType(type)}
+                                        />
+                                        <Label htmlFor={`acc-filter-type-${type}`} className="text-sm cursor-pointer">
+                                          {type}
+                                        </Label>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                {availableSubTypes.length > 0 && (
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">Sub-types:</Label>
+                                    <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto">
+                                      {availableSubTypes.map((subType) => (
+                                        <div key={subType} className="flex items-center space-x-2">
+                                          <Checkbox
+                                            id={`acc-filter-subtype-${subType}`}
+                                            checked={selectedSubTypes.includes(subType)}
+                                            onCheckedChange={() => toggleSubType(subType)}
+                                          />
+                                          <Label htmlFor={`acc-filter-subtype-${subType}`} className="text-sm cursor-pointer">
+                                            {subType}
+                                          </Label>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+
+                        {/* Sort Dropdown */}
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm font-medium text-gray-600">Sort:</Label>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="min-w-[140px] justify-between">
+                                {sortBy === 'type' ? 'Type (Debt → Asset)' : 
+                                 sortBy === 'type-reverse' ? 'Type (Asset → Debt)' :
+                                 sortBy === 'name' ? 'Name (A → Z)' : 
+                                 sortBy === 'name-reverse' ? 'Name (Z → A)' : 'Type (Debt → Asset)'}
+                                <ChevronDown className="h-4 w-4 ml-2" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56 p-2" align="start">
+                              <RadioGroup value={sortBy} onValueChange={handleSortChange} className="space-y-2">
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="type" id="acc-sort-type" />
+                                  <Label htmlFor="acc-sort-type" className="text-sm cursor-pointer">
+                                    Type (Debt → Asset)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="type-reverse" id="acc-sort-type-reverse" />
+                                  <Label htmlFor="acc-sort-type-reverse" className="text-sm cursor-pointer">
+                                    Type (Asset → Debt)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="name" id="acc-sort-name" />
+                                  <Label htmlFor="acc-sort-name" className="text-sm cursor-pointer">
+                                    Name (A → Z)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="name-reverse" id="acc-sort-name-reverse" />
+                                  <Label htmlFor="acc-sort-name-reverse" className="text-sm cursor-pointer">
+                                    Name (Z → A)
+                                  </Label>
+                                </div>
+                              </RadioGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
                     </div>
 
                     {selectedMonths.length > 0 && (
                       <CardContent className="pt-0">
-                        <div className="flex justify-end mb-4">
+                        <div className="flex justify-between items-center mb-4 pt-4 border-t border-gray-200">
+                          <div className="flex items-center gap-3">
+                            <h4 className="text-lg font-semibold text-gray-900">Statement Details</h4>
+                          </div>
                           <Button variant="outline" size="sm">
                             <Save className="mr-1 h-3 w-3" />
                             Save All Changes
                           </Button>
                         </div>
                         
-                        <div className="relative">
+                        <div className="space-y-4">
+                          <div className="relative rounded-lg border-2 border-gray-300 shadow-sm">
                           <div className="overflow-x-auto">
-                            <Table>
+                            <Table className="border-separate border-spacing-0">
                               <TableHeader>
-                                <TableRow>
-                                  <TableHead className="w-[280px] sticky left-0 bg-white z-20 border-r-2 border-gray-400">Account</TableHead>
-                                  {selectedMonths.map(monthValue => {
+                                <TableRow className="border-none">
+                                  <TableHead className="w-[200px] sticky left-0 bg-gray-200 z-20 border-r-2 border-gray-400 font-bold text-gray-800 py-2 px-4 rounded-tl-lg h-12">
+                                    ACCOUNT
+                                  </TableHead>
+                                  {selectedMonths.map((monthValue, index) => {
                                     const monthLabel = availableMonths.find(m => m.value === monthValue)?.label || monthValue;
+                                    const [month, year] = monthLabel.split(' ');
                                     return (
-                                      <TableHead key={monthValue} className="text-center min-w-[120px]">
-                                        {monthLabel}
+                                      <TableHead key={monthValue} className={`text-center min-w-[100px] py-2 px-3 bg-gray-400 text-white font-bold h-12 ${index === selectedMonths.length - 1 ? 'rounded-tr-lg' : 'border-r border-gray-300'}`}>
+                                        <div className="text-sm font-bold whitespace-nowrap">
+                                          {month.slice(0, 3).toUpperCase()} {year}
+                                        </div>
                                       </TableHead>
                                     );
                                   })}
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {accounts.map((account) => (
+                                {paginatedAccounts.map((account) => (
                                   <TableRow key={account.name} className="hover:bg-gray-50">
-                                    <TableCell className="sticky left-0 bg-white z-10 border-r-2 border-gray-400">
-                                      <div className="space-y-2">
-                                        <div className="font-medium text-gray-900">{account.name}</div>
-                                        <div className="flex flex-wrap gap-1">
+                                    <TableCell className="w-[200px] sticky left-0 bg-white z-10 border-r-2 border-gray-400 py-3">
+                                      <div className="space-y-1.5">
+                                        <div className="font-medium text-gray-900 text-sm">{account.name}</div>
+                                        <div className="flex flex-wrap gap-1 justify-center">
                                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                                             account.type === 'Asset' 
                                               ? 'bg-green-100 text-green-800' 
@@ -850,45 +1056,52 @@ export default function AccountsPage() {
                                             {account.accountType}
                                           </span>
                                         </div>
-                                        <div className="text-xs text-gray-500 space-y-0.5">
-                                          {account.apr && (
-                                            <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
-                                          )}
+                                        <div className="text-xs text-gray-500">
                                           {account.dueDate && (
-                                            <div>Due: {account.dueDate}th</div>
+                                            <div className="flex justify-between items-center">
+                                              <span>Due: {account.dueDate}th</span>
+                                              {account.apr && (
+                                                <span>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</span>
+                                              )}
+                                            </div>
+                                          )}
+                                          {!account.dueDate && account.apr && (
+                                            <div>{account.type === 'Asset' ? 'APY' : 'APR'}: {account.apr}%</div>
                                           )}
                                         </div>
                                       </div>
                                     </TableCell>
 
                                     {selectedMonths.map(monthValue => (
-                                      <TableCell key={`${account.name}-${monthValue}`} className="text-center">
+                                      <TableCell key={`${account.name}-${monthValue}`} className="text-center border-r border-gray-200 py-3">
                                         <div className="space-y-1">
                                           <div className="relative">
                                             <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
                                             <Input
                                               type="text"
-                                              defaultValue={
-                                                account.name === "Checking Account" ? "12,345.67" :
-                                                account.name === "Savings Account" ? "25,890.12" :
-                                                account.name === "Money Market" ? "8,500.00" :
-                                                account.name === "Credit Card" ? "2,456.78" :
-                                                account.name === "Mortgage" ? "285,000.00" :
-                                                "15,250.00"
-                                              }
-                                              className="w-28 text-center pl-6"
+                                              defaultValue={getBalance(account.name).toLocaleString()}
+                                              className="w-28 h-8 text-center pl-6"
                                             />
                                             <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">B</span>
                                           </div>
-                                          <div className="relative">
-                                            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
-                                            <Input
-                                              type="text"
-                                              defaultValue="0.00"
-                                              className="w-28 text-center pl-6 text-xs"
-                                            />
-                                            <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
-                                          </div>
+                                          <TooltipProvider>
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <div className="relative">
+                                                  <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
+                                                  <Input
+                                                    type="text"
+                                                    defaultValue={getInterest(account.name).toFixed(2)}
+                                                    className="w-28 h-6 text-center pl-6 text-xs"
+                                                  />
+                                                  <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
+                                                </div>
+                                              </TooltipTrigger>
+                                              <TooltipContent>
+                                                <p>Interest/Return for this month</p>
+                                              </TooltipContent>
+                                            </Tooltip>
+                                          </TooltipProvider>
                                         </div>
                                       </TableCell>
                                     ))}
@@ -897,6 +1110,39 @@ export default function AccountsPage() {
                               </TableBody>
                             </Table>
                           </div>
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                          <div className="flex items-center justify-between mt-4">
+                            <p className="text-sm text-gray-700">
+                              Showing {startIndex + 1} to {Math.min(endIndex, filteredAccounts.length)} of {filteredAccounts.length} accounts
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                                disabled={currentPage === 0}
+                              >
+                                <ChevronLeft className="h-4 w-4" />
+                                Previous
+                              </Button>
+                              <span className="text-sm text-gray-700">
+                                Page {currentPage + 1} of {totalPages}
+                              </span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                                disabled={currentPage === totalPages - 1}
+                              >
+                                Next
+                                <ChevronRight className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                         </div>
                       </CardContent>
                     )}
@@ -909,7 +1155,7 @@ export default function AccountsPage() {
           <TabsContent value="debt-payoff" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Debt Payoff Calculator</CardTitle>
+                <CardTitle>Simple Debt Payoff Calculator</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-6">
@@ -920,8 +1166,7 @@ export default function AccountsPage() {
                       </label>
                       <Input
                         type="number"
-                        value={debtBalance}
-                        onChange={(e) => setDebtBalance(e.target.value)}
+                        defaultValue="15000"
                         placeholder="15000"
                       />
                     </div>
@@ -933,8 +1178,7 @@ export default function AccountsPage() {
                       <Input
                         type="number"
                         step="0.01"
-                        value={interestRate}
-                        onChange={(e) => setInterestRate(e.target.value)}
+                        defaultValue="18.5"
                         placeholder="18.5"
                       />
                     </div>
@@ -947,8 +1191,7 @@ export default function AccountsPage() {
                       </label>
                       <Input
                         type="number"
-                        value={minimumPayment}
-                        onChange={(e) => setMinimumPayment(e.target.value)}
+                        defaultValue="300"
                         placeholder="300"
                       />
                     </div>
@@ -959,8 +1202,7 @@ export default function AccountsPage() {
                       </label>
                       <Input
                         type="number"
-                        value={extraPayment}
-                        onChange={(e) => setExtraPayment(e.target.value)}
+                        defaultValue="100"
                         placeholder="100"
                       />
                     </div>
@@ -976,13 +1218,13 @@ export default function AccountsPage() {
                       <div>
                         <p className="text-sm text-gray-600">Time to payoff</p>
                         <p className="text-xl font-semibold text-red-700">
-                          {Math.floor(minOnlyScenario.months / 12)} years, {minOnlyScenario.months % 12} months
+                          4 years, 7 months
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Total interest paid</p>
                         <p className="text-lg font-semibold text-red-700">
-                          {formatCurrency(minOnlyScenario.totalInterest)}
+                          {formatCurrency(4260)}
                         </p>
                       </div>
                     </CardContent>
@@ -996,13 +1238,13 @@ export default function AccountsPage() {
                       <div>
                         <p className="text-sm text-gray-600">Time to payoff</p>
                         <p className="text-xl font-semibold text-green-700">
-                          {Math.floor(withExtraScenario.months / 12)} years, {withExtraScenario.months % 12} months
+                          3 years, 2 months
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Total interest paid</p>
                         <p className="text-lg font-semibold text-green-700">
-                          {formatCurrency(withExtraScenario.totalInterest)}
+                          {formatCurrency(2890)}
                         </p>
                       </div>
                     </CardContent>
@@ -1017,13 +1259,13 @@ export default function AccountsPage() {
                     <div>
                       <p className="text-sm text-gray-600">Interest saved</p>
                       <p className="text-xl font-semibold text-blue-700">
-                        {formatCurrency(interestSaved)}
+                        {formatCurrency(1370)}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Time saved</p>
                       <p className="text-lg font-semibold text-blue-700">
-                        {Math.floor(monthsSaved / 12)} years, {monthsSaved % 12} months
+                        1 years, 5 months
                       </p>
                     </div>
                   </CardContent>
@@ -1032,6 +1274,89 @@ export default function AccountsPage() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Balance Adjustment Dialog */}
+        <Dialog open={isBalanceDialogOpen} onOpenChange={setIsBalanceDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Adjust Balance - {selectedAccount?.name}</DialogTitle>
+            </DialogHeader>
+            <Form {...balanceForm}>
+              <form onSubmit={balanceForm.handleSubmit(handleBalanceAdjustment)} className="space-y-4">
+                <div className="text-sm text-gray-600">
+                  Current Balance: {selectedAccount && formatCurrency(selectedAccount.balance)}
+                </div>
+                
+                <FormField
+                  control={balanceForm.control}
+                  name="newBalance"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Balance</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                          <Input type="number" step="0.01" placeholder="0.00" className="pl-8" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button type="button" variant="outline" onClick={() => setIsBalanceDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">Update Balance</Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Notes Dialog */}
+        <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Notes - {selectedAccountForNotes}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                {selectedAccountForNotes && accountNotes[selectedAccountForNotes]?.map((note, index) => (
+                  <div key={index} className="flex items-start justify-between p-2 bg-gray-50 rounded">
+                    <p className="text-sm text-gray-700 flex-1">{note}</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeNote(selectedAccountForNotes, index)}
+                      className="ml-2 h-auto p-1"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+                {(!selectedAccountForNotes || !accountNotes[selectedAccountForNotes]?.length) && (
+                  <p className="text-sm text-gray-500 italic">No notes yet</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="new-note">Add New Note</Label>
+                <Textarea
+                  id="new-note"
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  placeholder="Enter a note about this account..."
+                  rows={3}
+                />
+                <Button onClick={addNote} disabled={!newNote.trim()} className="w-full">
+                  Add Note
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppShell>
   );
