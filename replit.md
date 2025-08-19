@@ -59,6 +59,14 @@ Preferred communication style: Simple, everyday language.
 - Clean minimal design with logout button positioned at the bottom of the page
 - Improved user experience by focusing on essential account management
 
+**Debt Payoff Calculator Restoration (August 19, 2025)**
+- Reverted Debt Payoff Calculator to original simple design with clean user interface
+- Restored standalone debt payoff calculator with basic input fields for balance, interest rate, minimum payment, and extra payment
+- Simplified statements page to use tabs with basic statements placeholder and debt payoff calculator
+- Removed complex multi-account debt management features in favor of simple single-debt calculation
+- Calculator now shows comparison between minimum payment only vs. with extra payment scenarios
+- Added savings summary showing interest saved and time saved with extra payments
+
 **Budget Page Removal (August 12, 2025)**
 - Completely removed standalone Budget page and all associated functionality
 - Cleaned up navigation menus (desktop sidebar and mobile bottom nav)
