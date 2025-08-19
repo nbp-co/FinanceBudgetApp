@@ -33,15 +33,14 @@ Preferred communication style: Simple, everyday language.
 - Updated transaction form to use selected calendar date as default
 - Removed email display from sidebar for cleaner user interface
 
-**Statements and Debt Payoff Restoration (August 19, 2025)**
-- Restored Statements page navigation link in both desktop sidebar and mobile bottom navigation
-- Created comprehensive DebtPayoffCalculator component with full functionality
-- Added debt payoff strategies: Debt Avalanche (highest interest first) and Debt Snowball (lowest balance first)
-- Implemented payoff calculations with extra payment distribution
-- Added amortization schedule and interest calculation features
-- Integrated debt overview cards showing total debt, account count, and estimated interest savings
-- Updated mobile navigation from 4 to 5 columns to accommodate all navigation items
-- Added statements tab redirect to full statements page for better organization
+**Statements Integration as Sub-Tab (August 19, 2025)**
+- Moved statements from main navigation tab to sub-tab within accounts page structure
+- Removed standalone statements route from application routing
+- Updated both desktop sidebar and mobile bottom navigation to remove statements main tab
+- Changed mobile navigation from 5 columns back to 4 columns for cleaner layout
+- Integrated statements functionality directly into accounts page with tab structure
+- Statements now accessible as "Statements" tab under the accounts section
+- Maintains debt payoff calculator as separate tab within accounts page structure
 
 **Daily Balance System Implementation (August 19, 2025)**
 - Implemented automatic daily balance calculation system triggered by transaction changes

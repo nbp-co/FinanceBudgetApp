@@ -9,7 +9,6 @@ import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import CalendarPage from "@/pages/calendar-page";
 import AccountsPage from "@/pages/accounts-page";
-import StatementsPage from "@/pages/statements-page";
 import SummaryPage from "@/pages/summary-page";
 import SettingsPage from "@/pages/settings-page";
 
@@ -19,7 +18,6 @@ function Router() {
       <Route path="/" component={() => <Redirect to="/calendar" />} />
       <ProtectedRoute path="/calendar" component={CalendarPage} />
       <ProtectedRoute path="/accounts" component={AccountsPage} />
-      <ProtectedRoute path="/statements" component={StatementsPage} />
       <ProtectedRoute path="/summary" component={SummaryPage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <Route path="/auth" component={AuthPage} />
