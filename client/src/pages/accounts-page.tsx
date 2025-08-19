@@ -1267,22 +1267,22 @@ export default function AccountsPage() {
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-4 gap-3 text-xs">
+                          <div className="grid grid-cols-4 gap-2 text-xs">
                             <div className="min-w-0">
                               <p className="text-gray-500 text-xs mb-0.5">Payment</p>
-                              <p className="font-bold text-gray-900 text-xs truncate">{debt.paymentDue}</p>
+                              <p className="font-bold text-gray-900 text-xs">${Math.round(parseFloat(debt.paymentDue.replace('$', '').replace(',', '')))}</p>
                             </div>
                             <div className="min-w-0">
                               <p className="text-gray-500 text-xs mb-0.5">Interest/mo</p>
-                              <p className="font-bold text-red-600 text-xs truncate">{formatCurrency(Math.round(debt.balance * debt.apr / 100 / 12))}</p>
+                              <p className="font-bold text-red-600 text-xs">${Math.round(debt.balance * debt.apr / 100 / 12)}</p>
                             </div>
                             <div className="min-w-0">
                               <p className="text-gray-500 text-xs mb-0.5">Year-end</p>
-                              <p className="font-bold text-blue-600 text-xs truncate">{formatCurrency(Math.round(debt.balance * 0.85))}</p>
+                              <p className="font-bold text-blue-600 text-xs">${Math.round(debt.balance * 0.85).toLocaleString()}</p>
                             </div>
                             <div className="min-w-0">
                               <p className="text-gray-500 text-xs mb-0.5">Expected</p>
-                              <p className="font-bold text-green-600 text-xs truncate">{debt.dueDate.includes('2030') ? '2030' : debt.dueDate.includes('2034') ? '2034' : debt.dueDate.includes('2029') ? '2029' : debt.dueDate.includes('2027') ? '2027' : debt.dueDate.includes('Never') ? 'Never' : '2032'}</p>
+                              <p className="font-bold text-green-600 text-xs">{debt.dueDate.includes('2030') ? 'JUN 2030' : debt.dueDate.includes('2034') ? 'JUN 2034' : debt.dueDate.includes('2029') ? 'APR 2029' : debt.dueDate.includes('2027') ? 'DEC 2027' : debt.dueDate.includes('Never') ? 'Never' : 'JAN 2032'}</p>
                             </div>
                           </div>
                         </div>
