@@ -1265,7 +1265,7 @@ export default function AccountsPage() {
                           </div>
                           
                           <div className="flex items-baseline space-x-2 mb-2">
-                            <span className="text-sm font-bold text-red-600">{formatCurrency(debt.balance)}</span>
+                            <span className="text-sm font-bold text-red-600">${Math.round(debt.balance).toLocaleString()}</span>
                             <span className="text-sm text-gray-600">{debt.rate} APR</span>
                           </div>
                           
