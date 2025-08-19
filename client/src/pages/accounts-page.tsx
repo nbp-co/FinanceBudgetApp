@@ -1335,7 +1335,7 @@ export default function AccountsPage() {
                               <p className="text-sm text-gray-600 font-medium">Total Debt</p>
                               <p className="text-xl font-bold text-gray-900">${summary.totalDebt.toLocaleString()}</p>
                               <p className="text-xs text-gray-500">
-                                ${(() => {
+                                {(() => {
                                   const debtAccounts = getDebtAccounts();
                                   let totalStartBalance = 0;
                                   
@@ -1363,12 +1363,18 @@ export default function AccountsPage() {
                                       }
                                     } else {
                                       // No statements, use current balance
-                                      totalStartBalance += Math.abs(account.balance);
+                                      const balance = getBalance(account.name);
+                                      if (!isNaN(balance)) {
+                                        totalStartBalance += Math.abs(balance);
+                                      }
                                     }
                                   });
                                   
-                                  return Math.round(totalStartBalance).toLocaleString();
-                                })()} Starting Bal
+                                  if (isNaN(totalStartBalance) || totalStartBalance === 0) {
+                                    return "No Starting Bal";
+                                  }
+                                  return `$${Math.round(totalStartBalance).toLocaleString()} Starting Bal`;
+                                })()}
                               </p>
                             </div>
                             <div className="text-center">
