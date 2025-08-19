@@ -125,8 +125,8 @@ export default function StatementsPage() {
                 <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm mb-4">
                   <Label className="text-sm font-medium text-gray-700 mb-3 block">Select months to edit:</Label>
                   <div className="space-y-3">
-                    {/* Desktop: 2 rows x 6 months, Mobile: 4 rows x 3 months */}
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                    {/* Row 1: JAN-MAR */}
+                    <div className="grid grid-cols-3 gap-3">
                       {availableMonths.slice(0, 3).map((month) => (
                         <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
                           <Checkbox
@@ -140,26 +140,10 @@ export default function StatementsPage() {
                           </Label>
                         </div>
                       ))}
-                      {/* Desktop: Show remaining first 6 months in same row */}
-                      <div className="hidden sm:contents">
-                        {availableMonths.slice(3, 6).map((month) => (
-                          <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
-                            <Checkbox
-                              id={`month-${month.value}`}
-                              checked={selectedMonths.includes(month.value)}
-                              onCheckedChange={() => toggleMonth(month.value)}
-                              className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                            />
-                            <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
-                              {month.label}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                     
-                    {/* Mobile: Second row (APR-JUN) */}
-                    <div className="grid grid-cols-3 sm:hidden gap-3">
+                    {/* Row 2: APR-JUN */}
+                    <div className="grid grid-cols-3 gap-3">
                       {availableMonths.slice(3, 6).map((month) => (
                         <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
                           <Checkbox
@@ -175,8 +159,8 @@ export default function StatementsPage() {
                       ))}
                     </div>
                     
-                    {/* Mobile: Third row (JUL-SEP) / Desktop: Second row start */}
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                    {/* Row 3: JUL-SEP */}
+                    <div className="grid grid-cols-3 gap-3">
                       {availableMonths.slice(6, 9).map((month) => (
                         <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
                           <Checkbox
@@ -190,26 +174,10 @@ export default function StatementsPage() {
                           </Label>
                         </div>
                       ))}
-                      {/* Desktop: Show remaining months in same row */}
-                      <div className="hidden sm:contents">
-                        {availableMonths.slice(9, 12).map((month) => (
-                          <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
-                            <Checkbox
-                              id={`month-${month.value}`}
-                              checked={selectedMonths.includes(month.value)}
-                              onCheckedChange={() => toggleMonth(month.value)}
-                              className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                            />
-                            <Label htmlFor={`month-${month.value}`} className="text-sm cursor-pointer">
-                              {month.label}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                     
-                    {/* Mobile: Fourth row (OCT-DEC) */}
-                    <div className="grid grid-cols-3 sm:hidden gap-3">
+                    {/* Row 4: OCT-DEC */}
+                    <div className="grid grid-cols-3 gap-3">
                       {availableMonths.slice(9, 12).map((month) => (
                         <div key={month.value} className="flex items-center space-x-2 whitespace-nowrap">
                           <Checkbox
