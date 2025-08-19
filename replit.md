@@ -27,6 +27,7 @@ Preferred communication style: Simple, everyday language.
 - Transaction details modal now supports both view and edit modes with form validation
 - Added recurring transaction functionality with future transaction generation (12 months)
 - Support for multiple recurring frequencies: Daily, Weekly, Bi-weekly, Monthly, and Custom intervals
+- Removed "Financial Calendar" header from tab for cleaner interface design
 
 **Budget Page Removal (August 12, 2025)**
 - Completely removed standalone Budget page and all associated functionality
