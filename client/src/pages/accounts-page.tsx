@@ -971,21 +971,10 @@ export default function AccountsPage() {
                       {/* Month Selection */}
                       <div>
                         <p className="text-sm text-gray-600 mb-2">Select months to edit:</p>
-                        <div className="space-y-3">
-                          <div className="grid grid-cols-6 gap-4">
-                            {availableMonths.slice(0, 6).map(month => (
-                              <label key={month.value} className="flex items-center space-x-2">
-                                <Checkbox
-                                  checked={selectedMonths.includes(month.value)}
-                                  onCheckedChange={() => toggleMonth(month.value)}
-                                />
-                                <span className="text-sm text-gray-700">{month.label}</span>
-                              </label>
-                            ))}
-                          </div>
-                          <div className="grid grid-cols-6 gap-4">
-                            {availableMonths.slice(6).map(month => (
-                              <label key={month.value} className="flex items-center space-x-2">
+                        <div className="overflow-x-auto scrollbar-hide">
+                          <div className="flex gap-4 pb-2 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible" style={{ width: 'max-content' }}>
+                            {availableMonths.map(month => (
+                              <label key={month.value} className="flex items-center space-x-2 whitespace-nowrap min-w-[120px] lg:min-w-0">
                                 <Checkbox
                                   checked={selectedMonths.includes(month.value)}
                                   onCheckedChange={() => toggleMonth(month.value)}
