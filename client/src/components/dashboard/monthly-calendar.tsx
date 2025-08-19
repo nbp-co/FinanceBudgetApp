@@ -2,13 +2,13 @@ import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, Repeat } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay, subDays } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-import type { Account, Transaction, Category, DailyBalance } from "@shared/schema";
+import type { Account, Transaction, Category, DailyBalance, RecurringRule } from "@shared/schema";
 
 interface MonthlyCalendarProps {
   onDateSelect?: (date: Date | null) => void;
@@ -33,6 +33,11 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
   // Fetch categories for transaction details
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
+  });
+
+  // Fetch recurring rules for frequency information
+  const { data: recurringRules = [] } = useQuery<RecurringRule[]>({
+    queryKey: ["/api/recurring"],
   });
 
   // Fetch transactions for the current month
@@ -196,6 +201,25 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     if (!Array.isArray(categories) || categories.length === 0) return 'Loading...';
     const category = categories.find(cat => cat.id === categoryId);
     return category ? category.name : 'Unknown Category';
+  };
+
+  // Get recurring frequency display
+  const getRecurringFrequency = (transaction: Transaction): string | null => {
+    if (!transaction.recurringId) return null;
+    
+    const recurringRule = recurringRules.find(rule => rule.id === transaction.recurringId);
+    if (!recurringRule) return 'Recurring';
+    
+    // Map frequency values to display strings
+    const frequencyMap: { [key: string]: string } = {
+      'daily': 'Daily',
+      'weekly': 'Weekly', 
+      'biweekly': 'Bi-weekly',
+      'monthly': 'Monthly',
+      'custom': `Every ${recurringRule.interval} days`
+    };
+    
+    return frequencyMap[recurringRule.freq] || 'Recurring';
   };
 
   // Group daily balances by date for efficient lookup
@@ -434,7 +458,15 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                     <p className="text-xs text-gray-500">{getCategoryName(transaction.categoryId)}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex items-center gap-2">
+                  {transaction.recurringId && (
+                    <div className="flex flex-col items-center">
+                      <Repeat className="h-3 w-3 text-blue-500" />
+                      <span className="text-xs text-blue-500 font-medium">
+                        {getRecurringFrequency(transaction)}
+                      </span>
+                    </div>
+                  )}
                   <p className={`font-semibold text-sm ${
                     transaction.type === 'INCOME' ? 'text-green-600' :
                     transaction.type === 'EXPENSE' ? 'text-red-600' : 'text-gray-800'
