@@ -12,7 +12,7 @@ export function AppShell({ children }: AppShellProps) {
     <div className="min-h-screen bg-gray-50">
       <DesktopSidebar />
       
-      <div className="lg:pl-60">
+      <div className="lg:pl-48">
         <MobileHeader />
         
         <main className="pb-20 lg:pb-8">
