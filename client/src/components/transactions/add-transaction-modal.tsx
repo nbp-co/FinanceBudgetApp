@@ -23,6 +23,7 @@ interface AddTransactionModalProps {
 export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransaction }: AddTransactionModalProps) {
   const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE" | "TRANSFER">(editTransaction?.type || "EXPENSE");
   const [isRecurring, setIsRecurring] = useState(false);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [formData, setFormData] = useState({
     description: editTransaction?.description || "",
     amount: editTransaction?.amount || "",
@@ -223,6 +224,16 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
     
     // Category is optional - no validation needed
     
+    // For recurring transactions in edit mode, show dialog
+    if (isEditMode && editTransaction?.recurringId) {
+      setShowUpdateDialog(true);
+      return;
+    }
+    
+    submitTransaction();
+  };
+
+  const submitTransaction = () => {
     const transactionData = {
       type: transactionType,
       amount: formData.amount,
@@ -491,6 +502,38 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
                 </AlertDialogContent>
               </AlertDialog>
             )}
+
+            {/* Update recurring transaction dialog */}
+            <AlertDialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Update Recurring Transaction</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This is a recurring transaction. How would you like to update it?
+                    <div className="mt-3 space-y-2">
+                      <div className="p-3 border rounded-lg">
+                        <strong>Single instance:</strong> Update only this transaction
+                      </div>
+                      <div className="p-3 border rounded-lg">
+                        <strong>All future transactions:</strong> Update this and all future occurrences (not supported yet)
+                      </div>
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={() => {
+                      setShowUpdateDialog(false);
+                      submitTransaction();
+                    }}
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    Update Single Instance
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             
             <Button type="submit" className="flex-1" disabled={createTransactionMutation.isPending}>
               {createTransactionMutation.isPending ? "Saving..." : (isEditMode ? "Update Transaction" : "Save Transaction")}
