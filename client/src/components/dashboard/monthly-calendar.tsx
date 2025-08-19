@@ -179,7 +179,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
         // Parse date safely to avoid timezone issues
         const dateStr = typeof transaction.date === 'string' 
           ? transaction.date.split('T')[0] 
-          : transaction.date.toISOString().split('T')[0];
+          : new Date(transaction.date).toISOString().split('T')[0];
         const date = new Date(dateStr + 'T00:00:00');
         const dateKey = format(date, 'yyyy-MM-dd');
         
@@ -267,12 +267,13 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     
     // Get all transactions up to and including this date for this account
     const transactionsUpToDate = transactions.filter(tx => {
-      const txDate = new Date(tx.date);
-      const targetDate = new Date(date);
-      // Set both dates to start of day for accurate comparison
-      txDate.setHours(0, 0, 0, 0);
-      targetDate.setHours(0, 0, 0, 0);
-      return txDate <= targetDate && tx.accountId === selectedAccountId;
+      // Parse date safely to avoid timezone issues
+      const txDateStr = typeof tx.date === 'string' 
+        ? tx.date.split('T')[0] 
+        : new Date(tx.date).toISOString().split('T')[0];
+      const targetDateStr = format(date, 'yyyy-MM-dd');
+      
+      return txDateStr <= targetDateStr && (tx.accountId === selectedAccountId || tx.toAccountId === selectedAccountId);
     });
     
     // Start with opening balance
