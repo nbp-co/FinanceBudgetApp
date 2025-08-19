@@ -91,6 +91,9 @@ export default function AccountsPage() {
     startDate: new Date().toISOString().split('T')[0]
   });
 
+  // Mobile tab navigation state
+  const [activeTab, setActiveTab] = useState("accounts");
+
   // Debt summary view mode state
   const [summaryViewMode, setSummaryViewMode] = useState<'table' | 'chart'>('table');
   const [summaryChartMode, setSummaryChartMode] = useState<'balance' | 'interest'>('balance');
@@ -608,9 +611,12 @@ export default function AccountsPage() {
   };
 
   return (
-    <AppShell>
+    <AppShell
+      accountsTabValue={activeTab}
+      onAccountsTabChange={setActiveTab}
+    >
       <div className="p-4 lg:p-8">
-        <Tabs defaultValue="accounts" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="flex justify-center lg:block hidden">
             <TabsList className="grid grid-cols-3 max-w-2xl">
               <TabsTrigger value="accounts">My Accounts</TabsTrigger>
