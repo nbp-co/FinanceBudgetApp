@@ -71,8 +71,10 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
       toast({
-        title: "Transaction created",
-        description: "Your transaction has been added successfully.",
+        title: isRecurring ? "Recurring transaction created" : "Transaction created",
+        description: isRecurring 
+          ? "Your recurring transaction and future occurrences have been added successfully." 
+          : "Your transaction has been added successfully.",
       });
       onClose();
       // Reset form
@@ -153,6 +155,9 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
       accountId: formData.accountId,
       toAccountId: transactionType === "TRANSFER" ? formData.toAccountId : undefined,
       categoryId: transactionType !== "TRANSFER" ? formData.categoryId : undefined,
+      isRecurring,
+      frequency: formData.frequency,
+      interval: formData.interval,
     };
 
     console.log("Submitting transaction data:", transactionData);

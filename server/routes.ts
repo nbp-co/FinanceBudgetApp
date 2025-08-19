@@ -9,7 +9,48 @@ import {
   insertRecurringRuleSchema,
   insertMonthlyStatementSchema 
 } from "@shared/schema";
-import { addMonths, startOfMonth, endOfMonth, addDays } from "date-fns";
+import { addMonths, startOfMonth, endOfMonth, addDays, addWeeks } from "date-fns";
+
+// Helper function to generate future recurring transactions
+function generateFutureTransactions(baseTransaction: any, recurringRule: any, monthsAhead: number = 12) {
+  const futureTransactions = [];
+  const startDate = new Date(baseTransaction.date);
+  let currentDate = new Date(startDate);
+  
+  // Generate transactions for the specified number of months
+  const endDate = addMonths(startDate, monthsAhead);
+  
+  while (currentDate < endDate) {
+    // Calculate next occurrence based on frequency
+    switch (recurringRule.freq) {
+      case 'daily':
+        currentDate = addDays(currentDate, recurringRule.interval || 1);
+        break;
+      case 'weekly':
+        currentDate = addWeeks(currentDate, recurringRule.interval || 1);
+        break;
+      case 'biweekly':
+        currentDate = addWeeks(currentDate, 2 * (recurringRule.interval || 1));
+        break;
+      case 'monthly':
+      default:
+        currentDate = addMonths(currentDate, recurringRule.interval || 1);
+        break;
+    }
+    
+    // Don't include the original transaction date
+    if (currentDate.getTime() !== startDate.getTime() && currentDate < endDate) {
+      futureTransactions.push({
+        ...baseTransaction,
+        date: new Date(currentDate),
+        id: undefined, // Let the database generate new IDs
+        createdAt: undefined
+      });
+    }
+  }
+  
+  return futureTransactions;
+}
 
 function requireAuth(req: any, res: any, next: any) {
   if (!req.isAuthenticated() || !req.user) {
@@ -169,13 +210,56 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/transactions", requireAuth, async (req, res) => {
     try {
       console.log("Creating transaction with data:", req.body);
+      const { isRecurring, frequency, interval, ...transactionBody } = req.body;
+      
       const transactionData = insertTransactionSchema.parse({
-        ...req.body,
+        ...transactionBody,
         userId: getUserId(req),
-        date: new Date(req.body.date)
+        date: new Date(transactionBody.date)
       });
       console.log("Parsed transaction data:", transactionData);
+      
+      // Create the initial transaction
       const transaction = await storage.createTransaction(transactionData);
+      
+      // If this is a recurring transaction, create the recurring rule and future transactions
+      if (isRecurring) {
+        console.log("Creating recurring rule for transaction");
+        
+        const recurringRuleData = insertRecurringRuleSchema.parse({
+          userId: getUserId(req),
+          accountId: transactionData.accountId,
+          templateType: transactionData.type,
+          templateAmount: transactionData.amount,
+          templateDesc: transactionData.description,
+          templateCategoryId: transactionData.categoryId,
+          freq: frequency || "monthly",
+          interval: parseInt(interval || "1"),
+          startDate: new Date(transactionBody.date),
+          endDate: null, // No end date for now
+          timezone: "UTC",
+          active: true
+        });
+        
+        const recurringRule = await storage.createRecurringRule(recurringRuleData);
+        
+        // Generate future transactions (next 12 months)
+        const futureTransactions = generateFutureTransactions(transactionData, recurringRule, 12);
+        
+        // Create all future transactions
+        for (const futureTransaction of futureTransactions) {
+          await storage.createTransaction({
+            ...futureTransaction,
+            recurringId: recurringRule.id
+          });
+        }
+        
+        console.log(`Created ${futureTransactions.length} future recurring transactions`);
+        
+        // Update the original transaction with the recurring ID
+        await storage.updateTransaction(transaction.id, { recurringId: recurringRule.id });
+      }
+      
       res.status(201).json(transaction);
     } catch (error) {
       console.error("Transaction creation error:", error);
