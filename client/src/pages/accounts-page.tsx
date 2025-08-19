@@ -685,7 +685,10 @@ export default function AccountsPage() {
                             <FormItem>
                               <FormLabel>Current Balance</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                  <Input type="number" step="0.01" placeholder="0.00" className="pl-8" {...field} />
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -853,7 +856,10 @@ export default function AccountsPage() {
                             <FormItem>
                               <FormLabel>Current Balance</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                  <Input type="number" step="0.01" placeholder="0.00" className="pl-8" {...field} />
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -2226,7 +2232,10 @@ export default function AccountsPage() {
                     <FormItem>
                       <FormLabel>New Balance</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                          <Input type="number" step="0.01" placeholder="0.00" className="pl-8" {...field} />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
