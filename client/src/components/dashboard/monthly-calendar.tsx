@@ -9,7 +9,7 @@ import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 export function MonthlyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [accountFilter, setAccountFilter] = useState("assets");
+  const [accountFilter, setAccountFilter] = useState("checking");
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -186,14 +186,12 @@ export function MonthlyCalendar() {
                   <SelectValue placeholder="Select Account" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="assets">All Assets</SelectItem>
-                  <SelectItem value="checking" className="pl-6">Checking Account</SelectItem>
-                  <SelectItem value="savings" className="pl-6">Savings Account</SelectItem>
-                  <SelectItem value="investment" className="pl-6">Investment Account</SelectItem>
-                  <SelectItem value="business" className="pl-6">Business Account</SelectItem>
-                  <SelectItem value="debts">All Debts</SelectItem>
-                  <SelectItem value="credit" className="pl-6">Credit Card</SelectItem>
-                  <SelectItem value="business-credit" className="pl-6">Business Credit Card</SelectItem>
+                  <SelectItem value="checking">Checking Account</SelectItem>
+                  <SelectItem value="savings">Savings Account</SelectItem>
+                  <SelectItem value="investment">Investment Account</SelectItem>
+                  <SelectItem value="business">Business Account</SelectItem>
+                  <SelectItem value="credit">Credit Card</SelectItem>
+                  <SelectItem value="business-credit">Business Credit Card</SelectItem>
                 </SelectContent>
               </Select>
             </div>
