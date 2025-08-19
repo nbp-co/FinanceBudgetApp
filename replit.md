@@ -52,11 +52,13 @@ Preferred communication style: Simple, everyday language.
 - Fixed balance display formatting to show proper currency values instead of $0.00
 - Ensured daily balances update immediately after any transaction modification
 
-**Settings Page Simplification (August 19, 2025)**
-- Simplified Settings page to contain only a single logout button at the bottom
-- Removed complex collapsible sections for profile, security, and notifications
-- Clean minimal design with logout button positioned at the bottom of the page
-- Improved user experience by focusing on essential account management
+**Settings Page Restoration (August 19, 2025)**
+- Reverted Settings page to comprehensive design with collapsible sections
+- Restored Profile Information section with name, email, timezone, ZIP code, and birth year fields
+- Restored Security section with password change functionality  
+- Restored Notifications section (placeholder for future implementation)
+- Maintained logout button at bottom of the page
+- All sections are collapsible with expand/collapse functionality using chevron icons
 
 **Debt Payoff Calculator Restoration (August 19, 2025)**
 - Reverted Debt Payoff Calculator to original simple design with clean user interface
