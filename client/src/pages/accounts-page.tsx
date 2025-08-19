@@ -1267,22 +1267,22 @@ export default function AccountsPage() {
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-4 gap-2 text-xs">
-                            <div>
-                              <p className="text-gray-500 text-xs">Payment</p>
-                              <p className="font-bold text-gray-900 text-sm">{debt.paymentDue}</p>
+                          <div className="grid grid-cols-4 gap-3 text-xs">
+                            <div className="min-w-0">
+                              <p className="text-gray-500 text-xs mb-0.5">Payment</p>
+                              <p className="font-bold text-gray-900 text-xs truncate">{debt.paymentDue}</p>
                             </div>
-                            <div>
-                              <p className="text-gray-500 text-xs">Interest/mo</p>
-                              <p className="font-bold text-red-600 text-sm">{formatCurrency(Math.round(debt.balance * debt.apr / 100 / 12))}</p>
+                            <div className="min-w-0">
+                              <p className="text-gray-500 text-xs mb-0.5">Interest/mo</p>
+                              <p className="font-bold text-red-600 text-xs truncate">{formatCurrency(Math.round(debt.balance * debt.apr / 100 / 12))}</p>
                             </div>
-                            <div>
-                              <p className="text-gray-500 text-xs">Year-end</p>
-                              <p className="font-bold text-blue-600 text-sm">{formatCurrency(Math.round(debt.balance * 0.85))}</p>
+                            <div className="min-w-0">
+                              <p className="text-gray-500 text-xs mb-0.5">Year-end</p>
+                              <p className="font-bold text-blue-600 text-xs truncate">{formatCurrency(Math.round(debt.balance * 0.85))}</p>
                             </div>
-                            <div>
-                              <p className="text-gray-500 text-xs">Expected</p>
-                              <p className="font-bold text-green-600 text-sm">{debt.dueDate.includes('2030') ? 'Jun 2030' : debt.dueDate.includes('2034') ? 'May 2034' : debt.dueDate.includes('2029') ? 'Apr 2029' : debt.dueDate.includes('2027') ? 'Dec 2027' : debt.dueDate.includes('Never') ? 'Never' : 'Jan 2032'}</p>
+                            <div className="min-w-0">
+                              <p className="text-gray-500 text-xs mb-0.5">Expected</p>
+                              <p className="font-bold text-green-600 text-xs truncate">{debt.dueDate.includes('2030') ? '2030' : debt.dueDate.includes('2034') ? '2034' : debt.dueDate.includes('2029') ? '2029' : debt.dueDate.includes('2027') ? '2027' : debt.dueDate.includes('Never') ? 'Never' : '2032'}</p>
                             </div>
                           </div>
                         </div>
