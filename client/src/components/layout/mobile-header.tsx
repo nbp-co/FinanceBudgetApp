@@ -25,7 +25,7 @@ export function MobileHeader({ accountsTabValue = "accounts", onAccountsTabChang
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Wallet className="w-5 h-5 text-white" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900">BudgetApp</h1>
+          <h1 className="text-xl font-bold text-gray-900">NBP Finance</h1>
         </div>
         <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
           <span className="text-white text-sm font-medium">
