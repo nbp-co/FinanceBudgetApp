@@ -114,6 +114,15 @@ export const interestSnapshots = pgTable("interest_snapshots", {
   createdAt: timestamp("created_at").notNull().default(sql`now()`)
 });
 
+// Daily balances table
+export const dailyBalances = pgTable("daily_balances", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  accountId: varchar("account_id").notNull().references(() => accounts.id, { onDelete: "cascade" }),
+  date: timestamp("date").notNull(),
+  balance: decimal("balance", { precision: 12, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`)
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
@@ -128,6 +137,7 @@ export const accountsRelations = relations(accounts, ({ one, many }) => ({
   transactionsTo: many(transactions, { relationName: "toAccount" }),
   statements: many(monthlyStatements),
   interestSnaps: many(interestSnapshots),
+  dailyBalances: many(dailyBalances),
 }));
 
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
@@ -161,6 +171,10 @@ export const monthlyStatementsRelations = relations(monthlyStatements, ({ one })
 
 export const interestSnapshotsRelations = relations(interestSnapshots, ({ one }) => ({
   account: one(accounts, { fields: [interestSnapshots.accountId], references: [accounts.id] }),
+}));
+
+export const dailyBalancesRelations = relations(dailyBalances, ({ one }) => ({
+  account: one(accounts, { fields: [dailyBalances.accountId], references: [accounts.id] }),
 }));
 
 // Insert schemas
@@ -198,6 +212,11 @@ export const insertInterestSnapshotSchema = createInsertSchema(interestSnapshots
   createdAt: true,
 });
 
+export const insertDailyBalanceSchema = createInsertSchema(dailyBalances).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -213,3 +232,5 @@ export type MonthlyStatement = typeof monthlyStatements.$inferSelect;
 export type InsertMonthlyStatement = z.infer<typeof insertMonthlyStatementSchema>;
 export type InterestSnapshot = typeof interestSnapshots.$inferSelect;
 export type InsertInterestSnapshot = z.infer<typeof insertInterestSnapshotSchema>;
+export type DailyBalance = typeof dailyBalances.$inferSelect;
+export type InsertDailyBalance = z.infer<typeof insertDailyBalanceSchema>;

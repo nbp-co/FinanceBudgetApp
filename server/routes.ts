@@ -512,6 +512,72 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Daily balance endpoints
+  app.get("/api/daily-balances/:accountId", requireAuth, async (req, res) => {
+    try {
+      const { accountId } = req.params;
+      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+      const balances = await storage.getDailyBalancesByAccount(accountId, startDate, endDate);
+      res.json(balances);
+    } catch (error) {
+      console.error("Error fetching daily balances:", error);
+      res.status(500).json({ error: "Failed to fetch daily balances" });
+    }
+  });
+
+  app.get("/api/daily-balances/:accountId/:date", requireAuth, async (req, res) => {
+    try {
+      const { accountId, date } = req.params;
+      const balance = await storage.getDailyBalance(accountId, new Date(date));
+      if (!balance) {
+        return res.status(404).json({ error: "Daily balance not found" });
+      }
+      res.json(balance);
+    } catch (error) {
+      console.error("Error fetching daily balance:", error);
+      res.status(500).json({ error: "Failed to fetch daily balance" });
+    }
+  });
+
+  app.post("/api/daily-balances", requireAuth, async (req, res) => {
+    try {
+      const balance = await storage.createDailyBalance(req.body);
+      res.status(201).json(balance);
+    } catch (error) {
+      console.error("Error creating daily balance:", error);
+      res.status(500).json({ error: "Failed to create daily balance" });
+    }
+  });
+
+  app.put("/api/daily-balances/:accountId/:date", requireAuth, async (req, res) => {
+    try {
+      const { accountId, date } = req.params;
+      const { balance } = req.body;
+      const updated = await storage.updateDailyBalance(accountId, new Date(date), balance);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating daily balance:", error);
+      res.status(500).json({ error: "Failed to update daily balance" });
+    }
+  });
+
+  app.post("/api/daily-balances/calculate/:accountId", requireAuth, async (req, res) => {
+    try {
+      const { accountId } = req.params;
+      const { startDate, endDate } = req.body;
+      await storage.updateDailyBalancesForAccount(
+        accountId, 
+        new Date(startDate), 
+        new Date(endDate)
+      );
+      res.json({ message: "Daily balances updated successfully" });
+    } catch (error) {
+      console.error("Error calculating daily balances:", error);
+      res.status(500).json({ error: "Failed to calculate daily balances" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

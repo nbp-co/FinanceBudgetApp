@@ -6,6 +6,7 @@ import {
   recurringRules,
   monthlyStatements,
   interestSnapshots,
+  dailyBalances,
   type User, 
   type InsertUser,
   type Account,
@@ -19,7 +20,9 @@ import {
   type MonthlyStatement,
   type InsertMonthlyStatement,
   type InterestSnapshot,
-  type InsertInterestSnapshot
+  type InsertInterestSnapshot,
+  type DailyBalance,
+  type InsertDailyBalance
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, asc } from "drizzle-orm";
@@ -79,6 +82,15 @@ export interface IStorage {
   // Interest snapshots methods
   getInterestSnapshots(accountId: string, date?: Date): Promise<InterestSnapshot[]>;
   createInterestSnapshot(snapshot: InsertInterestSnapshot): Promise<InterestSnapshot>;
+
+  // Daily balance methods
+  getDailyBalance(accountId: string, date: Date): Promise<DailyBalance | undefined>;
+  getDailyBalancesByAccount(accountId: string, startDate?: Date, endDate?: Date): Promise<DailyBalance[]>;
+  createDailyBalance(balance: InsertDailyBalance): Promise<DailyBalance>;
+  updateDailyBalance(accountId: string, date: Date, balance: string): Promise<DailyBalance>;
+  upsertDailyBalance(accountId: string, date: Date, balance: string): Promise<DailyBalance>;
+  calculateDailyBalance(accountId: string, date: Date): Promise<string>;
+  updateDailyBalancesForAccount(accountId: string, startDate: Date, endDate: Date): Promise<void>;
 
   // Session store
   sessionStore: session.Store;
@@ -364,16 +376,22 @@ export class DatabaseStorage implements IStorage {
 
   // Interest snapshots methods
   async getInterestSnapshots(accountId: string, date?: Date): Promise<InterestSnapshot[]> {
-    let query = db
+    if (date) {
+      return await db
+        .select()
+        .from(interestSnapshots)
+        .where(and(
+          eq(interestSnapshots.accountId, accountId),
+          eq(interestSnapshots.date, date)
+        ))
+        .orderBy(desc(interestSnapshots.date));
+    }
+    
+    return await db
       .select()
       .from(interestSnapshots)
-      .where(eq(interestSnapshots.accountId, accountId));
-
-    if (date) {
-      query = query.where(eq(interestSnapshots.date, date));
-    }
-
-    return await query.orderBy(desc(interestSnapshots.date));
+      .where(eq(interestSnapshots.accountId, accountId))
+      .orderBy(desc(interestSnapshots.date));
   }
 
   async createInterestSnapshot(insertSnapshot: InsertInterestSnapshot): Promise<InterestSnapshot> {
@@ -382,6 +400,127 @@ export class DatabaseStorage implements IStorage {
       .values(insertSnapshot)
       .returning();
     return snapshot;
+  }
+
+  // Daily balance methods
+  async getDailyBalance(accountId: string, date: Date): Promise<DailyBalance | undefined> {
+    const [balance] = await db
+      .select()
+      .from(dailyBalances)
+      .where(and(
+        eq(dailyBalances.accountId, accountId),
+        eq(dailyBalances.date, date)
+      ));
+    return balance || undefined;
+  }
+
+  async getDailyBalancesByAccount(accountId: string, startDate?: Date, endDate?: Date): Promise<DailyBalance[]> {
+    let whereConditions = [eq(dailyBalances.accountId, accountId)];
+    
+    if (startDate) {
+      whereConditions.push(gte(dailyBalances.date, startDate));
+    }
+    
+    if (endDate) {
+      whereConditions.push(lte(dailyBalances.date, endDate));
+    }
+
+    return await db
+      .select()
+      .from(dailyBalances)
+      .where(and(...whereConditions))
+      .orderBy(asc(dailyBalances.date));
+  }
+
+  async createDailyBalance(insertBalance: InsertDailyBalance): Promise<DailyBalance> {
+    const [balance] = await db
+      .insert(dailyBalances)
+      .values(insertBalance)
+      .returning();
+    return balance;
+  }
+
+  async updateDailyBalance(accountId: string, date: Date, balance: string): Promise<DailyBalance> {
+    const [updated] = await db
+      .update(dailyBalances)
+      .set({ balance })
+      .where(and(
+        eq(dailyBalances.accountId, accountId),
+        eq(dailyBalances.date, date)
+      ))
+      .returning();
+    return updated;
+  }
+
+  async upsertDailyBalance(accountId: string, date: Date, balance: string): Promise<DailyBalance> {
+    const existing = await this.getDailyBalance(accountId, date);
+    
+    if (existing) {
+      return await this.updateDailyBalance(accountId, date, balance);
+    } else {
+      return await this.createDailyBalance({
+        accountId,
+        date,
+        balance
+      });
+    }
+  }
+
+  // Calculate daily balance for a specific account and date
+  async calculateDailyBalance(accountId: string, date: Date): Promise<string> {
+    // Get the account to get opening balance
+    const account = await this.getAccount(accountId);
+    if (!account) {
+      throw new Error("Account not found");
+    }
+
+    // Get all transactions up to and including this date
+    const transactions = await this.getTransactionsByUser(account.userId, {
+      accountId,
+      endDate: date
+    });
+
+    // Start with opening balance
+    let balance = parseFloat(account.openingBalance);
+
+    // Apply all transactions
+    for (const transaction of transactions) {
+      const amount = parseFloat(transaction.amount);
+      
+      if (transaction.type === 'INCOME') {
+        balance += amount;
+      } else if (transaction.type === 'EXPENSE') {
+        if (account.type === 'ASSET') {
+          balance -= amount; // For asset accounts, expenses reduce balance
+        } else {
+          balance += amount; // For debt accounts, expenses increase balance (more debt)
+        }
+      } else if (transaction.type === 'TRANSFER') {
+        if (transaction.accountId === accountId) {
+          // Money leaving this account
+          balance -= amount;
+        }
+        if (transaction.toAccountId === accountId) {
+          // Money coming into this account
+          balance += amount;
+        }
+      }
+    }
+
+    return balance.toFixed(2);
+  }
+
+  // Update daily balances for an account for a date range
+  async updateDailyBalancesForAccount(accountId: string, startDate: Date, endDate: Date): Promise<void> {
+    const currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
+      const balance = await this.calculateDailyBalance(accountId, currentDate);
+      await this.upsertDailyBalance(accountId, currentDate, balance);
+      
+      // Move to next day
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
   }
 }
 

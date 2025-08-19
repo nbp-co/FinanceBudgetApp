@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay, subDays } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
-import type { Account, Transaction, Category } from "@shared/schema";
+import type { Account, Transaction, Category, DailyBalance } from "@shared/schema";
 
 interface MonthlyCalendarProps {
   onDateSelect?: (date: Date | null) => void;
@@ -77,6 +78,51 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
       setSelectedAccountId(defaultAccount.id);
     }
   }, [accounts, selectedAccountId]);
+
+  // Fetch daily balances for the selected account
+  const { data: dailyBalances = [], isLoading: balancesLoading } = useQuery<DailyBalance[]>({
+    queryKey: ["/api/daily-balances", selectedAccountId, monthStart.toISOString(), monthEnd.toISOString()],
+    queryFn: () => {
+      if (!selectedAccountId) return [];
+      
+      const params = new URLSearchParams({
+        startDate: monthStart.toISOString(),
+        endDate: monthEnd.toISOString(),
+      });
+      
+      return fetch(`/api/daily-balances/${selectedAccountId}?${params.toString()}`, {
+        credentials: "include",
+      }).then(res => res.json());
+    },
+    enabled: !!selectedAccountId,
+  });
+
+  // Calculate daily balances automatically when account or month changes
+  const queryClient = useQueryClient();
+  const calculateBalancesMutation = useMutation({
+    mutationFn: async ({ accountId, startDate, endDate }: { accountId: string, startDate: Date, endDate: Date }) => {
+      return apiRequest(`/api/daily-balances/calculate/${accountId}`, {
+        method: 'POST',
+        body: { startDate: startDate.toISOString(), endDate: endDate.toISOString() }
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/daily-balances"] });
+    },
+  });
+
+  // Auto-calculate balances when account changes or month changes
+  useEffect(() => {
+    if (selectedAccountId && !balancesLoading) {
+      // Calculate balances for the current month and carry over from previous month
+      const prevMonthEnd = subDays(monthStart, 1);
+      calculateBalancesMutation.mutate({
+        accountId: selectedAccountId,
+        startDate: prevMonthEnd,
+        endDate: monthEnd
+      });
+    }
+  }, [selectedAccountId, currentDate]);
   
   // Get days from previous month to fill the grid
   const startPadding = getDay(monthStart);
@@ -144,27 +190,34 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     return transactionsByDate[dateKey] || [];
   };
 
-  // Calculate running balance up to a given date
-  const getDailyBalance = (date: Date): number => {
-    const daysToCalculate = eachDayOfInterval({ start: monthStart, end: date });
+  // Group daily balances by date for efficient lookup
+  const balancesByDate = useMemo(() => {
+    const grouped: Record<string, DailyBalance> = {};
     
-    let runningBalance = 0;
-    
-    for (const day of daysToCalculate) {
-      const dayTransactions = getTransactionsForDay(day);
-      for (const transaction of dayTransactions) {
-        const amount = parseFloat(transaction.amount);
-        
-        if (transaction.type === 'INCOME') {
-          runningBalance += amount;
-        } else if (transaction.type === 'EXPENSE') {
-          runningBalance -= amount;
-        }
-        // TRANSFER transactions don't affect total balance in this view
-      }
+    if (Array.isArray(dailyBalances)) {
+      dailyBalances.forEach(balance => {
+        const date = new Date(balance.date);
+        const dateKey = format(date, 'yyyy-MM-dd');
+        grouped[dateKey] = balance;
+      });
     }
     
-    return runningBalance;
+    return grouped;
+  }, [dailyBalances]);
+
+  // Get balance for a specific day
+  const getBalanceForDay = (date: Date): string | null => {
+    if (!isSameMonth(date, currentDate)) return null;
+    
+    const dateKey = format(date, 'yyyy-MM-dd');
+    const balance = balancesByDate[dateKey];
+    return balance ? balance.balance : null;
+  };
+
+  // Get daily balance from database or calculate if needed
+  const getDailyBalance = (date: Date): number | null => {
+    const balance = getBalanceForDay(date);
+    return balance ? parseFloat(balance) : null;
   };
 
   const handleDayClick = (day: Date) => {
@@ -292,16 +345,13 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                       <div className="text-xs text-gray-400">+</div>
                     )}
                   </div>
-                  {/* Show ending balance for days with transactions */}
-                  {transactions.length > 0 && isCurrentMonth && (
+                  {/* Show daily balance if available */}
+                  {isCurrentMonth && getDailyBalance(day) !== null && (
                     <div className="mt-auto">
                       <div className={`text-[10px] text-center font-medium px-1 leading-3 ${
-                        getDailyBalance(day) < 0 ? 'text-red-600' : 'text-gray-600'
+                        getDailyBalance(day)! < 0 ? 'text-red-600' : 'text-green-600'
                       }`}>
-                        {getDailyBalance(day) < 0 
-                          ? `-${Math.abs(Math.round(getDailyBalance(day))).toLocaleString()}`
-                          : Math.round(getDailyBalance(day)).toLocaleString()
-                        }
+                        {formatCurrencyWhole(getDailyBalance(day)!)}
                       </div>
                     </div>
                   )}
