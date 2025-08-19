@@ -465,7 +465,7 @@ export default function AccountsPage() {
       account: accountName,
       amount: '',
       frequency: 'monthly',
-      paymentSource: 'checking',
+      paymentSource: 'checking-account',
       startDate: new Date().toISOString().split('T')[0]
     });
     setIsPaymentDialogOpen(true);
@@ -501,7 +501,7 @@ export default function AccountsPage() {
     // Filter by sub-type
     if (debtFilterBy.length > 0) {
       debtAccounts = debtAccounts.filter(account => 
-        debtFilterBy.includes(account.subType || 'Other')
+        debtFilterBy.includes(account.accountType || 'Other')
       );
     }
 
@@ -544,7 +544,7 @@ export default function AccountsPage() {
   };
 
   const getUniqueDebtSubTypes = () => {
-    return Array.from(new Set(getDebtAccounts().map(account => account.subType || 'Other')));
+    return Array.from(new Set(getDebtAccounts().map(account => account.accountType || 'Other')));
   };
   
   const form = useForm<AccountFormData>({
@@ -1327,7 +1327,8 @@ export default function AccountsPage() {
                                   let totalStartBalance = 0;
                                   
                                   debtAccounts.forEach(account => {
-                                    const statements = (monthlyStatements || []).filter(s => s.accountId === account.id);
+                                    const accountId = account.name.toLowerCase().replace(/\s+/g, '-');
+                                    const statements = (monthlyStatements || []).filter(s => s.accountId === accountId);
                                     if (statements.length > 0) {
                                       // Find January statement or earliest available
                                       const januaryStatement = statements.find(s => {
@@ -1442,7 +1443,7 @@ export default function AccountsPage() {
                                 <SelectItem value="all">All Types</SelectItem>
                                 {getUniqueDebtSubTypes().map(subType => (
                                   <SelectItem key={`filter-${subType}`} value={subType}>
-                                    {subType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                    {subType.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -1825,9 +1826,14 @@ export default function AccountsPage() {
                         <SelectValue placeholder="Select payment source" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="checking">Checking Account</SelectItem>
-                        <SelectItem value="business-checking">Business Checking</SelectItem>
-                        <SelectItem value="savings">Savings Account</SelectItem>
+                        {allAccounts
+                          .filter(account => account.type === 'Asset') // Only show asset accounts as payment sources
+                          .map(account => (
+                            <SelectItem key={account.name} value={account.name.toLowerCase().replace(/\s+/g, '-')}>
+                              {account.name}
+                            </SelectItem>
+                          ))
+                        }
                       </SelectContent>
                     </Select>
                   </div>
@@ -1984,7 +1990,7 @@ export default function AccountsPage() {
                         <TableRow className="bg-gray-400 h-10 border-none">
                           <TableHead className="font-bold text-white py-3 px-4 rounded-tl-lg border-r border-gray-300">DEBT BY TYPE</TableHead>
                           {(() => {
-                            const months = [];
+                            const months: JSX.Element[] = [];
                             const monthLabels = summaryMonthOffset === 1 
                               ? ['JUL 2025', 'AUG 2025', 'SEP 2025', 'OCT 2025', 'NOV 2025', 'DEC 2025']
                               : summaryMonthOffset === 0
@@ -2089,7 +2095,7 @@ export default function AccountsPage() {
                       {(() => {
                         const debtAccounts = getDebtAccounts();
                         const debtTypes = Array.from(new Set(debtAccounts.map(account => account.accountType)));
-                        const chartData = [];
+                        const chartData: Array<{month: string; [key: string]: any}> = [];
                         
                         // Prepare data for chart using JAN-JUN and JUL-DEC periods
                         const monthLabels = summaryMonthOffset === 1 
@@ -2101,7 +2107,7 @@ export default function AccountsPage() {
                           : ['Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024'];
                         
                         monthLabels.forEach(monthLabel => {
-                          const monthData: any = { month: monthLabel };
+                          const monthData: {month: string; [key: string]: any} = { month: monthLabel };
                           
                           debtTypes.forEach(debtType => {
                             const typeAccounts = debtAccounts.filter(account => account.accountType === debtType);
