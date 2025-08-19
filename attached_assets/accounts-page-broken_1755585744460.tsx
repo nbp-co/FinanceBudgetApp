@@ -16,8 +16,6 @@ import { Plus, Building, CreditCard, Edit, Settings, Save, Minus, ChevronDown, C
 import { formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useQuery } from "@tanstack/react-query";
-import type { Account } from "@shared/schema";
 
 const accountFormSchema = z.object({
   name: z.string().min(1, "Account name is required"),
@@ -50,12 +48,6 @@ export default function AccountsPage() {
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<string[]>(['Asset', 'Debt']);
   const [isStatementsOpen, setIsStatementsOpen] = useState(true);
 
-  // Debt payoff calculator state
-  const [debtBalance, setDebtBalance] = useState('15000');
-  const [interestRate, setInterestRate] = useState('18.5');
-  const [minimumPayment, setMinimumPayment] = useState('300');
-  const [extraPayment, setExtraPayment] = useState('100');
-
   // Statements data
   const availableMonths = [
     { value: "2024-12", label: "Dec 2024" },
@@ -75,8 +67,35 @@ export default function AccountsPage() {
     { name: "Auto Loan", type: "Debt", accountType: "Auto Loan", apr: 5.2, dueDate: 10 },
   ];
 
+  // Interest data by month - debt accounts only
+  const interestData = [
+    { month: 'Jul 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Aug 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Sep 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Oct 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Nov 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+    { month: 'Dec 2024', 'Credit Card': 47.23, 'Mortgage': 1542.88, 'Auto Loan': 78.95 },
+  ];
+
+  // Colors for different account sub-types
+  const chartColors = {
+    'Credit Card': '#ef4444', // red
+    'Mortgage': '#f97316', // orange
+    'Auto Loan': '#eab308', // yellow
+    'Savings': '#22c55e', // green
+    'Money Market': '#3b82f6', // blue
+  };
+
+  // Sort accounts by type and subtype
+  const sortedAccounts = allAccounts.sort((a, b) => {
+    if (a.type !== b.type) {
+      return a.type === 'Asset' ? -1 : 1;
+    }
+    return a.accountType.localeCompare(b.accountType);
+  });
+
   // Filter accounts based on selected types
-  const accounts = allAccounts.filter(account => 
+  const accounts = sortedAccounts.filter(account => 
     selectedAccountTypes.includes(account.type)
   );
 
@@ -119,18 +138,21 @@ export default function AccountsPage() {
 
   const handleAssetSubmit = (data: AccountFormData) => {
     console.log("Creating asset account:", data);
+    // Handle asset account creation here
     setIsAssetDialogOpen(false);
     form.reset();
   };
 
   const handleDebtSubmit = (data: AccountFormData) => {
     console.log("Creating debt account:", data);
+    // Handle debt account creation here
     setIsDebtDialogOpen(false);
     form.reset();
   };
 
   const handleBalanceAdjustment = (data: BalanceAdjustmentData) => {
     console.log("Adjusting balance for", selectedAccount?.name, "to", data.newBalance);
+    // Handle balance adjustment here
     setIsBalanceDialogOpen(false);
     setSelectedAccount(null);
     balanceForm.reset();
@@ -144,39 +166,18 @@ export default function AccountsPage() {
 
   const openEditAccount = (accountData: AccountFormData) => {
     setEditingAccount(accountData);
+    // Pre-populate the form with existing account data
     form.reset(accountData);
     setIsEditDialogOpen(true);
   };
 
   const handleEditAccount = (data: AccountFormData) => {
     console.log("Editing account:", editingAccount?.name, "with data:", data);
+    // Handle account editing here
     setIsEditDialogOpen(false);
     setEditingAccount(null);
     form.reset();
   };
-
-  // Calculate debt payoff scenarios
-  const calculatePayoff = (balance: number, rate: number, payment: number) => {
-    const monthlyRate = rate / 100 / 12;
-    if (monthlyRate === 0) return { months: Math.ceil(balance / payment), totalInterest: 0 };
-    
-    const months = Math.ceil(-Math.log(1 - (balance * monthlyRate) / payment) / Math.log(1 + monthlyRate));
-    const totalPaid = months * payment;
-    const totalInterest = totalPaid - balance;
-    
-    return { months, totalInterest };
-  };
-
-  const debtBalanceNum = parseFloat(debtBalance) || 0;
-  const interestRateNum = parseFloat(interestRate) || 0;
-  const minimumPaymentNum = parseFloat(minimumPayment) || 0;
-  const extraPaymentNum = parseFloat(extraPayment) || 0;
-
-  const minOnlyScenario = calculatePayoff(debtBalanceNum, interestRateNum, minimumPaymentNum);
-  const withExtraScenario = calculatePayoff(debtBalanceNum, interestRateNum, minimumPaymentNum + extraPaymentNum);
-
-  const monthsSaved = minOnlyScenario.months - withExtraScenario.months;
-  const interestSaved = minOnlyScenario.totalInterest - withExtraScenario.totalInterest;
 
   const AddAssetAccountDialog = () => (
     <Dialog open={isAssetDialogOpen} onOpenChange={setIsAssetDialogOpen}>
@@ -612,10 +613,9 @@ export default function AccountsPage() {
     <AppShell>
       <div className="p-4 lg:p-8">
         <Tabs defaultValue="accounts" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-lg">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
             <TabsTrigger value="accounts">My Accounts</TabsTrigger>
             <TabsTrigger value="statements">Statements</TabsTrigger>
-            <TabsTrigger value="debt-payoff">Debt Payoff</TabsTrigger>
           </TabsList>
           
           <TabsContent value="accounts" className="space-y-8">
@@ -884,8 +884,15 @@ export default function AccountsPage() {
                                             <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">$</span>
                                             <Input
                                               type="text"
-                                              defaultValue="0.00"
-                                              className="w-28 text-center pl-6 text-xs"
+                                              defaultValue={
+                                                account.name === "Checking Account" ? "0.00" :
+                                                account.name === "Savings Account" ? "95.43" :
+                                                account.name === "Money Market" ? "25.18" :
+                                                account.name === "Credit Card" ? "47.23" :
+                                                account.name === "Mortgage" ? "1,542.88" :
+                                                "78.95"
+                                              }
+                                              className="w-28 text-center text-xs pl-6"
                                             />
                                             <span className="absolute -top-1 -left-1 text-xs text-gray-400 font-medium">I</span>
                                           </div>
@@ -904,132 +911,55 @@ export default function AccountsPage() {
                 </Card>
               </Collapsible>
             </div>
-          </TabsContent>
 
-          <TabsContent value="debt-payoff" className="space-y-6">
+            {/* Interest Chart - Debt Accounts Only */}
             <Card>
-              <CardHeader>
-                <CardTitle>Debt Payoff Calculator</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Current Balance
-                      </label>
-                      <Input
-                        type="number"
-                        value={debtBalance}
-                        onChange={(e) => setDebtBalance(e.target.value)}
-                        placeholder="15000"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Interest Rate (%)
-                      </label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={interestRate}
-                        onChange={(e) => setInterestRate(e.target.value)}
-                        placeholder="18.5"
-                      />
-                    </div>
+                <CardHeader>
+                  <CardTitle>Monthly Interest Expense by Debt Account</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={interestData}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                        <XAxis 
+                          dataKey="month" 
+                          tick={{ fontSize: 12 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                        />
+                        <YAxis 
+                          tick={{ fontSize: 12 }}
+                          tickFormatter={(value) => `$${value}`}
+                        />
+                        <Tooltip 
+                          formatter={(value) => [`$${value}`, '']}
+                          labelStyle={{ color: '#374151' }}
+                          contentStyle={{ 
+                            backgroundColor: '#f9fafb',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <Legend />
+                        <Bar dataKey="Credit Card" stackId="a" fill={chartColors['Credit Card']} />
+                        <Bar dataKey="Mortgage" stackId="a" fill={chartColors['Mortgage']} />
+                        <Bar dataKey="Auto Loan" stackId="a" fill={chartColors['Auto Loan']} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Minimum Payment
-                      </label>
-                      <Input
-                        type="number"
-                        value={minimumPayment}
-                        onChange={(e) => setMinimumPayment(e.target.value)}
-                        placeholder="300"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Extra Payment
-                      </label>
-                      <Input
-                        type="number"
-                        value={extraPayment}
-                        onChange={(e) => setExtraPayment(e.target.value)}
-                        placeholder="100"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6 pt-6 border-t">
-                  <Card className="bg-red-50">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg text-red-800">Minimum Payment Only</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div>
-                        <p className="text-sm text-gray-600">Time to payoff</p>
-                        <p className="text-xl font-semibold text-red-700">
-                          {Math.floor(minOnlyScenario.months / 12)} years, {minOnlyScenario.months % 12} months
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Total interest paid</p>
-                        <p className="text-lg font-semibold text-red-700">
-                          {formatCurrency(minOnlyScenario.totalInterest)}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-green-50">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg text-green-800">With Extra Payment</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div>
-                        <p className="text-sm text-gray-600">Time to payoff</p>
-                        <p className="text-xl font-semibold text-green-700">
-                          {Math.floor(withExtraScenario.months / 12)} years, {withExtraScenario.months % 12} months
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Total interest paid</p>
-                        <p className="text-lg font-semibold text-green-700">
-                          {formatCurrency(withExtraScenario.totalInterest)}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Card className="bg-blue-50">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg text-blue-800">Savings Summary</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div>
-                      <p className="text-sm text-gray-600">Interest saved</p>
-                      <p className="text-xl font-semibold text-blue-700">
-                        {formatCurrency(interestSaved)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Time saved</p>
-                      <p className="text-lg font-semibold text-blue-700">
-                        {Math.floor(monthsSaved / 12)} years, {monthsSaved % 12} months
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
