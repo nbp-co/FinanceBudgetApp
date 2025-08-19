@@ -195,19 +195,21 @@ export function MonthlyCalendar() {
                 </SelectContent>
               </Select>
               
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <div className="flex items-center space-x-3">
-                  <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
-                  <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
-                    <Calendar className="h-3 w-3" />
+              <div className="flex items-center justify-center flex-1">
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center space-x-3">
+                    <CardTitle className="text-xl">{format(currentDate, 'MMM yyyy').toUpperCase()}</CardTitle>
+                    <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
+                      <Calendar className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={goToNextMonth}>
+                    <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
-                <Button variant="ghost" size="icon" onClick={goToNextMonth}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
               </div>
             </div>
           </div>
