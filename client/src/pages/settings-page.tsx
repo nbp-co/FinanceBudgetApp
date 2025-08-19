@@ -211,26 +211,16 @@ export default function SettingsPage() {
             </Collapsible>
           </Card>
 
-          {/* Logout */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <LogOut className="mr-2 h-5 w-5" />
-                Logout
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                variant="outline" 
-                onClick={() => logoutMutation.mutate()}
-                disabled={logoutMutation.isPending}
-                className="w-full"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                {logoutMutation.isPending ? "Signing out..." : "Sign Out"}
-              </Button>
-            </CardContent>
-          </Card>
+          {/* Logout Button */}
+          <Button 
+            variant="outline" 
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
+            className="w-full"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            {logoutMutation.isPending ? "Signing out..." : "Sign Out"}
+          </Button>
         </div>
       </div>
     </AppShell>
