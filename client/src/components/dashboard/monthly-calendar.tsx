@@ -458,15 +458,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                     <p className="text-xs text-gray-500">{getCategoryName(transaction.categoryId)}</p>
                   </div>
                 </div>
-                <div className="text-right flex items-center gap-2">
-                  {transaction.recurringId && (
-                    <div className="flex flex-col items-center">
-                      <Repeat className="h-3 w-3 text-blue-500" />
-                      <span className="text-xs text-blue-500 font-medium">
-                        {getRecurringFrequency(transaction)}
-                      </span>
-                    </div>
-                  )}
+                <div className="text-right">
                   <p className={`font-semibold text-sm ${
                     transaction.type === 'INCOME' ? 'text-green-600' :
                     transaction.type === 'EXPENSE' ? 'text-red-600' : 'text-gray-800'
@@ -474,6 +466,14 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                     {transaction.type === 'INCOME' ? '+' : transaction.type === 'EXPENSE' ? '-' : ''}
                     {formatCurrency(parseFloat(transaction.amount))}
                   </p>
+                  {transaction.recurringId && (
+                    <div className="flex items-center justify-end gap-1 mt-1">
+                      <Repeat className="h-3 w-3 text-blue-500" />
+                      <span className="text-xs text-blue-500 font-medium">
+                        {getRecurringFrequency(transaction)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
