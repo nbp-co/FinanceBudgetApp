@@ -33,14 +33,14 @@ Preferred communication style: Simple, everyday language.
 - Updated transaction form to use selected calendar date as default
 - Removed email display from sidebar for cleaner user interface
 
-**Statements Integration as Sub-Tab (August 19, 2025)**
-- Moved statements from main navigation tab to sub-tab within accounts page structure
-- Removed standalone statements route from application routing
-- Updated both desktop sidebar and mobile bottom navigation to remove statements main tab
-- Changed mobile navigation from 5 columns back to 4 columns for cleaner layout
-- Integrated statements functionality directly into accounts page with tab structure
-- Statements now accessible as "Statements" tab under the accounts section
-- Maintains debt payoff calculator as separate tab within accounts page structure
+**Comprehensive Statements Implementation (August 19, 2025)**
+- Restored comprehensive statements functionality as sub-tab within accounts page
+- Added month selection interface with checkboxes for JAN-OCT 2025 
+- Implemented filter and sort controls for statement data (All Types, Asset, Debt)
+- Created detailed statement table with account information, balances, and payment details
+- Added example Auto Loan account with debt information and payment schedule
+- Maintained statements as sub-tab structure within accounts page (3-tab layout)
+- Statements tab now shows full monthly statement interface matching design requirements
 
 **Daily Balance System Implementation (August 19, 2025)**
 - Implemented automatic daily balance calculation system triggered by transaction changes
