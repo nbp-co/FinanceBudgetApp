@@ -1,8 +1,18 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountList } from "@/components/accounts/account-list";
+import { DebtPayoffCalculator } from "@/components/accounts/debt-payoff-calculator";
+import { useQuery } from "@tanstack/react-query";
+import type { Account } from "@shared/schema";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 export default function AccountsPage() {
+  // Fetch accounts for debt payoff calculator
+  const { data: accounts = [] } = useQuery<Account[]>({
+    queryKey: ["/api/accounts"],
+  });
+
   return (
     <AppShell>
       <div className="max-w-6xl mx-auto space-y-6">
@@ -22,15 +32,19 @@ export default function AccountsPage() {
           </TabsContent>
           
           <TabsContent value="statements" className="space-y-6">
-            <div className="text-center py-8">
-              <p className="text-gray-500">Statements feature coming soon</p>
+            <div className="text-center py-8 space-y-4">
+              <p className="text-gray-600">Access your detailed monthly statements</p>
+              <Button asChild>
+                <a href="/statements" className="inline-flex items-center gap-2">
+                  <ExternalLink className="h-4 w-4" />
+                  Go to Statements Page
+                </a>
+              </Button>
             </div>
           </TabsContent>
           
           <TabsContent value="debt-payoff" className="space-y-6">
-            <div className="text-center py-8">
-              <p className="text-gray-500">Debt payoff feature coming soon</p>
-            </div>
+            <DebtPayoffCalculator accounts={accounts} />
           </TabsContent>
         </Tabs>
       </div>

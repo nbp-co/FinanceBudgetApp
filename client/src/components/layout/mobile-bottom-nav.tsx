@@ -11,7 +11,8 @@ import {
 const navigation = [
   { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Accounts", href: "/accounts", icon: Building },
-  { name: "Summary", href: "/summary", icon: FileText },
+  { name: "Statements", href: "/statements", icon: FileText },
+  { name: "Summary", href: "/summary", icon: Home },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -20,7 +21,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-50">
-      <div className="grid grid-cols-4 h-16">
+      <div className="grid grid-cols-5 h-16">
         {navigation.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.href;
