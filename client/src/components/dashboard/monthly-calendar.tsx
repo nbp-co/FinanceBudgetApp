@@ -176,7 +176,8 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     // Ensure transactions is an array
     if (Array.isArray(transactions)) {
       transactions.forEach(transaction => {
-        const date = new Date(transaction.date);
+        // Parse date as UTC to avoid timezone issues
+        const date = new Date(transaction.date + 'T00:00:00');
         const dateKey = format(date, 'yyyy-MM-dd');
         
         if (!grouped[dateKey]) {
