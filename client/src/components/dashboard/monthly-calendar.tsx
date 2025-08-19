@@ -106,10 +106,12 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
   const queryClient = useQueryClient();
   const calculateBalancesMutation = useMutation({
     mutationFn: async ({ accountId, startDate, endDate }: { accountId: string, startDate: Date, endDate: Date }) => {
-      return apiRequest(`/api/daily-balances/calculate/${accountId}`, {
+      return fetch(`/api/daily-balances/calculate/${accountId}`, {
         method: 'POST',
-        body: { startDate: startDate.toISOString(), endDate: endDate.toISOString() }
-      });
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startDate: startDate.toISOString(), endDate: endDate.toISOString() })
+      }).then(res => res.json());
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/daily-balances"] });
@@ -410,13 +412,13 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                       <div className="text-xs text-gray-400">+</div>
                     )}
                   </div>
-                  {/* Show daily balance if available */}
-                  {isCurrentMonth && getDailyBalance(day) !== null && (
+                  {/* Show daily balance only for days with transactions */}
+                  {isCurrentMonth && getTransactionsForDay(day).length > 0 && getDailyBalance(day) !== null && (
                     <div className="mt-auto">
                       <div className={`text-[10px] text-center font-medium px-1 leading-3 ${
                         getDailyBalance(day)! < 0 ? 'text-red-600' : 'text-green-600'
                       }`}>
-                        {formatCurrencyWhole(getDailyBalance(day)!)}
+                        {Math.abs(getDailyBalance(day)!).toFixed(0)}
                       </div>
                     </div>
                   )}

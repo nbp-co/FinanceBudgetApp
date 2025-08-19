@@ -282,11 +282,11 @@ export class DatabaseStorage implements IStorage {
       .where(and(...whereConditions))
       .orderBy(desc(transactions.date), desc(transactions.createdAt));
     
-    if (filters?.limit) {
+    if (filters?.limit !== undefined) {
       query = query.limit(filters.limit);
     }
     
-    if (filters?.offset) {
+    if (filters?.offset !== undefined) {
       query = query.offset(filters.offset);
     }
 
