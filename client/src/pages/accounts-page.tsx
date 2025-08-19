@@ -683,7 +683,7 @@ export default function AccountsPage() {
                           name="balance"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Initial Balance</FormLabel>
+                              <FormLabel>Current Balance</FormLabel>
                               <FormControl>
                                 <Input type="number" step="0.01" placeholder="0.00" {...field} />
                               </FormControl>
