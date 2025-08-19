@@ -6,7 +6,8 @@ import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay, isSameDay } from "date-fns";
 import { formatCurrency, formatCurrencyWhole } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import type { Account, Transaction } from "@shared/schema";
+import { TransactionDetailsModal } from "@/components/transactions/transaction-details-modal";
+import type { Account, Transaction, Category } from "@shared/schema";
 
 interface MonthlyCalendarProps {
   onDateSelect?: (date: Date | null) => void;
@@ -16,6 +17,8 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -24,6 +27,11 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
   // Fetch user accounts
   const { data: accounts = [], isLoading: accountsLoading } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
+  });
+
+  // Fetch categories for transaction details
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ["/api/categories"],
   });
 
   // Fetch transactions for the current month
@@ -163,6 +171,22 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
     if (isSameMonth(day, currentDate)) {
       setSelectedDate(day);
     }
+  };
+
+  const handleTransactionClick = (transaction: Transaction, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent day selection when clicking transaction
+    setSelectedTransaction(transaction);
+    setIsDetailsModalOpen(true);
+  };
+
+  const getSelectedTransactionAccount = () => {
+    if (!selectedTransaction) return undefined;
+    return accounts.find(account => account.id === selectedTransaction.accountId);
+  };
+
+  const getSelectedTransactionCategory = () => {
+    if (!selectedTransaction || !selectedTransaction.categoryId) return undefined;
+    return categories.find(category => category.id === selectedTransaction.categoryId);
   };
 
   const selectedDayTransactions = selectedDate ? getTransactionsForDay(selectedDate) : [];
@@ -337,7 +361,11 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
         ) : selectedDayTransactions.length > 0 ? (
           <div className="space-y-3">
             {selectedDayTransactions.map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div 
+                key={transaction.id} 
+                onClick={(e) => handleTransactionClick(transaction, e)}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+              >
                 <div className="flex items-center space-x-3">
                   {transaction.type === 'TRANSFER' ? (
                     <div className="w-3 h-3 rounded-full overflow-hidden flex">
@@ -379,6 +407,18 @@ export function MonthlyCalendar({ onDateSelect }: MonthlyCalendarProps = {}) {
       </CardContent>
     </Card>
   </div>
+
+  {/* Transaction Details Modal */}
+  <TransactionDetailsModal
+    isOpen={isDetailsModalOpen}
+    onClose={() => {
+      setIsDetailsModalOpen(false);
+      setSelectedTransaction(null);
+    }}
+    transaction={selectedTransaction}
+    account={getSelectedTransactionAccount()}
+    category={getSelectedTransactionCategory()}
+  />
 </div>
   );
 }
