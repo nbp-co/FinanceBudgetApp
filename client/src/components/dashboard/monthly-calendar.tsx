@@ -200,7 +200,7 @@ export function MonthlyCalendar() {
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <div className="flex items-center space-x-3">
-                  <CardTitle className="text-xl">{format(currentDate, 'MMMM yyyy').toUpperCase()}</CardTitle>
+                  <CardTitle className="text-xl">{format(currentDate, 'MMM yyyy').toUpperCase()}</CardTitle>
                   <Button variant="ghost" size="sm" onClick={goToToday} className="h-6 w-6 p-0">
                     <Calendar className="h-3 w-3" />
                   </Button>
