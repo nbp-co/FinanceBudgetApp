@@ -75,7 +75,6 @@ export function DesktopSidebar() {
                 </div>
                 <div className="text-sm leading-6">
                   <p className="font-semibold text-gray-900">{user?.name || "User"}</p>
-                  <p className="text-gray-400">{user?.email}</p>
                 </div>
               </div>
             </li>

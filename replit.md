@@ -28,6 +28,10 @@ Preferred communication style: Simple, everyday language.
 - Added recurring transaction functionality with future transaction generation (12 months)
 - Support for multiple recurring frequencies: Daily, Weekly, Bi-weekly, Monthly, and Custom intervals
 - Removed "Financial Calendar" header from tab for cleaner interface design
+- Added recurring transaction visual indicators with frequency labels
+- Made transaction categories optional with "Uncategorized" fallback
+- Updated transaction form to use selected calendar date as default
+- Removed email display from sidebar for cleaner user interface
 
 **Budget Page Removal (August 12, 2025)**
 - Completely removed standalone Budget page and all associated functionality
