@@ -19,8 +19,6 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
-
-
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -307,11 +305,67 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
     return calculatedBalance;
   };
 
+  const getFilteredTransactions = (transactions: any[]) => {
+    if (accountFilter === "assets") {
+      return transactions.filter(t => 
+        ['Checking', 'Savings', 'Investment'].includes((t as any).fromAccount) ||
+        ['Checking', 'Savings', 'Investment'].includes((t as any).toAccount) ||
+        (t.type === 'income' || t.type === 'expense')
+      );
+    }
+    if (accountFilter === "debts") {
+      return transactions.filter(t => 
+        ['Credit Card', 'Business Credit Card'].includes((t as any).fromAccount) ||
+        ['Credit Card', 'Business Credit Card'].includes((t as any).toAccount)
+      );
+    }
+    // Individual account filters
+    if (accountFilter === "checking") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Checking' || 
+        (t as any).toAccount === 'Checking' ||
+        (t.type === 'income' || t.type === 'expense') // Income/expense typically go to checking
+      );
+    }
+    if (accountFilter === "savings") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Savings' || 
+        (t as any).toAccount === 'Savings'
+      );
+    }
+    if (accountFilter === "investment") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Investment' || 
+        (t as any).toAccount === 'Investment'
+      );
+    }
+    if (accountFilter === "credit") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Credit Card' || 
+        (t as any).toAccount === 'Credit Card'
+      );
+    }
+    if (accountFilter === "business") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Business' || 
+        (t as any).toAccount === 'Business'
+      );
+    }
+    if (accountFilter === "business-credit") {
+      return transactions.filter(t => 
+        (t as any).fromAccount === 'Business Credit Card' || 
+        (t as any).toAccount === 'Business Credit Card'
+      );
+    }
+    return transactions;
+  };
+
   const handleDayClick = (day: Date) => {
     if (isSameMonth(day, currentDate)) {
       setSelectedDate(day);
     }
   };
+
 
   const handleTransactionClick = (transaction: Transaction, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent day selection when clicking transaction
@@ -376,7 +430,8 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
 
           {/* Calendar Days */}
           {allDays.map((day, index) => {
-            const transactions = getTransactionsForDay(day);
+            const allTransactions = getTransactionsForDay(day);
+            const transactions = getFilteredTransactions(allTransactions);
             const isCurrentMonth = isSameMonth(day, currentDate);
             const isTodayDate = isToday(day);
             const isSelected = selectedDate && isSameDay(day, selectedDate);
@@ -453,7 +508,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
           <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-sm font-bold text-gray-600">
                   Balance for {format(selectedDate, 'EEEE, MMM d')}
                 </p>
               </div>
@@ -515,7 +570,7 @@ export function MonthlyCalendar({ onDateSelect, onEditTransaction }: MonthlyCale
                     <p className="text-xs text-gray-500">{getCategoryName(transaction.categoryId)}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex-shrink-0 min-w-0">
                   <p className={`font-semibold text-sm ${
                     transaction.type === 'INCOME' ? 'text-green-600' :
                     transaction.type === 'EXPENSE' ? 'text-red-600' : 'text-gray-800'
