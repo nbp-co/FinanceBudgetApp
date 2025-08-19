@@ -10,6 +10,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**UI Improvements & Layout Fixes (August 19, 2025 - Current Session)**
+- Fixed chevron arrow directions on debt payoff page collapsible sections (rotate 180° when expanded)
+- Updated monthly statements to show all 12 months in 4 rows with 3 months each (JAN-MAR, APR-JUN, JUL-SEP, OCT-DEC)
+- Enhanced settings page: replaced collapsible "Account Actions" with simple logout button
+- Fixed collapsible arrows to show up arrow when sections are expanded across all pages
+- Improved responsive layouts for better mobile and desktop usability
+
 **Navigation Reordering (August 12, 2025)**
 - Updated main navigation order to: Calendar, Accounts, Summary, Settings
 - Applied consistently across desktop sidebar and mobile bottom navigation
