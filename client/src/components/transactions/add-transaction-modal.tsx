@@ -103,8 +103,14 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || `Failed to ${isEditMode ? 'update' : 'create'} transaction`);
+        let errorMessage = `Failed to ${isEditMode ? 'update' : 'create'} transaction`;
+        try {
+          const error = await response.json();
+          errorMessage = error.message || errorMessage;
+        } catch {
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
       
       return response.json();
@@ -156,11 +162,24 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to delete transaction");
+        let errorMessage = "Failed to delete transaction";
+        try {
+          const error = await response.json();
+          errorMessage = error.message || errorMessage;
+        } catch {
+          // Response is not JSON (likely HTML error page)
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
       
-      return response.json();
+      // Handle successful response - may be empty
+      try {
+        return await response.json();
+      } catch {
+        // Empty response is okay for delete
+        return { success: true };
+      }
     },
     onSuccess: (_, deleteAll) => {
       queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
@@ -457,17 +476,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
                     <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
                     <AlertDialogDescription>
                       {editTransaction?.recurringId ? (
-                        <>
-                          This is a recurring transaction. What would you like to delete?
-                          <div className="mt-3 space-y-2">
-                            <div className="p-3 border rounded-lg">
-                              <strong>Single instance:</strong> Delete only this specific transaction
-                            </div>
-                            <div className="p-3 border rounded-lg">
-                              <strong>All future transactions:</strong> Delete this and all future occurrences
-                            </div>
-                          </div>
-                        </>
+                        "This is a recurring transaction. You can delete only this specific transaction or delete this and all future occurrences."
                       ) : (
                         "Are you sure you want to delete this transaction? This action cannot be undone."
                       )}
@@ -479,23 +488,26 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
                       <>
                         <AlertDialogAction 
                           onClick={() => deleteTransactionMutation.mutate(false)}
+                          disabled={deleteTransactionMutation.isPending}
                           className="bg-orange-600 hover:bg-orange-700"
                         >
-                          Delete Single Instance
+                          {deleteTransactionMutation.isPending ? "Deleting..." : "Delete Single Instance"}
                         </AlertDialogAction>
                         <AlertDialogAction 
                           onClick={() => deleteTransactionMutation.mutate(true)}
+                          disabled={deleteTransactionMutation.isPending}
                           className="bg-red-600 hover:bg-red-700"
                         >
-                          Delete All Future
+                          {deleteTransactionMutation.isPending ? "Deleting..." : "Delete All Future"}
                         </AlertDialogAction>
                       </>
                     ) : (
                       <AlertDialogAction 
                         onClick={() => deleteTransactionMutation.mutate(false)}
+                        disabled={deleteTransactionMutation.isPending}
                         className="bg-red-600 hover:bg-red-700"
                       >
-                        Delete Transaction
+                        {deleteTransactionMutation.isPending ? "Deleting..." : "Delete Transaction"}
                       </AlertDialogAction>
                     )}
                   </AlertDialogFooter>
@@ -509,15 +521,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
                 <AlertDialogHeader>
                   <AlertDialogTitle>Update Recurring Transaction</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This is a recurring transaction. How would you like to update it?
-                    <div className="mt-3 space-y-2">
-                      <div className="p-3 border rounded-lg">
-                        <strong>Single instance:</strong> Update only this transaction
-                      </div>
-                      <div className="p-3 border rounded-lg">
-                        <strong>All future transactions:</strong> Update this and all future occurrences (not supported yet)
-                      </div>
-                    </div>
+                    This is a recurring transaction. You can update only this specific transaction or all future occurrences. Currently, only single instance updates are supported.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
