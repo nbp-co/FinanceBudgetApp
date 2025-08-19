@@ -57,6 +57,7 @@ export interface IStorage {
     accountId?: string;
     type?: string;
     categoryId?: string;
+    recurringId?: string;
     startDate?: Date;
     endDate?: Date;
     limit?: number;
@@ -243,6 +244,7 @@ export class DatabaseStorage implements IStorage {
     accountId?: string;
     type?: string;
     categoryId?: string;
+    recurringId?: string;
     startDate?: Date;
     endDate?: Date;
     limit?: number;
@@ -260,6 +262,10 @@ export class DatabaseStorage implements IStorage {
     
     if (filters?.categoryId) {
       whereConditions.push(eq(transactions.categoryId, filters.categoryId));
+    }
+    
+    if (filters?.recurringId) {
+      whereConditions.push(eq(transactions.recurringId, filters.recurringId));
     }
     
     if (filters?.startDate) {

@@ -296,9 +296,32 @@ export function registerRoutes(app: Express): Server {
         return res.sendStatus(404);
       }
       
-      await storage.deleteTransaction(req.params.id);
+      const { deleteAll } = req.query;
+      
+      if (transaction.recurringId && deleteAll === 'true') {
+        // Delete all future transactions with the same recurring ID
+        const futureTransactions = await storage.getTransactionsByUser(getUserId(req), {
+          recurringId: transaction.recurringId
+        });
+        
+        const currentDate = new Date(transaction.date);
+        const futureToDelete = futureTransactions.filter(t => 
+          new Date(t.date) >= currentDate
+        );
+        
+        for (const futureTransaction of futureToDelete) {
+          await storage.deleteTransaction(futureTransaction.id);
+        }
+        
+        console.log(`Deleted ${futureToDelete.length} future recurring transactions`);
+      } else {
+        // Delete only this specific transaction
+        await storage.deleteTransaction(req.params.id);
+      }
+      
       res.sendStatus(200);
     } catch (error) {
+      console.error("Error deleting transaction:", error);
       res.status(500).json({ message: "Failed to delete transaction" });
     }
   });

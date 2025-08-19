@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 import type { Account, Category } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +42,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
   useEffect(() => {
     if (editTransaction) {
       setTransactionType(editTransaction.type);
+      setIsRecurring(!!editTransaction.recurringId);
       setFormData({
         description: editTransaction.description || "",
         amount: editTransaction.amount || "",
@@ -107,6 +110,7 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/daily-balances"] });
       toast({
         title: isEditMode 
           ? "Transaction updated" 
@@ -134,6 +138,44 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
       toast({
         title: `Error ${isEditMode ? 'updating' : 'creating'} transaction`,
         description: error.message || `Failed to ${isEditMode ? 'update' : 'create'} transaction`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteTransactionMutation = useMutation({
+    mutationFn: async (deleteAll: boolean = false) => {
+      const url = deleteAll 
+        ? `/api/transactions/${editTransaction.id}?deleteAll=true`
+        : `/api/transactions/${editTransaction.id}`;
+      
+      const response = await fetch(url, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to delete transaction");
+      }
+      
+      return response.json();
+    },
+    onSuccess: (_, deleteAll) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/daily-balances"] });
+      toast({
+        title: "Transaction deleted",
+        description: deleteAll 
+          ? "This transaction and all future occurrences have been deleted successfully."
+          : "Your transaction has been deleted successfully.",
+      });
+      onClose();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error deleting transaction",
+        description: error.message || "Failed to delete transaction",
         variant: "destructive",
       });
     },
@@ -391,6 +433,71 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate, editTransact
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancel
             </Button>
+            
+            {isEditMode && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    type="button" 
+                    variant="destructive"
+                    disabled={deleteTransactionMutation.isPending}
+                    className="flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {editTransaction?.recurringId ? (
+                        <>
+                          This is a recurring transaction. What would you like to delete?
+                          <div className="mt-3 space-y-2">
+                            <div className="p-3 border rounded-lg">
+                              <strong>Single instance:</strong> Delete only this specific transaction
+                            </div>
+                            <div className="p-3 border rounded-lg">
+                              <strong>All future transactions:</strong> Delete this and all future occurrences
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        "Are you sure you want to delete this transaction? This action cannot be undone."
+                      )}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    {editTransaction?.recurringId ? (
+                      <>
+                        <AlertDialogAction 
+                          onClick={() => deleteTransactionMutation.mutate(false)}
+                          className="bg-orange-600 hover:bg-orange-700"
+                        >
+                          Delete Single Instance
+                        </AlertDialogAction>
+                        <AlertDialogAction 
+                          onClick={() => deleteTransactionMutation.mutate(true)}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          Delete All Future
+                        </AlertDialogAction>
+                      </>
+                    ) : (
+                      <AlertDialogAction 
+                        onClick={() => deleteTransactionMutation.mutate(false)}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Delete Transaction
+                      </AlertDialogAction>
+                    )}
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+            
             <Button type="submit" className="flex-1" disabled={createTransactionMutation.isPending}>
               {createTransactionMutation.isPending ? "Saving..." : (isEditMode ? "Update Transaction" : "Save Transaction")}
             </Button>
