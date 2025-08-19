@@ -52,8 +52,21 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
 
   const createTransactionMutation = useMutation({
     mutationFn: async (transactionData: any) => {
-      const res = await apiRequest("POST", "/api/transactions", transactionData);
-      return res.json();
+      const response = await fetch("/api/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(transactionData),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to create transaction");
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/transactions"] });
@@ -86,16 +99,63 @@ export function AddTransactionModal({ isOpen, onClose, defaultDate }: AddTransac
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validation
+    if (!formData.description.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Description is required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!formData.amount || parseFloat(formData.amount) <= 0) {
+      toast({
+        title: "Validation Error", 
+        description: "Amount must be greater than 0",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!formData.accountId) {
+      toast({
+        title: "Validation Error",
+        description: "Please select an account",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (transactionType === "TRANSFER" && !formData.toAccountId) {
+      toast({
+        title: "Validation Error",
+        description: "Please select a destination account for transfers",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (transactionType !== "TRANSFER" && !formData.categoryId) {
+      toast({
+        title: "Validation Error",
+        description: "Please select a category",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const transactionData = {
       type: transactionType,
-      amount: parseFloat(formData.amount),
-      description: formData.description,
-      date: new Date(formData.date).toISOString(),
+      amount: formData.amount,
+      description: formData.description.trim(),
+      date: formData.date,
       accountId: formData.accountId,
-      toAccountId: transactionType === "TRANSFER" ? formData.toAccountId : null,
-      categoryId: transactionType !== "TRANSFER" ? formData.categoryId || null : null,
+      toAccountId: transactionType === "TRANSFER" ? formData.toAccountId : undefined,
+      categoryId: transactionType !== "TRANSFER" ? formData.categoryId : undefined,
     };
 
+    console.log("Submitting transaction data:", transactionData);
     createTransactionMutation.mutate(transactionData);
   };
 

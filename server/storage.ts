@@ -153,11 +153,51 @@ export class DatabaseStorage implements IStorage {
 
   // Category methods
   async getCategoriesByUser(userId: string): Promise<Category[]> {
-    return await db
+    const existingCategories = await db
       .select()
       .from(categories)
       .where(eq(categories.userId, userId))
       .orderBy(asc(categories.kind), asc(categories.name));
+    
+    // Create default categories if none exist
+    if (existingCategories.length === 0) {
+      await this.createDefaultCategories(userId);
+      return await db
+        .select()
+        .from(categories)
+        .where(eq(categories.userId, userId))
+        .orderBy(asc(categories.kind), asc(categories.name));
+    }
+    
+    return existingCategories;
+  }
+
+  private async createDefaultCategories(userId: string): Promise<void> {
+    const defaultCategories = [
+      { name: "Groceries", kind: "EXPENSE" as const },
+      { name: "Dining Out", kind: "EXPENSE" as const },
+      { name: "Gas & Fuel", kind: "EXPENSE" as const },
+      { name: "Shopping", kind: "EXPENSE" as const },
+      { name: "Entertainment", kind: "EXPENSE" as const },
+      { name: "Utilities", kind: "EXPENSE" as const },
+      { name: "Healthcare", kind: "EXPENSE" as const },
+      { name: "Transportation", kind: "EXPENSE" as const },
+      { name: "Insurance", kind: "EXPENSE" as const },
+      { name: "Other Expenses", kind: "EXPENSE" as const },
+      { name: "Salary", kind: "INCOME" as const },
+      { name: "Freelance", kind: "INCOME" as const },
+      { name: "Investment Income", kind: "INCOME" as const },
+      { name: "Interest", kind: "INCOME" as const },
+      { name: "Other Income", kind: "INCOME" as const },
+    ];
+
+    for (const category of defaultCategories) {
+      await this.createCategory({
+        userId,
+        name: category.name,
+        kind: category.kind,
+      });
+    }
   }
 
   async getCategory(id: string): Promise<Category | undefined> {
