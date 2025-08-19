@@ -22,7 +22,7 @@ export function DesktopSidebar() {
   const { user } = useAuth();
 
   return (
-    <nav className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-48 lg:flex-col">
+    <nav className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-52 lg:flex-col">
       <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-gray-200 px-4 pb-4">
         <div className="flex h-16 shrink-0 items-center">
           <div className="flex items-center space-x-3">
