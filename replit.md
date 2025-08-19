@@ -53,6 +53,12 @@ Preferred communication style: Simple, everyday language.
 - Fixed balance display formatting to show proper currency values instead of $0.00
 - Ensured daily balances update immediately after any transaction modification
 
+**Settings Page Simplification (August 19, 2025)**
+- Simplified Settings page to contain only a single logout button at the bottom
+- Removed complex collapsible sections for profile, security, and notifications
+- Clean minimal design with logout button positioned at the bottom of the page
+- Improved user experience by focusing on essential account management
+
 **Budget Page Removal (August 12, 2025)**
 - Completely removed standalone Budget page and all associated functionality
 - Cleaned up navigation menus (desktop sidebar and mobile bottom nav)
